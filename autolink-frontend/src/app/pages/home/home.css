@@ -1,0 +1,103 @@
+.home {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #f0f0f0;
+  background-color: #1f1f1f; /* fondo general oscuro */
+  padding: 20px 50px;
+}
+
+/* Hero principal */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 50px;
+  background-color: #2c2c2c;
+  border-radius: 10px;
+  padding: 30px;
+}
+
+.hero-text h1 {
+  font-size: 36px;
+  margin-bottom: 15px;
+}
+
+.hero-text p {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #c0c0c0;
+}
+
+.hero-text .btn {
+  text-decoration: none;
+  background-color: #444;
+  color: #f0f0f0;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.hero-text .btn:hover {
+  background-color: #555;
+}
+
+.hero-image img {
+  max-width: 400px;
+  border-radius: 10px;
+}
+
+/* Sección de vehículos destacados */
+.destacados h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.cards {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.card {
+  background-color: #2c2c2c;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  width: 250px;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  background-color: #3a3a3a;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.card h3 {
+  margin: 10px 0 5px 0;
+}
+
+.card p {
+  margin: 5px 0 15px 0;
+  color: #c0c0c0;
+}
+
+.card .btn {
+  text-decoration: none;
+  background-color: #444;
+  color: #f0f0f0;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.card .btn:hover {
+  background-color: #555;
+}
