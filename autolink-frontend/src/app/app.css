@@ -1,23 +1,21 @@
-/* app.component.css */
+:host {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}
 
-/* Que todo el body ocupe el 100% de la altura */
-html, body {
-  height: 100%;
+/* Reset HTML y body para evitar huecos */
+:host ::ng-deep html,
+:host ::ng-deep body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #1a1a1a; /* gris oscuro */
-  color: #e0e0e0; /* texto claro */
+  padding: 0;
+  height: 100%;
 }
 
-/* Layout general con flex para que header y footer sean fijos */
-body {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Main ocupará el espacio restante */
+/* El main debe ocupar el espacio flexible */
 main {
-  flex: 1;
-  padding: 40px 60px;
-  background-color: #222; /* gris medio */
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  display: block;
 }

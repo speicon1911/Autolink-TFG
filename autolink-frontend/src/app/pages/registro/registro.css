@@ -1,0 +1,62 @@
+.registro-container {
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #1b1b1b;
+  padding: 40px;
+}
+
+.registro-card {
+  background: #262626;
+  width: 400px;
+  padding: 40px;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 0 15px #00000055;
+}
+
+.registro-card h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+  color: #bbbbbb;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: white;
+  margin-bottom: 12px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: #388e3c;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2e7d32;
+}
+
+.login {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.login a {
+  color: #64b5f6;
+}

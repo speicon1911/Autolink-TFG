@@ -1,1 +1,43 @@
-<p>catalogo works!</p>
+<div class="catalogo-container">
+  <h1>Catálogo de Vehículos</h1>
+
+  <!-- Barra de filtros -->
+  <div class="filtros">
+    <input type="text" placeholder="Buscar por marca o modelo" />
+    <select>
+      <option value="">Precio</option>
+      <option value="1">Menor a Mayor</option>
+      <option value="2">Mayor a Menor</option>
+    </select>
+    <select>
+      <option value="">Kilometraje</option>
+      <option value="1">Menor a Mayor</option>
+      <option value="2">Mayor a Menor</option>
+    </select>
+    <button>Filtrar</button>
+  </div>
+
+  <!-- Vehículos (cuando tengas backend, aquí *ngFor) -->
+  <div class="grid-vehiculos">
+    <div class="card-vehiculo">
+      <img src="https://via.placeholder.com/400x250" alt="vehiculo" />
+      <div class="info">
+        <h3>Audi A3 Sportback</h3>
+        <p>2018 · 90.000 km · Diesel</p>
+        <span class="precio">17.900 €</span>
+        <button>Ver Detalles</button>
+      </div>
+    </div>
+
+    <div class="card-vehiculo">
+      <img src="https://via.placeholder.com/400x250" alt="vehiculo" />
+      <div class="info">
+        <h3>BMW Serie 1</h3>
+        <p>2019 · 60.000 km · Gasolina</p>
+        <span class="precio">22.500 €</span>
+        <button>Ver Detalles</button>
+      </div>
+    </div>
+
+  </div>
+</div>
