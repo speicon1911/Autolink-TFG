@@ -1,36 +1,34 @@
 <main class="home">
-  <section class="hero">
-    <div class="hero-text">
+  <section class="portada">
+    <div class="contenido-principal">
       <h1>Bienvenido a Autolink</h1>
       <p>Tu concesionario online de confianza. Descubre los mejores vehículos al mejor precio.</p>
-      <a href="catalogo.html" class="btn">Ver Catálogo</a>
+      <a routerLink="/catalogo" class="btn-accion">Ver Catálogo</a>
     </div>
-    <div class="hero-image">
-      <img src="assets/vehiculo-destacado.jpg" alt="Vehículo destacado">
+    <div class="imagen-portada">
+      <img src="assets/vehiculo-destacado.jpg" alt="Vehículo destacado de la semana">
     </div>
   </section>
 
   <section class="destacados">
     <h2>Vehículos Destacados</h2>
-    <div class="cards">
-      <div class="card">
-        <img src="assets/coche1.jpg" alt="Coche 1">
-        <h3>Modelo 1</h3>
-        <p>Precio: 20.000 €</p>
-        <a href="vehiculos.html" class="btn">Ver más</a>
-      </div>
-      <div class="card">
-        <img src="assets/coche2.jpg" alt="Coche 2">
-        <h3>Modelo 2</h3>
-        <p>Precio: 25.000 €</p>
-        <a href="vehiculos.html" class="btn">Ver más</a>
-      </div>
-      <div class="card">
-        <img src="assets/coche3.jpg" alt="Coche 3">
-        <h3>Modelo 3</h3>
-        <p>Precio: 18.500 €</p>
-        <a href="vehiculos.html" class="btn">Ver más</a>
-      </div>
+    
+    <div class="cards-contenedor">
+      @for (vehiculo of vehiculos; track vehiculo.id) {
+        <article class="tarjeta-vehiculo">
+          <img src="assets/coche-placeholder.jpg" alt="{{vehiculo.marca}} {{vehiculo.modelo}}">
+          
+          <div class="tarjeta-info">
+            <h3>{{vehiculo.marca}} {{vehiculo.modelo}}</h3>
+            <p class="precio"><strong>${{vehiculo.precio | number}}</strong></p>
+            <a href="#" class="btn-secundario">Ver Detalles</a>
+          </div>
+        </article>
+      } @empty {
+        <div class="cargando-estado">
+          <p>Buscando los mejores vehículos para ti...</p>
+        </div>
+      }
     </div>
   </section>
 </main>

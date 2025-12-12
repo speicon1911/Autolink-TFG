@@ -1,20 +1,27 @@
 .catalogo-container {
-  padding: 40px;
+  padding: 40px 5%;
   color: #eaeaea;
-  background: #1e1e1e;
+  background: #121212; /* Fondo más profundo para resaltar las tarjetas */
+  min-height: 100vh;
 }
 
 h1 {
-  font-size: 32px;
-  margin-bottom: 25px;
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  font-weight: 700;
+  text-align: left;
 }
 
-/* Filtros */
+/* --- Filtros --- */
 .filtros {
   display: flex;
   gap: 15px;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   flex-wrap: wrap;
+  padding: 20px;
+  background: #1e1e1e;
+  border-radius: 12px;
+  border: 1px solid #333;
 }
 
 .filtros input,
@@ -22,77 +29,105 @@ h1 {
   background: #2b2b2b;
   border: 1px solid #444;
   color: white;
-  padding: 10px 14px;
-  border-radius: 6px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  flex: 1;
+  min-width: 200px;
+  outline: none;
 }
 
-.filtros button {
-  background: #d32f2f;
+.filtros input:focus {
+  border-color: #e63946;
+}
+
+.btn-filtrar {
+  background: #e63946;
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-.filtros button:hover {
-  background: #b71c1c;
+.btn-filtrar:hover {
+  background: #ff4d5a;
 }
 
-/* Cards */
+/* --- Grid de Vehículos --- */
 .grid-vehiculos {
   display: grid;
+  /* Crea columnas automáticas de mínimo 280px */
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
+  gap: 30px;
 }
 
 .card-vehiculo {
-  background: #2b2b2b;
-  border-radius: 12px;
+  background: #1e1e1e;
+  border-radius: 15px;
+  border: 1px solid #333;
   overflow: hidden;
-  transition: transform 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card-vehiculo:hover {
-  transform: scale(1.02);
+  transform: translateY(-8px);
+  border-color: #e63946;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
 }
 
 .card-vehiculo img {
   width: 100%;
-  height: 170px;
+  height: 200px;
   object-fit: cover;
 }
 
 .card-vehiculo .info {
-  padding: 15px;
+  padding: 20px;
 }
 
 .card-vehiculo h3 {
   margin: 0;
-  font-size: 20px;
+  font-size: 1.4rem;
+  color: #fff;
 }
 
 .card-vehiculo p {
-  margin: 8px 0;
-  color: #bdbdbd;
+  margin: 10px 0;
+  color: #999;
+  font-size: 0.9rem;
 }
 
 .precio {
   display: block;
-  margin: 12px 0;
-  font-size: 20px;
-  color: #4caf50;
+  margin: 15px 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4caf50; /* Verde brillante para el precio */
 }
 
-.card-vehiculo button {
+.btn-detalles {
   width: 100%;
-  background: #1565c0;
-  border: none;
-  color: white;
+  background: transparent;
+  border: 2px solid #1565c0;
+  color: #1565c0;
   padding: 10px;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.card-vehiculo button:hover {
-  background: #0d47a1;
+.btn-detalles:hover {
+  background: #1565c0;
+  color: white;
+}
+
+/* Estado vacío */
+.vacio {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px;
+  color: #666;
 }
