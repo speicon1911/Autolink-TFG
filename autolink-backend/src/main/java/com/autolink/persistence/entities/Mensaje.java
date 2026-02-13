@@ -2,8 +2,6 @@ package com.autolink.persistence.entities;
 
 import java.time.LocalDate;
 
-import com.autolink.persistence.entities.personas.Persona;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

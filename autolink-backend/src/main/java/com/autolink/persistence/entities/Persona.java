@@ -1,8 +1,7 @@
-package com.autolink.persistence.entities.personas;
+package com.autolink.persistence.entities;
 
 import java.util.List;
 
-import com.autolink.persistence.entities.Mensaje;
 import com.autolink.persistence.entities.enums.TipoUsuario;
 
 import jakarta.persistence.CascadeType;
@@ -44,6 +43,18 @@ public class Persona {
 
     @Column(name = "tipo_usuario")
     private TipoUsuario tipoUsuario;
+
+    // --- CAMPOS ESPECÍFICOS (Antes en subclases) ---
+
+    // De Vendedor
+    private Integer telefono;
+
+    // De Administrador
+    @Column(name = "salario_anual")
+    private Double salarioAnual;
+
+    @Column(name = "ciudad_asignada")
+    private String ciudadAsignada;
 
     // --- RELACIONES ---
 
