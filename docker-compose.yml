@@ -1,0 +1,29 @@
+services:
+  # SERVICIO DE BASE DE DATOS (MariaDB)
+  db:
+    image: speicon1911/base-de-datos-mariadb:mariaDB
+    container_name: autolink-db
+    restart: always
+    ports:
+      - "3307:3306"  # Tu Spring Boot busca el 3307 -> Docker lo manda al 3306 interno
+    environment:
+      - MYSQL_ROOT_PASSWORD=secreta
+      - MYSQL_DATABASE=autolink
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  # SERVICIO DE ADMINISTRACIÓN (phpMyAdmin)
+  phpmyadmin:
+    image: speicon1911/base-de-datos-mariadb:phpMyAdmin
+    container_name: autolink-pma
+    restart: always
+    ports:
+      - "8080:80"    # Accederás vía http://localhost:8080
+    environment:
+      - PMA_HOST=db  # Se conecta internamente al servicio llamado 'db'
+      - PMA_PORT=3306
+    depends_on:
+      - db
+
+volumes:
+  mariadb_data:
