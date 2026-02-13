@@ -47,5 +47,7 @@ public class Vehiculo {
     private MarcaVehiculos marca;
 
     private String modelo;
+    
+    private Boolean disponible;
 
 }
