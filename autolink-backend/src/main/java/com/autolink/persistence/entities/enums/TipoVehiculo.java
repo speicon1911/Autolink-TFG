@@ -27,4 +27,5 @@ public enum TipoVehiculo {
     // 🏍️ Motocicletas (si el concesionario vende motos)
     MOTOCICLETA,
     SCOOTER
+
 }

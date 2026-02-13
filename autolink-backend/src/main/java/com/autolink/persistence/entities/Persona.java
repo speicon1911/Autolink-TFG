@@ -9,7 +9,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumeratedValue;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,12 +35,9 @@ public class Persona {
     @Column(length = 50)
     private String apellidos;
 
-    @Column(columnDefinition = "CHAR(9)", unique = true, nullable = false)
     private String DNI;
 
-    @Column(length = 100, unique = true, nullable = false)
     private String correo;
-    @Column(length = 100, nullable = false)
     private String password;
 
     @Column(name = "tipo_usuario")
