@@ -1,5 +1,7 @@
 package com.autolink.persistence.entities;
 
+import java.util.List;
+
 import com.autolink.persistence.entities.enums.TipoUsuario;
 
 import jakarta.persistence.Column;
@@ -9,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,6 +54,12 @@ public class Persona {
 
     @Column(name = "ciudad_asignada")
     private String ciudadAsignada;
+    
+    @OneToMany(mappedBy = "vendedor")
+    private List<Venta> ventasRealizadas;
+    
+    @OneToMany(mappedBy = "cliente")
+    private List<Venta> comprasRealizadas;
 
  
 }

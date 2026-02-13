@@ -1,5 +1,6 @@
 package com.autolink.persistence.entities;
 
+import com.autolink.persistence.entities.enums.MarcaVehiculos;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 
 import jakarta.persistence.Column;
@@ -42,7 +43,8 @@ public class Vehiculo {
     @Enumerated(EnumType.STRING)
     private TipoVehiculo tipoVehiculo;
 
-    private String marca;
+    @Enumerated(EnumType.STRING)
+    private MarcaVehiculos marca;
 
     private String modelo;
 
