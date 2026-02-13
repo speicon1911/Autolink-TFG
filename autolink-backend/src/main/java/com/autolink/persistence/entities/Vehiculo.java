@@ -27,15 +27,15 @@ public class Vehiculo {
     @Column(name = "id_vehiculo")
     private int idVehiculo;
 
-    private int precio;
+    private Integer precio;
 
-    private int plazas;
+    private Integer plazas;
 
-    private int potencia;
+    private Integer potencia;
 
-    private int puertas;
+    private Integer puertas;
 
-    private int kilometraje;
+    private Integer kilometraje;
 
     private String color;
 
