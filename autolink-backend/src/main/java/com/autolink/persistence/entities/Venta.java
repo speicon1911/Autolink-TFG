@@ -3,6 +3,7 @@ package com.autolink.persistence.entities;
 import java.time.LocalDate;
 
 import com.autolink.persistence.entities.enums.EstadoVenta;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,6 +41,7 @@ public class Venta {
 	
 	@ManyToOne
 	@JoinColumn(name = "id_vendedor", nullable = false)
+	@JsonIgnore
 	private Persona vendedor;
 	
 	@ManyToOne

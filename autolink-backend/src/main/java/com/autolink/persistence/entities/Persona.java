@@ -3,6 +3,7 @@ package com.autolink.persistence.entities;
 import java.util.List;
 
 import com.autolink.persistence.entities.enums.TipoUsuario;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,9 +57,11 @@ public class Persona {
     private String ciudadAsignada;
     
     @OneToMany(mappedBy = "vendedor")
+    @JsonIgnore // bloquea que aparezcan las ventas realizadas al buscar
     private List<Venta> ventasRealizadas;
     
     @OneToMany(mappedBy = "cliente")
+    @JsonIgnore
     private List<Venta> comprasRealizadas;
 
  

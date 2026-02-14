@@ -1,5 +1,7 @@
 package com.autolink.persistence.entities;
 
+import java.time.LocalDate;
+
 import com.autolink.persistence.entities.enums.MarcaVehiculos;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 
@@ -48,6 +50,9 @@ public class Vehiculo {
 
     private String modelo;
     
+    @Column(name = "fecha_fabricacion")
+    private LocalDate fechaFabricacion;
+    
     private Boolean disponible;
-
+    
 }
