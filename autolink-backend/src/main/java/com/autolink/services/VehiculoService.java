@@ -32,7 +32,12 @@ public class VehiculoService {
 	public List<Vehiculo> filtrarVehiculos(MarcaVehiculos marca, String modelo, TipoVehiculo tipo, 
 			String color, Integer minPotencia, Integer maxPrecio, Integer maxKm, 
 			Integer plazas, Boolean disponible) {	
-		return vehiculoRepository.buscarConFiltros(marca, modelo, tipo, color, minPotencia, maxPrecio, maxKm, plazas,
+		List<Vehiculo> vehiculos = vehiculoRepository.buscarConFiltros(marca, modelo, tipo, color, minPotencia, maxPrecio, maxKm, plazas,
 				disponible);
+		if(vehiculos.isEmpty()) {
+			throw new VehiculoNotFoundException("No se han encontrado vehiclos con los filtros asiganados");
+		}
+		
+		return vehiculos;
 	}
 }
