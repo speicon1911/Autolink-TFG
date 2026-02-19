@@ -8,6 +8,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.autolink.services.exceptions.VehiculoExceptions;
 import com.autolink.services.exceptions.VehiculoNotFoundException;
+import com.autolink.services.exceptions.VentaExceptions;
+import com.autolink.services.exceptions.VentaNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -35,4 +37,15 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 	}
 	
+	
+	// ventas
+	@ExceptionHandler(VentaNotFoundException.class)
+	public ResponseEntity<String> handleVentasNotFound(VentaNotFoundException ex){
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	}
+	
+	@ExceptionHandler(VentaExceptions.class)
+	public ResponseEntity<String> handleVentasExceptions(VentaExceptions ex){
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	}
 }
