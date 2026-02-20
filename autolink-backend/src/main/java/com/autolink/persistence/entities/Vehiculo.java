@@ -2,6 +2,8 @@ package com.autolink.persistence.entities;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.ManyToAny;
+
 import com.autolink.persistence.entities.enums.MarcaVehiculos;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 
@@ -12,6 +14,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,8 +49,9 @@ public class Vehiculo {
     @Enumerated(EnumType.STRING)
     private TipoVehiculo tipoVehiculo;
 
-    @Enumerated(EnumType.STRING)
-    private MarcaVehiculos marca;
+    @ManyToOne
+    @JoinColumn(name = "id_marca")
+    private Marca marca;
 
     private String modelo;
 

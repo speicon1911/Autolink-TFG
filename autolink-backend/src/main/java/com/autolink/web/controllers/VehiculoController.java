@@ -39,9 +39,10 @@ public class VehiculoController {
 			@RequestParam(required = false) String modelo, @RequestParam(required = false) TipoVehiculo tipo,
 			@RequestParam(required = false) String color, @RequestParam(required = false) Integer minPotencia,
 			@RequestParam(required = false) Integer maxPrecio, @RequestParam(required = false) Integer maxKm,
-			@RequestParam(required = false) Integer plazas, @RequestParam(required = false) Boolean disponible) {
+			@RequestParam(required = false) Integer plazas, @RequestParam(required = false) boolean disponible,
+			@RequestParam(required = false) boolean verificado) {
 		List<Vehiculo> resultados = this.vehiculoService.filtrarVehiculos(marca, modelo, tipo, color, minPotencia,
-				maxPrecio, maxKm, plazas, disponible);
+				maxPrecio, maxKm, plazas, disponible, verificado);
 		return ResponseEntity.ok(resultados);
 	}
 

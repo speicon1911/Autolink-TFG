@@ -15,7 +15,7 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
 	List<Vehiculo> findByDisponibleTrue();
 
 	// filtro
-	@Query("SELECT v FROM Vehiculo v WHERE " + "(:marca IS NULL OR v.marca = :marca) AND " +
+	@Query("SELECT v FROM Vehiculo v WHERE " + "(:marca IS NULL OR v.marca.nombre = :marca) AND " +
 	// Convertimos la columna y el parámetro a MAYÚSCULAS
 			"(:modelo IS NULL OR UPPER(v.modelo) LIKE UPPER(CONCAT('%', :modelo, '%'))) AND "
 			+ "(:tipo IS NULL OR v.tipoVehiculo = :tipo) AND "
@@ -26,5 +26,5 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
 	List<Vehiculo> buscarConFiltros(@Param("marca") MarcaVehiculos marca, @Param("modelo") String modelo,
 			@Param("tipo") TipoVehiculo tipo, @Param("color") String color, @Param("minPotencia") Integer minPotencia,
 			@Param("maxPrecio") Integer maxPrecio, @Param("maxKm") Integer maxKm, @Param("plazas") Integer plazas,
-			@Param("disponible") Boolean disponible);
+			@Param("disponible") boolean disponible, @Param("verificado") boolean verificado);
 }

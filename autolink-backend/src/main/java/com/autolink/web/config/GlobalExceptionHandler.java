@@ -16,6 +16,7 @@ import com.autolink.services.exceptions.VentaNotFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+	// excepcion que lanza cuando el valor de un enum no es identico al enviado por url o body
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<String> handleEnumConversionError(MethodArgumentTypeMismatchException ex) {
 		String paramName = ex.getName();
