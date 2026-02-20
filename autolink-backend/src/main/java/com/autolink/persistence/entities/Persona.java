@@ -2,7 +2,7 @@ package com.autolink.persistence.entities;
 
 import java.util.List;
 
-import com.autolink.persistence.entities.enums.TipoUsuario;
+import com.autolink.persistence.entities.enums.Rol;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -40,9 +40,9 @@ public class Persona {
     private String correo;
     private String password;
 
-    @Column(name = "tipo_usuario")
+    @Column(name = "rol")
     @Enumerated(EnumType.STRING)
-    private TipoUsuario tipoUsuario;
+    private Rol rol;
 
     // --- CAMPOS ESPECÍFICOS (Antes en subclases) ---
 

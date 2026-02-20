@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.autolink.persistence.entities.Persona;
-import com.autolink.persistence.entities.enums.TipoUsuario;
+import com.autolink.persistence.entities.enums.Rol;
 import com.autolink.persistence.repositories.PersonaRepository;
 import com.autolink.services.exceptions.PersonaExceptions;
 import com.autolink.services.exceptions.PersonaNotFoundException;
@@ -31,7 +31,7 @@ public class PersonaService {
 
 	// Encontrar vendedores
 	public List<Persona> findByTipoVendedor() {
-		List<Persona> vendedores = this.personaRepository.findByTipoUsuario(TipoUsuario.VENDEDOR);
+		List<Persona> vendedores = this.personaRepository.findByRol(Rol.VENDEDOR);
 		if (vendedores.isEmpty()) {
 			throw new PersonaNotFoundException("No se han encontrado vendedores");
 		}
@@ -40,7 +40,7 @@ public class PersonaService {
 
 	// Encontrar clientes
 	public List<Persona> findByTipoCliente() {
-		List<Persona> clientes = this.personaRepository.findByTipoUsuario(TipoUsuario.CLIENTE);
+		List<Persona> clientes = this.personaRepository.findByRol(Rol.CLIENTE);
 		if (clientes.isEmpty()) {
 			throw new PersonaNotFoundException("No se han encontrado vendedores");
 		}
@@ -49,7 +49,7 @@ public class PersonaService {
 
 	// Encontrar administradores
 	public List<Persona> findByTipoAdministrador() {
-		List<Persona> administrador = this.personaRepository.findByTipoUsuario(TipoUsuario.ADMINISTRADOR);
+		List<Persona> administrador = this.personaRepository.findByRol(Rol.ADMINISTRADOR);
 		if (administrador.isEmpty()) {
 			throw new PersonaNotFoundException("No se han encontrado vendedores");
 		}
@@ -111,10 +111,10 @@ public class PersonaService {
 	}
 
 	// update TipoUsuario (solo administradores)
-	public Persona updateTipoUsuario(TipoUsuario nuevo, int idPersona) {
+	public Persona updateTipoUsuario(Rol nuevo, int idPersona) {
 		
 		Persona personaBD = this.findById(idPersona);
-		personaBD.setTipoUsuario(nuevo);
+		personaBD.setRol(nuevo);
 
 		return this.personaRepository.save(personaBD);
 

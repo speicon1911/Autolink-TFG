@@ -2,10 +2,8 @@ package com.autolink.persistence.entities;
 
 import java.time.LocalDate;
 
-import org.hibernate.annotations.ManyToAny;
-
-import com.autolink.persistence.entities.enums.MarcaVehiculos;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -51,6 +49,7 @@ public class Vehiculo {
 
     @ManyToOne
     @JoinColumn(name = "id_marca")
+    @JsonIgnore
     private Marca marca;
 
     private String modelo;

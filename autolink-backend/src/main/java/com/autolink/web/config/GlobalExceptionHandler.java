@@ -32,12 +32,12 @@ public class GlobalExceptionHandler {
 	// Personas
 	@ExceptionHandler(PersonaExceptions.class)
 	public ResponseEntity<String> handlePersonaExceptions(PersonaExceptions ex) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 	}
 
 	@ExceptionHandler(PersonaNotFoundException.class)
 	public ResponseEntity<String> handlePersonaNotFoundException(PersonaNotFoundException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
 
 	// Vehiculos

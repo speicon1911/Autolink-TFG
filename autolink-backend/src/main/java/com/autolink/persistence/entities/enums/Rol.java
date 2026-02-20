@@ -1,5 +1,5 @@
 package com.autolink.persistence.entities.enums;
 
-public enum TipoUsuario {
+public enum Rol {
     ADMINISTRADOR, CLIENTE, VENDEDOR
 }

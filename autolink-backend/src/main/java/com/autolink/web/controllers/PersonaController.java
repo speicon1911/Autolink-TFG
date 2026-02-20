@@ -55,6 +55,6 @@ public class PersonaController {
 	
 	@PutMapping("/{idPersona}/tipo-usuario")
 	public ResponseEntity<?> updateTipoUsuario(@PathVariable int idPersona, @RequestBody Persona persona){
-			return ResponseEntity.ok(this.personaService.updateTipoUsuario(persona.getTipoUsuario(), idPersona));
+			return ResponseEntity.ok(this.personaService.updateTipoUsuario(persona.getRol(), idPersona));
 	}
 }
