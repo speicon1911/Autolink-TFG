@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.autolink.persistence.entities.Vehiculo;
-import com.autolink.persistence.entities.enums.MarcaVehiculos;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 import com.autolink.services.VehiculoService;
 
@@ -35,15 +34,31 @@ public class VehiculoController {
 	}
 
 	@GetMapping("/buscar")
-	public ResponseEntity<?> buscarConFiltros(@RequestParam(required = false) MarcaVehiculos marca,
-			@RequestParam(required = false) String modelo, @RequestParam(required = false) TipoVehiculo tipo,
-			@RequestParam(required = false) String color, @RequestParam(required = false) Integer minPotencia,
-			@RequestParam(required = false) Integer maxPrecio, @RequestParam(required = false) Integer maxKm,
-			@RequestParam(required = false) Integer plazas, @RequestParam(required = false) boolean disponible,
-			@RequestParam(required = false) boolean verificado) {
-		List<Vehiculo> resultados = this.vehiculoService.filtrarVehiculos(marca, modelo, tipo, color, minPotencia,
-				maxPrecio, maxKm, plazas, disponible, verificado);
-		return ResponseEntity.ok(resultados);
+	public ResponseEntity<?> buscarConFiltros(
+	    @RequestParam(required = false) String marca,
+	    @RequestParam(required = false) String modelo,
+	    @RequestParam(required = false) TipoVehiculo tipo,
+	    @RequestParam(required = false) String color,
+	    @RequestParam(required = false) Integer minPotencia,
+	    @RequestParam(required = false) Integer maxPrecio,
+	    @RequestParam(required = false) Integer maxKm,
+	    @RequestParam(required = false) Integer plazas,
+	    // Ponemos default "false" para que nunca sean null al entrar al método
+	    @RequestParam(defaultValue = "false") boolean disponible, 
+	    @RequestParam(defaultValue = "false") boolean verificado,
+	    // Añadimos estos para saber si el usuario REALMENTE quiere filtrar por esto
+	    @RequestParam(required = false) Boolean filterDisp,
+	    @RequestParam(required = false) Boolean filterVerif
+	) {
+	    // Si filterDisp es null, significa que el usuario no puso "?disponible=..." en la URL
+	    boolean aplicarDisp = (filterDisp != null);
+	    boolean aplicarVerif = (filterVerif != null);
+
+	    List<Vehiculo> resultados = this.vehiculoService.filtrarVehiculos(
+	        marca, modelo, tipo, color, minPotencia, maxPrecio, maxKm, plazas, 
+	        disponible, aplicarDisp, verificado, aplicarVerif
+	    );
+	    return ResponseEntity.ok(resultados);
 	}
 
 	@PutMapping("/{idVehiculo}")

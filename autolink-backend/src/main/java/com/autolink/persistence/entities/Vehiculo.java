@@ -57,8 +57,8 @@ public class Vehiculo {
     @Column(name = "fecha_fabricacion")
     private LocalDate fechaFabricacion;
 
-    private boolean disponible;
+    private Boolean disponible;
 
-    private boolean verificado;
+    private Boolean verificado;
 
 }
