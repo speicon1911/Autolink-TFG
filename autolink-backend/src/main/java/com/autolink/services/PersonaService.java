@@ -72,11 +72,6 @@ public class PersonaService {
 			throw new PersonaExceptions("No se pueden modificar las ventas realizadas");
 		}
 
-//		en caso de error de Postman da error aunque no se quiera cambiar las compras, cambiar esos if por esto:
-//		if(persona.getComprasRealizadas() != null && !persona.getComprasRealizadas().isEmpty()) {
-//		    throw new PersonaExceptions("No se pueden modificar las compras realizadas");
-//		}
-
 		// Recuperamos la persona actual de la BD
 		Persona personaBD = this.findById(idPersona);
 
@@ -117,6 +112,7 @@ public class PersonaService {
 
 	// update TipoUsuario (solo administradores)
 	public Persona updateTipoUsuario(TipoUsuario nuevo, int idPersona) {
+		
 		Persona personaBD = this.findById(idPersona);
 		personaBD.setTipoUsuario(nuevo);
 

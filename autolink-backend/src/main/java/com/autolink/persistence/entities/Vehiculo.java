@@ -49,10 +49,12 @@ public class Vehiculo {
     private MarcaVehiculos marca;
 
     private String modelo;
-    
+
     @Column(name = "fecha_fabricacion")
     private LocalDate fechaFabricacion;
-    
-    private Boolean disponible;
-    
+
+    private boolean disponible;
+
+    private boolean verificado;
+
 }
