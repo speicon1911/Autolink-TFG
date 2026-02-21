@@ -63,6 +63,10 @@ public class Persona {
     @OneToMany(mappedBy = "cliente")
     @JsonIgnore
     private List<Venta> comprasRealizadas;
+    
+    @OneToMany(mappedBy = "vendedor")
+    @JsonIgnore
+    private List<Vehiculo> vehiculosEnStock;
 
  
 }

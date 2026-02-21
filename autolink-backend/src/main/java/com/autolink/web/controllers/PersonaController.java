@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,5 +58,16 @@ public class PersonaController {
 	@PutMapping("/{idPersona}/tipo-usuario")
 	public ResponseEntity<?> updateTipoUsuario(@PathVariable int idPersona, @RequestBody Persona persona){
 			return ResponseEntity.ok(this.personaService.updateTipoUsuario(persona.getRol(), idPersona));
+	}
+	
+	@PostMapping
+	public ResponseEntity<Persona> create(@RequestBody Persona persona) {
+	    return ResponseEntity.status(HttpStatus.CREATED).body(this.personaService.createPersona(persona));
+	}
+
+	@DeleteMapping("/{idPersona}")
+	public ResponseEntity<Void> delete(@PathVariable int idPersona) {
+	    this.personaService.deletePersona(idPersona);
+	    return ResponseEntity.noContent().build();
 	}
 }

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.autolink.services.exceptions.MarcaExceptions;
+import com.autolink.services.exceptions.MarcaNotFoundException;
 import com.autolink.services.exceptions.PersonaExceptions;
 import com.autolink.services.exceptions.PersonaNotFoundException;
 import com.autolink.services.exceptions.VehiculoExceptions;
@@ -60,5 +62,15 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(VentaExceptions.class)
 	public ResponseEntity<String> handleVentaExceptions(VentaExceptions ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	}
+	
+	// marcas
+	@ExceptionHandler(MarcaNotFoundException.class)
+	public ResponseEntity<String> handleMarcaNotFound(MarcaNotFoundException ex){
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	}
+	@ExceptionHandler(MarcaExceptions.class)
+	public ResponseEntity<String> handleMarcaNotFound(MarcaExceptions ex){
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
 }

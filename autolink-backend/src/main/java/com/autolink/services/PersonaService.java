@@ -56,6 +56,22 @@ public class PersonaService {
 		return administrador;
 	}
 
+	// crear
+	public Persona createPersona(Persona persona) {
+        return this.personaRepository.save(persona);
+    }
+
+	// eliminar
+    public void deletePersona(int idPersona) {
+        // Tu entidad usa el campo 'id', así que lo respetamos aquí
+        if (!this.personaRepository.existsById(idPersona)) {
+            throw new PersonaNotFoundException("No es posible eliminar la persona con ID: " + idPersona);
+        }
+        this.personaRepository.deleteById(idPersona);
+    }
+	
+	
+	// actualizar perfil
 	public Persona updatePerfil(Persona persona, int idPersona) {
 		if (persona.getId() != idPersona) {
 			throw new PersonaExceptions(

@@ -1,5 +1,6 @@
 package com.autolink.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,29 @@ public class VentaService {
 		return compras;
 	}
 
+	// crear 
+	public Venta createVenta(Venta venta) {
+        // Validamos actores antes de guardar
+        if (venta.getVendedor() == null || venta.getCliente() == null) {
+            throw new VentaExceptions("La venta debe estar asociada a un vendedor y un cliente");
+        }
+
+        // Asignamos fecha de hoy si viene vacía
+        if (venta.getFecha() == null) {
+            venta.setFecha(LocalDate.now());
+        }
+
+        return this.ventaRepository.save(venta);
+    }
+
+	// eliminar
+    public void deleteVenta(int idVenta) {
+        if (!this.ventaRepository.existsById(idVenta)) {
+            throw new VentaNotFoundException("No es posible eliminar la venta con ID: " + idVenta);
+        }
+        this.ventaRepository.deleteById(idVenta);
+    }
+	
 	// editar ventas finales
 	public Venta updatePrecioVenta(Venta venta, int idVenta) {
 		// 1. Validar IDs

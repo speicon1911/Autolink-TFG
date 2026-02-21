@@ -3,7 +3,7 @@ package com.autolink.persistence.entities;
 import java.time.LocalDate;
 
 import com.autolink.persistence.entities.enums.EstadoVenta;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,7 +41,8 @@ public class Venta {
 	
 	@ManyToOne
 	@JoinColumn(name = "id_vendedor", nullable = false)
-	@JsonIgnore
+	// me permite enviar datos en json y que no salgan reflejados en bucle al solicitar datos
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY) 
 	private Persona vendedor;
 	
 	@ManyToOne

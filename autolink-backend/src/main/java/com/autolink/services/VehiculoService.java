@@ -1,5 +1,6 @@
 package com.autolink.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,44 +39,79 @@ public class VehiculoService {
 	}
 
 	// buscar vehiculos por filtro
-	public List<Vehiculo> filtrarVehiculos(String marca, String modelo, TipoVehiculo tipo,
-	        String color, Integer minPotencia, Integer maxPrecio, Integer maxKm,
-	        Integer plazas, boolean disponible, boolean aplicarDisp, 
-	        boolean verificado, boolean aplicarVerif) {
+	public List<Vehiculo> filtrarVehiculos(String marca, String modelo, TipoVehiculo tipo, String color,
+			Integer minPotencia, Integer maxPrecio, Integer maxKm, Integer plazas, boolean disponible,
+			boolean aplicarDisp, boolean verificado, boolean aplicarVerif) {
+
+		// Pasamos los flags "aplicar" al repositorio
+		List<Vehiculo> vehiculos = vehiculoRepository.buscarConFiltros(marca, modelo, tipo, color, minPotencia,
+				maxPrecio, maxKm, plazas, disponible, aplicarDisp, verificado, aplicarVerif);
+
+		if (vehiculos.isEmpty()) {
+			throw new VehiculoNotFoundException("No se han encontrado vehiculos con los filtros asignados");
+		}
+
+		return vehiculos;
+	}
+	
+	// obtener vehículos por vendedor
+	public List<Vehiculo> getVehiculosPorVendedor(int idVendedor) {
+	    List<Vehiculo> vehiculos = this.vehiculoRepository.findByVendedorId(idVendedor);
 	    
-	    // Pasamos los flags "aplicar" al repositorio
-	    List<Vehiculo> vehiculos = vehiculoRepository.buscarConFiltros(
-	            marca, modelo, tipo, color, minPotencia, maxPrecio, maxKm, plazas,
-	            disponible, aplicarDisp, verificado, aplicarVerif);
-
 	    if (vehiculos.isEmpty()) {
-	        throw new VehiculoNotFoundException("No se han encontrado vehiculos con los filtros asignados");
+	        throw new VehiculoNotFoundException("Este vendedor no tiene vehículos asignados en stock");
 	    }
-
+	    
 	    return vehiculos;
 	}
 
+	// crear
+	public Vehiculo createVehiculo(Vehiculo vehiculo) {
+		if(vehiculo.getDisponible() == null) {
+			vehiculo.setDisponible(true);
+		}
+		
+		if(vehiculo.getVerificado() != null && vehiculo.getVerificado()) {
+			vehiculo.setFechaVerificacion(LocalDate.now());
+		}
+		return this.vehiculoRepository.save(vehiculo);
+	}
+	
+	// eliminar
+	public void deleteVehiculo(int idVehiculo) {
+		if(!this.vehiculoRepository.existsById(idVehiculo)) {
+			throw new VehiculoNotFoundException("No es posible encontrar un vehiculo con el ID: " + idVehiculo);
+		}
+		this.vehiculoRepository.deleteById(idVehiculo);
+	}
+	
 	// actualizar datos de coche
 	public Vehiculo updateVehiculo(Vehiculo vehiculoRequest, int idVehiculo) {
-	    // 1. Buscamos el vehículo existente
-	    Vehiculo vehiculoBD = vehiculoRepository.findById(idVehiculo)
-	        .orElseThrow(() -> new VehiculoNotFoundException("Vehículo no encontrado"));
+		// 1. Buscamos el vehículo existente
+		Vehiculo vehiculoBD = vehiculoRepository.findById(idVehiculo)
+				.orElseThrow(() -> new VehiculoNotFoundException("Vehículo no encontrado"));
 
-	    // 2. Actualización selectiva de campos simples
-	    if (vehiculoRequest.getPrecio() != null) vehiculoBD.setPrecio(vehiculoRequest.getPrecio());
-	    if (vehiculoRequest.getPlazas() != null) vehiculoBD.setPlazas(vehiculoRequest.getPlazas());
-	    if (vehiculoRequest.getPotencia() != null) vehiculoBD.setPotencia(vehiculoRequest.getPotencia());
-	    if (vehiculoRequest.getColor() != null) vehiculoBD.setColor(vehiculoRequest.getColor());
-	    if (vehiculoRequest.getModelo() != null) vehiculoBD.setModelo(vehiculoRequest.getModelo());
-	    if (vehiculoRequest.getKilometraje() != null) vehiculoBD.setKilometraje(vehiculoRequest.getKilometraje());
-	    
-	    // 3. Manejo de la Marca (si envías una nueva marca)
-	    if (vehiculoRequest.getMarca() != null) {
-	        vehiculoBD.setMarca(vehiculoRequest.getMarca());
-	    }
+		// 2. Actualización selectiva de campos simples
+		if (vehiculoRequest.getPrecio() != null)
+			vehiculoBD.setPrecio(vehiculoRequest.getPrecio());
+		if (vehiculoRequest.getPlazas() != null)
+			vehiculoBD.setPlazas(vehiculoRequest.getPlazas());
+		if (vehiculoRequest.getPotencia() != null)
+			vehiculoBD.setPotencia(vehiculoRequest.getPotencia());
+		if (vehiculoRequest.getColor() != null)
+			vehiculoBD.setColor(vehiculoRequest.getColor());
+		if (vehiculoRequest.getModelo() != null)
+			vehiculoBD.setModelo(vehiculoRequest.getModelo());
+		if (vehiculoRequest.getKilometraje() != null)
+			vehiculoBD.setKilometraje(vehiculoRequest.getKilometraje());
 
-	    // 4. Guardamos los cambios
-	    return vehiculoRepository.save(vehiculoBD);
+		// 3. Manejo de la Marca (si envías una nueva marca)
+		if (vehiculoRequest.getMarca() != null) {
+			vehiculoBD.setMarca(vehiculoRequest.getMarca());
+		}
+
+		// 4. Guardamos los cambios
+		return vehiculoRepository.save(vehiculoBD);
 	}
 
 	// actualizar disponible
@@ -93,22 +129,35 @@ public class VehiculoService {
 	}
 
 	// atualizar verificado
-	public Vehiculo updateVerificado(boolean verificado, int idVehiculo) {
+	public Vehiculo updateVerificado(Boolean verificado, int idVehiculo) {
+		// 1. Validar que el valor no sea nulo para este proceso
+		if (verificado == null) {
+			throw new VehiculoExceptions("El estado de verificación no puede ser nulo");
+		}
+
 		Vehiculo vehiculoBD = this.findById(idVehiculo);
 
-		boolean estadoActual = vehiculoBD.getVerificado();
+		// 2. Obtener estado actual (manejando el posible null inicial de la BD)
+		boolean estadoActual = (vehiculoBD.getVerificado() != null) && vehiculoBD.getVerificado();
 
-		// No permitir volver de true a false
+		// 3. No permitir volver de true a false
 		if (estadoActual && !verificado) {
 			throw new VehiculoExceptions("Un vehículo verificado no puede volver a no verificado");
 		}
 
-		// No permitir mismo estado
+		// 4. No permitir mismo estado
 		if (estadoActual == verificado) {
 			throw new VehiculoExceptions("El vehículo ya se encuentra en el estado introducido");
 		}
 
+		// 5. Aplicar cambios
 		vehiculoBD.setVerificado(verificado);
+
+		// 6. Asignar fecha automática solo si el nuevo estado es true
+		if (verificado) {
+			vehiculoBD.setFechaVerificacion(LocalDate.now());
+		}
+
 		return this.vehiculoRepository.save(vehiculoBD);
 	}
 }

@@ -3,9 +3,12 @@ package com.autolink.web.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,5 +42,16 @@ public class VentaController {
 	@PutMapping("/{idVenta}/actualizar-precio")
 	public ResponseEntity<?> updatePrecio(@PathVariable int idVenta, @RequestBody Venta venta){
 		return ResponseEntity.ok(this.ventaService.updatePrecioVenta(venta, idVenta));
+	}
+	
+	@PostMapping
+	public ResponseEntity<Venta> create(@RequestBody Venta venta) {
+	    return ResponseEntity.status(HttpStatus.CREATED).body(this.ventaService.createVenta(venta));
+	}
+
+	@DeleteMapping("/{idVenta}")
+	public ResponseEntity<Void> delete(@PathVariable int idVenta) {
+	    this.ventaService.deleteVenta(idVenta);
+	    return ResponseEntity.noContent().build();
 	}
 }

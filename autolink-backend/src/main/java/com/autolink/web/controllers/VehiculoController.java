@@ -3,9 +3,12 @@ package com.autolink.web.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,6 +63,11 @@ public class VehiculoController {
 	    );
 	    return ResponseEntity.ok(resultados);
 	}
+	
+	@GetMapping("/vendedor/{idVendedor}")
+	public ResponseEntity<List<Vehiculo>> getByVendedor(@PathVariable int idVendedor) {
+	    return ResponseEntity.ok(this.vehiculoService.getVehiculosPorVendedor(idVendedor));
+	}
 
 	@PutMapping("/{idVehiculo}")
 	public ResponseEntity<?> updateVehiculo(@PathVariable int idVehiculo, @RequestBody Vehiculo vehiculo) {
@@ -76,4 +84,14 @@ public class VehiculoController {
 		return ResponseEntity.ok(this.vehiculoService.updateVerificado(verificado, idVehiculo));
 	}
 
+	@PostMapping
+	public ResponseEntity<Vehiculo> create(@RequestBody Vehiculo vehiculo) {
+	    return ResponseEntity.status(HttpStatus.CREATED).body(this.vehiculoService.createVehiculo(vehiculo));
+	}
+
+	@DeleteMapping("/{idVehiculo}")
+	public ResponseEntity<Void> delete(@PathVariable int idVehiculo) {
+	    this.vehiculoService.deleteVehiculo(idVehiculo);
+	    return ResponseEntity.noContent().build();
+	}
 }
