@@ -1,6 +1,7 @@
 package com.autolink.persistence.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.repository.ListCrudRepository;
 
@@ -12,5 +13,6 @@ public interface PersonaRepository extends ListCrudRepository<Persona, Integer>{
 //	List<Persona> findById(int idPersona);
 	
 	List<Persona> findByRol(Rol rol);
+	Optional<Persona> findByCorreo(String correo);
 
 }

@@ -2,6 +2,8 @@ package com.autolink.web.config;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -18,20 +20,27 @@ import com.autolink.services.exceptions.VentaNotFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	// excepcion que lanza cuando el valor de un enum no es identico al enviado por url o body
-	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
-	public ResponseEntity<String> handleEnumConversionError(MethodArgumentTypeMismatchException ex) {
-		String paramName = ex.getName();
-		String value = ex.getValue() != null ? ex.getValue().toString() : "null";
-		String type = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "Unknown";
+	// --- EXCEPCIONES DE SEGURIDAD ---
 
-		String message = String.format("El valor '%s' para el parámetro '%s' no es válido para '%s'.", value, paramName,
-				type);
-
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+	@ExceptionHandler(AuthenticationException.class)
+	public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario o contraseña incorrectos.");
 	}
 
-	// Personas
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permisos suficientes para realizar esta acción.");
+	}
+
+	// --- EXCEPCIONES DE PARÁMETROS ---
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<String> handleEnumConversionError(MethodArgumentTypeMismatchException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	}
+
+	// --- EXCEPCIONES DE PERSONAS ---
+
 	@ExceptionHandler(PersonaExceptions.class)
 	public ResponseEntity<String> handlePersonaExceptions(PersonaExceptions ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
@@ -42,7 +51,8 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
 
-	// Vehiculos
+	// --- EXCEPCIONES DE VEHÍCULOS ---
+
 	@ExceptionHandler(VehiculoNotFoundException.class)
 	public ResponseEntity<String> handleVehiculoNotFound(VehiculoNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -53,7 +63,8 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 	}
 
-	// ventas
+	// --- EXCEPCIONES DE VENTAS ---
+
 	@ExceptionHandler(VentaNotFoundException.class)
 	public ResponseEntity<String> handleVentaNotFound(VentaNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -64,13 +75,15 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 	}
 	
-	// marcas
+	// --- EXCEPCIONES DE MARCAS ---
+
 	@ExceptionHandler(MarcaNotFoundException.class)
 	public ResponseEntity<String> handleMarcaNotFound(MarcaNotFoundException ex){
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
+
 	@ExceptionHandler(MarcaExceptions.class)
-	public ResponseEntity<String> handleMarcaNotFound(MarcaExceptions ex){
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	public ResponseEntity<String> handleMarcaExceptions(MarcaExceptions ex){
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 	}
 }
