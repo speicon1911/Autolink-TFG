@@ -3,12 +3,10 @@ package com.autolink.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.autolink.persistence.entities.Persona;
@@ -23,9 +21,9 @@ public class PersonaService implements UserDetailsService {
 	@Autowired
 	private PersonaRepository personaRepository;
 
-	@Autowired
-	@Lazy
-	private PasswordEncoder passwordEncoder;
+//	@Autowired
+//	@Lazy
+//	private PasswordEncoder passwordEncoder;
 
 	// --- SEGURIDAD (Spring Security) ---
 
@@ -57,7 +55,7 @@ public class PersonaService implements UserDetailsService {
 
 	public Persona createPersona(Persona persona) {
 		if (persona.getPassword() != null && !persona.getPassword().isBlank()) {
-			persona.setPassword(passwordEncoder.encode(persona.getPassword()));
+			persona.setPassword(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(persona.getPassword()));
 		}
 		
 		if (persona.getRol() == null) {
@@ -89,7 +87,7 @@ public class PersonaService implements UserDetailsService {
 		if (persona.getCorreo() != null && !persona.getCorreo().isBlank()) personaBD.setCorreo(persona.getCorreo());
 		
 		if (persona.getPassword() != null && !persona.getPassword().isBlank()) {
-			personaBD.setPassword(passwordEncoder.encode(persona.getPassword()));
+			personaBD.setPassword(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(persona.getPassword()));
 		}
 
 		if (persona.getSalarioAnual() != null) personaBD.setSalarioAnual(persona.getSalarioAnual());
