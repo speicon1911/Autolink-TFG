@@ -54,9 +54,10 @@ public class PersonaService implements UserDetailsService {
 	}
 
 	public Persona createPersona(Persona persona) {
-		if (persona.getPassword() != null && !persona.getPassword().isBlank()) {
-			persona.setPassword(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(persona.getPassword()));
-		}
+		if (persona.getPassword() != null) {
+	        // IMPORTANTE: Usar 'new' como en el ejemplo para asegurar que se guarda en BCrypt
+	        persona.setPassword(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(persona.getPassword()));
+	    }
 		
 		if (persona.getRol() == null) {
 			persona.setRol(Rol.CLIENTE);

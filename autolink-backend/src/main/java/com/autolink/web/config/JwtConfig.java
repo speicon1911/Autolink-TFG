@@ -8,6 +8,7 @@ import lombok.Getter;
 @Component
 @Getter
 public class JwtConfig {
+	
     @Value("${jwt.secret}")
     private String secret;
 
@@ -19,4 +20,5 @@ public class JwtConfig {
 
     @Value("${jwt.issuer}")
     private String issuer;
+
 }
