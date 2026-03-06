@@ -28,6 +28,9 @@ public class AuthService {
 	@Autowired
 	private PersonaService personaService;
 
+	@Autowired
+	private com.autolink.persistence.repositories.PersonaRepository personaRepository;
+
 	// Login: El "username" de Spring Security mapea con el "email" de Persona.
 	public LoginResponse login(LoginRequest request) {
 		Authentication authentication = authenticationManager
@@ -42,10 +45,20 @@ public class AuthService {
 		response.setAccess(accessToken);
 		response.setRefresh(refreshToken);
 
+		// Fetch user profile info
+		this.personaRepository.findByCorreo(userDetails.getUsername()).ifPresent(p -> {
+			response.setId(p.getId());
+			response.setNombre(p.getNombre());
+			response.setApellidos(p.getApellidos());
+			response.setCorreo(p.getCorreo());
+			response.setRol(p.getRol().name());
+		});
+
 		return response;
 	}
 
-//	 Registro corregido: Evitamos enviar la contraseña encriptada al AuthenticationManager.
+	// Registro corregido: Evitamos enviar la contraseña encriptada al
+	// AuthenticationManager.
 	public LoginResponse registrar(RegisterRequest request) {
 		// 1. Validar contraseñas (Lógica propia de la petición de registro)
 		if (request.getPassword1() == null || !request.getPassword1().equals(request.getPassword2())) {
@@ -88,10 +101,19 @@ public class AuthService {
 	public LoginResponse refresh(RefreshDTO dto) {
 		String accessToken = jwtUtil.generateAccessToken(dto.getRefresh());
 		String refreshToken = jwtUtil.generateRefreshToken(dto.getRefresh());
+		String email = jwtUtil.extractUsername(dto.getRefresh());
 
 		LoginResponse response = new LoginResponse();
 		response.setAccess(accessToken);
 		response.setRefresh(refreshToken);
+
+		this.personaRepository.findByCorreo(email).ifPresent(p -> {
+			response.setId(p.getId());
+			response.setNombre(p.getNombre());
+			response.setApellidos(p.getApellidos());
+			response.setCorreo(p.getCorreo());
+			response.setRol(p.getRol().name());
+		});
 
 		return response;
 	}

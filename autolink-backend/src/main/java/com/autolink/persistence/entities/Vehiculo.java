@@ -49,7 +49,6 @@ public class Vehiculo {
 
     @ManyToOne
     @JoinColumn(name = "id_marca")
-    @JsonIgnore
     private Marca marca;
 
     private String modelo;
@@ -60,10 +59,10 @@ public class Vehiculo {
     private Boolean disponible;
 
     private Boolean verificado;
-    
+
     @Column(name = "fecha_verificacion")
     private LocalDate fechaVerificacion;
-    
+
     @ManyToOne
     @JoinColumn(name = "id_vendedor")
     private Persona vendedor;

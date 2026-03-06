@@ -1,0 +1,36 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Sale } from '../models/sale.model';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class VentaService {
+    private readonly http = inject(HttpClient);
+    private readonly apiUrl = 'http://localhost:8082/ventas';
+
+    getPurchasesByCliente(idCliente: number): Observable<Sale[]> {
+        return this.http.get<Sale[]>(`${this.apiUrl}/cliente/${idCliente}`);
+    }
+
+    getSalesByVendedor(idVendedor: number): Observable<Sale[]> {
+        return this.http.get<Sale[]>(`${this.apiUrl}/vendedor/${idVendedor}`);
+    }
+
+    getAllVentas(): Observable<Sale[]> {
+        return this.http.get<Sale[]>(this.apiUrl);
+    }
+
+    createVenta(venta: Partial<Sale>): Observable<Sale> {
+        return this.http.post<Sale>(this.apiUrl, venta);
+    }
+
+    updatePrecioVenta(idVenta: number, precio: number): Observable<Sale> {
+        return this.http.put<Sale>(`${this.apiUrl}/${idVenta}/actualizar-precio`, { precio });
+    }
+
+    deleteVenta(idVenta: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/${idVenta}`);
+    }
+}
