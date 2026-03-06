@@ -18,51 +18,47 @@ import com.autolink.web.config.JwtUtils;
 
 @Service
 public class AuthService {
-	
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
+
 	@Autowired
 	private JwtUtils jwtUtil;
-	
+
 	@Autowired
 	private PersonaService personaService;
-	
-	/**
-	 * Login: El "username" de Spring Security mapea con el "email" de Persona.
-	 */
+
+	// Login: El "username" de Spring Security mapea con el "email" de Persona.
 	public LoginResponse login(LoginRequest request) {
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-		
+
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
 		String accessToken = jwtUtil.generateAccessToken(userDetails);
 		String refreshToken = jwtUtil.generateRefreshToken(userDetails);
-		
+
 		LoginResponse response = new LoginResponse();
 		response.setAccess(accessToken);
 		response.setRefresh(refreshToken);
 
 		return response;
 	}
-	
-	/**
-	 * Registro corregido: Evitamos enviar la contraseña encriptada al AuthenticationManager.
-	 */
+
+//	 Registro corregido: Evitamos enviar la contraseña encriptada al AuthenticationManager.
 	public LoginResponse registrar(RegisterRequest request) {
-		// 1. Validar contraseñas
-		if(request.getPassword1() == null || !request.getPassword1().equals(request.getPassword2())) {
+		// 1. Validar contraseñas (Lógica propia de la petición de registro)
+		if (request.getPassword1() == null || !request.getPassword1().equals(request.getPassword2())) {
 			throw new PersonaExceptions("Las contraseñas no coinciden o están vacías.");
 		}
-		
+
 		// 2. Crear y mapear la entidad Persona
 		Persona nuevaPersona = new Persona();
 		nuevaPersona.setNombre(request.getNombre().trim());
 		nuevaPersona.setApellidos(request.getApellidos().trim());
-		nuevaPersona.setCorreo(request.getEmail().trim().toLowerCase()); 
-		nuevaPersona.setPassword(request.getPassword1().trim()); // Texto plano para que PersonaService lo encripte
-		
+		nuevaPersona.setCorreo(request.getEmail().trim().toLowerCase());
+		nuevaPersona.setPassword(request.getPassword1().trim());
+
 		// 3. Mapear el Rol
 		if (request.getRol() != null) {
 			try {
@@ -73,24 +69,22 @@ public class AuthService {
 		} else {
 			nuevaPersona.setRol(Rol.CLIENTE);
 		}
-		
-		// 4. Guardar en BD (Aquí se encripta nuevaPersona.password)
+
+		// 4. Guardar en BD
+		// AQUÍ es donde PersonaService validará si el correo existe y lanzará la
+		// excepción si es necesario.
 		this.personaService.createPersona(nuevaPersona);
-		
-		// 5. Autenticación automática CORREGIDA
+
+		// 5. Autenticación automática
 		LoginRequest loginRequest = new LoginRequest();
-		loginRequest.setUsername(request.getEmail());
-		
-		// IMPORTANTE: Usamos la password del request original ("1234"), 
-		// NO la de nuevaPersona (que ahora es "$2a$10...")
-		loginRequest.setPassword(request.getPassword1()); 
-		
+		loginRequest.setUsername(request.getEmail().trim().toLowerCase());
+		loginRequest.setPassword(request.getPassword1().trim());
+
 		return this.login(loginRequest);
 	}
-	
-	/**
-	 * Refrescar tokens.
-	 */
+
+	// Refrescar tokens.
+
 	public LoginResponse refresh(RefreshDTO dto) {
 		String accessToken = jwtUtil.generateAccessToken(dto.getRefresh());
 		String refreshToken = jwtUtil.generateRefreshToken(dto.getRefresh());

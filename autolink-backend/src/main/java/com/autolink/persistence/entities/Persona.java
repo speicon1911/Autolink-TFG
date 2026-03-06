@@ -37,6 +37,7 @@ public class Persona {
 
     private String DNI;
 
+    @Column(unique = true, nullable = false, length = 100)
     private String correo;
     private String password;
 

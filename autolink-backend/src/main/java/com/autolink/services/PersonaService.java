@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.autolink.persistence.entities.Persona;
@@ -21,24 +22,16 @@ public class PersonaService implements UserDetailsService {
 	@Autowired
 	private PersonaRepository personaRepository;
 
-//	@Autowired
-//	@Lazy
-//	private PasswordEncoder passwordEncoder;
-
 	// --- SEGURIDAD (Spring Security) ---
 
-	
 	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		// Buscamos y si no existe lanzamos UsernameNotFoundException directamente
-		Persona persona = this.personaRepository.findByCorreo(email)
-				.orElseThrow(() -> new UsernameNotFoundException("El usuario con email " + email + " no existe."));
+		Persona persona = this.personaRepository.findByCorreo(username)
+				.orElseThrow(() -> new UsernameNotFoundException("El usuario con email " + username + " no existe."));
 
-		return User.builder()
-				.username(persona.getCorreo())
-				.password(persona.getPassword())
-				.roles(persona.getRol().name())
-				.build();
+		return User.builder().username(persona.getCorreo()).password(persona.getPassword())
+				.roles(persona.getRol().name()).build();
 	}
 
 	// --- MÉTODOS DE NEGOCIO ---
@@ -49,20 +42,24 @@ public class PersonaService implements UserDetailsService {
 
 	public Persona findById(int idPersona) {
 		// Buscamos por ID y si no existe lanzamos tu excepción personalizada
-		return this.personaRepository.findById(idPersona)
-				.orElseThrow(() -> new PersonaNotFoundException("No es posible encontrar a la persona con ID: " + idPersona));
+		return this.personaRepository.findById(idPersona).orElseThrow(
+				() -> new PersonaNotFoundException("No es posible encontrar a la persona con ID: " + idPersona));
 	}
 
 	public Persona createPersona(Persona persona) {
+		// Busca el correo y, sobre el resultado (Optional), pregunta si existe
+		if (this.personaRepository.findByCorreo(persona.getCorreo()).isPresent()) {
+			throw new PersonaExceptions("El correo " + persona.getCorreo() + " ya está registrado.");
+		}
+
 		if (persona.getPassword() != null) {
-	        // IMPORTANTE: Usar 'new' como en el ejemplo para asegurar que se guarda en BCrypt
-	        persona.setPassword(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(persona.getPassword()));
-	    }
-		
+			persona.setPassword(new BCryptPasswordEncoder().encode(persona.getPassword()));
+		}
+
 		if (persona.getRol() == null) {
 			persona.setRol(Rol.CLIENTE);
 		}
-		
+
 		return this.personaRepository.save(persona);
 	}
 
@@ -83,16 +80,27 @@ public class PersonaService implements UserDetailsService {
 		Persona personaBD = this.findById(idPersona);
 
 		// Actualización selectiva
-		if (persona.getNombre() != null && !persona.getNombre().isBlank()) personaBD.setNombre(persona.getNombre());
-		if (persona.getApellidos() != null && !persona.getApellidos().isBlank()) personaBD.setApellidos(persona.getApellidos());
-		if (persona.getCorreo() != null && !persona.getCorreo().isBlank()) personaBD.setCorreo(persona.getCorreo());
-		
-		if (persona.getPassword() != null && !persona.getPassword().isBlank()) {
-			personaBD.setPassword(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(persona.getPassword()));
+		if (persona.getNombre() != null && !persona.getNombre().isBlank())
+			personaBD.setNombre(persona.getNombre());
+		if (persona.getApellidos() != null && !persona.getApellidos().isBlank())
+			personaBD.setApellidos(persona.getApellidos());
+		if (persona.getCorreo() != null && !persona.getCorreo().isBlank()) {
+			// Si el correo es distinto al que ya tenía, verificamos que no exista ya
+			if (!persona.getCorreo().equalsIgnoreCase(personaBD.getCorreo())
+					&& personaRepository.findByCorreo(persona.getCorreo()).isPresent()) {
+				throw new PersonaExceptions("Ese correo ya está en uso por otro usuario");
+			}
+			personaBD.setCorreo(persona.getCorreo());
 		}
 
-		if (persona.getSalarioAnual() != null) personaBD.setSalarioAnual(persona.getSalarioAnual());
-		if (persona.getTelefono() != null) personaBD.setTelefono(persona.getTelefono());
+		if (persona.getPassword() != null && !persona.getPassword().isBlank()) {
+			personaBD.setPassword(new BCryptPasswordEncoder().encode(persona.getPassword()));
+		}
+
+		if (persona.getSalarioAnual() != null)
+			personaBD.setSalarioAnual(persona.getSalarioAnual());
+		if (persona.getTelefono() != null)
+			personaBD.setTelefono(persona.getTelefono());
 
 		return this.personaRepository.save(personaBD);
 	}
@@ -102,34 +110,34 @@ public class PersonaService implements UserDetailsService {
 		personaBD.setRol(nuevo);
 		return this.personaRepository.save(personaBD);
 	}
-	
+
 	// --- MÉTODOS DE FILTRADO POR ROL ---
 
-    // Encontrar vendedores
-    public List<Persona> findByTipoVendedor() {
-        List<Persona> vendedores = this.personaRepository.findByRol(Rol.VENDEDOR);
-        if (vendedores == null || vendedores.isEmpty()) {
-            throw new PersonaNotFoundException("No se han encontrado personas con el rol VENDEDOR");
-        }
-        return vendedores;
-    }
+	// Encontrar vendedores
+	public List<Persona> findByTipoVendedor() {
+		List<Persona> vendedores = this.personaRepository.findByRol(Rol.VENDEDOR);
+		if (vendedores == null || vendedores.isEmpty()) {
+			throw new PersonaNotFoundException("No se han encontrado personas con el rol VENDEDOR");
+		}
+		return vendedores;
+	}
 
-    // Encontrar clientes
-    public List<Persona> findByTipoCliente() {
-        List<Persona> clientes = this.personaRepository.findByRol(Rol.CLIENTE);
-        if (clientes == null || clientes.isEmpty()) {
-            throw new PersonaNotFoundException("No se han encontrado personas con el rol CLIENTE");
-        }
-        return clientes;
-    }
+	// Encontrar clientes
+	public List<Persona> findByTipoCliente() {
+		List<Persona> clientes = this.personaRepository.findByRol(Rol.CLIENTE);
+		if (clientes == null || clientes.isEmpty()) {
+			throw new PersonaNotFoundException("No se han encontrado personas con el rol CLIENTE");
+		}
+		return clientes;
+	}
 
-    // Encontrar administradores
-    public List<Persona> findByTipoAdministrador() {
-        // Asumiendo que tu Enum es ADMINISTRADOR (ajustar si es ADMIN)
-        List<Persona> administradores = this.personaRepository.findByRol(Rol.ADMINISTRADOR);
-        if (administradores == null || administradores.isEmpty()) {
-            throw new PersonaNotFoundException("No se han encontrado personas con el rol ADMINISTRADOR");
-        }
-        return administradores;
-    }
+	// Encontrar administradores
+	public List<Persona> findByTipoAdministrador() {
+		// Asumiendo que tu Enum es ADMINISTRADOR (ajustar si es ADMIN)
+		List<Persona> administradores = this.personaRepository.findByRol(Rol.ADMINISTRADOR);
+		if (administradores == null || administradores.isEmpty()) {
+			throw new PersonaNotFoundException("No se han encontrado personas con el rol ADMINISTRADOR");
+		}
+		return administradores;
+	}
 }
