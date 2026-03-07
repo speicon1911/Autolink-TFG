@@ -41,6 +41,18 @@ import { Rol } from '../../../core/models/user.model';
                    placeholder="juan@ejemplo.com">
           </div>
 
+          <div class="space-y-1">
+            <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">DNI</label>
+            <input type="text" formControlName="DNI"
+                   class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                   [class.border-red-500]="registerForm.get('DNI')?.invalid && registerForm.get('DNI')?.touched"
+                   placeholder="12345678A"
+                   maxlength="9">
+            <p *ngIf="registerForm.get('DNI')?.invalid && registerForm.get('DNI')?.touched" class="text-[10px] text-red-500 ml-1">
+              Introduce un DNI válido (8 números + 1 letra)
+            </p>
+          </div>
+
           <div class="space-y-1 animate-fade-in" *ngIf="rol() === 'VENDEDOR'">
             <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Teléfono de Contacto</label>
             <input type="tel" formControlName="telefono"
@@ -117,6 +129,7 @@ export class RegisterComponent {
     nombre: ['', Validators.required],
     apellidos: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
+    DNI: ['', [Validators.required, Validators.pattern(/^[0-9]{8}[A-Za-z]$/)]],
     telefono: [''],
     password1: ['', [Validators.required, Validators.minLength(4)]],
     password2: ['', [Validators.required, Validators.minLength(4)]]

@@ -198,7 +198,10 @@ export class VehicleCatalogComponent implements OnInit {
 
   cargarMarcas() {
     this.vehicleService.getMarcas().subscribe({
-      next: (data) => this.marcas.set(data),
+      next: (data) => {
+        const sorted = [...data].sort((a, b) => a.nombre.localeCompare(b.nombre));
+        this.marcas.set(sorted);
+      },
       error: () => console.error('Error cargando marcas')
     });
   }

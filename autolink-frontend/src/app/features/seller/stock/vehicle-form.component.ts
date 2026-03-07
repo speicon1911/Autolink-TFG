@@ -167,7 +167,10 @@ export class VehicleFormComponent implements OnInit {
   }
 
   cargarMarcas() {
-    this.vehicleService.getMarcas().subscribe(data => this.marcas.set(data));
+    this.vehicleService.getMarcas().subscribe(data => {
+      const sorted = [...data].sort((a, b) => a.nombre.localeCompare(b.nombre));
+      this.marcas.set(sorted);
+    });
   }
 
   onClose() {

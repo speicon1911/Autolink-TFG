@@ -1,4 +1,4 @@
--- 2. MARCAS (Se mantiene igual)
+-- 2. MARCAS (Actualizado con coches y motos adicionales)
 INSERT INTO marca (nombre) VALUES 
 ('TOYOTA'), ('FORD'), ('CHEVROLET'), ('HONDA'), ('HYUNDAI'), ('KIA'), 
 ('NISSAN'), ('VOLKSWAGEN'), ('MAZDA'), ('RENAULT'), ('PEUGEOT'), ('FIAT'),
@@ -6,22 +6,36 @@ INSERT INTO marca (nombre) VALUES
 ('LAND_ROVER'), ('JAGUAR'), ('TESLA'), ('ALFA_ROMEO'),
 ('FERRARI'), ('LAMBORGHINI'), ('MCLAREN'), ('ASTON_MARTIN'), ('BUGATTI'), ('MASERATI'),
 ('JEEP'), ('RAM'), ('GMC'), ('MITSUBISHI'), ('SUBARU'), ('ISUZU'),
-('DUCATI'), ('KAWASAKI'), ('YAMAHA'), ('SUZUKI'), ('HARLEY_DAVIDSON'), 
+('DUCATI'), ('KAWASAKI'), ('YAMAHA'), ('SUZUKI'), ('HARLEY-DAVIDSON'), 
 ('KTM'), ('TRIUMPH'), ('BMW_MOTORRAD'), ('HONDA_MOTOS'),
-('MG'), ('BYD'), ('CHERY'), ('GWM'), ('HAVAL');
+('MG'), ('BYD'), ('CHERY'), ('GWM'), ('HAVAL'),
 
+-- Marcas adicionales de coches
+('ABARTH'), ('ALPINA'), ('CADILLAC'), ('CHRYSLER'), ('CUPRA'), ('DACIA'),
+('DAEWOO'), ('DAIHATSU'), ('DODGE'), ('DS_AUTOMOBILES'), ('INFINITI'),
+('LADA'), ('LANCIA'), ('PEUGEOT_VEHICULOS_COMERCIALES'), ('SAAB'), ('SMART'),
+('SSANGYONG');
+
+-- Marcas adicionales de motos
+INSERT INTO marca (nombre) VALUES
+('APRILIA'), ('BENELLI'), ('BETA'), ('BIMOTA'), ('BRIXTON'), ('CAGIVA'),
+('CFMOTO'), ('DAELIM'), ('DERBI'), ('FANTIC'), ('GASGAS'), ('GILERA'),
+('HERO'), ('HUSABERG'), ('HUSQVARNA'), ('HYOSUNG'), ('INDIAN'), ('KEEWAY'),
+('LAMBRETTA'), ('MALAGUTI'), ('MASH'), ('MOTO_GUZZI'), ('MOTO_MORINI'),
+('MV_AGUSTA'), ('NORTON'), ('PEUGEOT_MOTOCYCLES'), ('PIAGGIO'), ('RIEJU'),
+('ROYAL_ENFIELD'), ('SHERCO'), ('SWM'), ('ZERO_MOTORCYCLES'), ('ZONTES');
 -- 3. PERSONAS (Contraseñas encriptadas con BCrypt)
 -- Laura: admin123 -> $2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.7uqqCyS
--- Carlos: vendedor2024 -> $2a$10$wE0vN29/9mIas5GvY9pX7uPPrUqGqB.X.XU0H7R7WJd9Yn3XmN5kG
--- Elena: elena_pass -> $2a$10$MvN6Y8E5B7Z.V6fL6lR6O.G9mO6S9X9Y9Z9A9B9C9D9E9F9G9H9I9
--- Juan: password123 -> $2a$10$pX7uPPrUqGqB.X.XU0H7R7WJd9Yn3XmN5kG8.UnVuG9HHgffUDAlk8
--- Marta: marta_secure -> $2a$10$h9MvN6Y8E5B7Z.V6fL6lR6O.G9mO6S9X9Y9Z9A9B9C9D9E9F9G9H
+-- Carlos: vendedor2024 -> $2a$12$jKGscMlB.LYJ8TwH9tUDquhXdmTs9ZwwLH2vGONw6bckpUhKWxKMq
+-- Elena: elena_pass -> $2a$12$5By9U2m7GH5eiGWRruRNAOATLdlv4yco39QS0RaG1gVAbVTNoOwTW
+-- Juan: password123 -> $2a$12$mogVLm0DEb29E5LtVjSLWujEa/gVwa8kj2PWm64psxXyzhsm2GAkS
+-- Marta: marta_secure -> $2a$12$Ob2IPKQUtjutgAUZwH9Jn.lBVszOgILUaatuXJ/7amPeZ2wZ7j2ry
 INSERT INTO persona (nombre, apellidos, DNI, correo, password, rol, salario_anual, ciudad_asignada, telefono) VALUES 
-('Laura', 'García Ruiz', '12345678A', 'laura.admin@autolink.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.7uqqCyS', 'ADMINISTRADOR', 45000.00, 'Madrid', NULL),
-('Carlos', 'Pérez Gómez', '87654321B', 'carlos.sales@autolink.com', '$2a$10$wE0vN29/9mIas5GvY9pX7uPPrUqGqB.X.XU0H7R7WJd9Yn3XmN5kG', 'VENDEDOR', NULL, NULL, 600123456),
-('Elena', 'Martínez Soler', '45678912C', 'elena.vende@autolink.com', '$2a$10$MvN6Y8E5B7Z.V6fL6lR6O.G9mO6S9X9Y9Z9A9B9C9D9E9F9G9H9I9', 'VENDEDOR', NULL, NULL, 655987654),
-('Juan', 'López Castro', '11223344D', 'juan.cliente@gmail.com', '$2a$10$pX7uPPrUqGqB.X.XU0H7R7WJd9Yn3XmN5kG8.UnVuG9HHgffUDAlk8', 'CLIENTE', NULL, NULL, NULL),
-('Marta', 'Sánchez Villa', '55667788E', 'marta.sv@yahoo.com', '$2a$10$h9MvN6Y8E5B7Z.V6fL6lR6O.G9mO6S9X9Y9Z9A9B9C9D9E9F9G9H', 'CLIENTE', NULL, NULL, NULL);
+('Laura', 'García Ruiz', '12345678A', 'laura.admin@autolink.com', '$2a$12$sB0EoxwLvrR8WDnHvYWRe.1cu93d6GzbxKKb8LZtiQiIgnWkka/xu', 'ADMINISTRADOR', 45000.00, 'Madrid', NULL),
+('Carlos', 'Pérez Gómez', '87654321B', 'carlos.sales@autolink.com', '$2a$12$jKGscMlB.LYJ8TwH9tUDquhXdmTs9ZwwLH2vGONw6bckpUhKWxKMq', 'VENDEDOR', NULL, NULL, 600123456),
+('Elena', 'Martínez Soler', '45678912C', 'elena.vende@autolink.com', '$2a$12$5By9U2m7GH5eiGWRruRNAOATLdlv4yco39QS0RaG1gVAbVTNoOwTW', 'VENDEDOR', NULL, NULL, 655987654),
+('Juan', 'López Castro', '11223344D', 'juan.cliente@gmail.com', '$2a$12$mogVLm0DEb29E5LtVjSLWujEa/gVwa8kj2PWm64psxXyzhsm2GAkS', 'CLIENTE', NULL, NULL, NULL),
+('Marta', 'Sánchez Villa', '55667788E', 'marta.sv@yahoo.com', '$2a$12$Ob2IPKQUtjutgAUZwH9Jn.lBVszOgILUaatuXJ/7amPeZ2wZ7j2ry', 'CLIENTE', NULL, NULL, NULL);
 
 -- 4. VEHÍCULOS (Se mantiene igual)
 INSERT INTO vehiculo (precio, plazas, potencia, puertas, kilometraje, color, tipo_vehiculo, id_marca, id_vendedor, modelo, disponible, verificado, fecha_fabricacion, fecha_verificacion) VALUES 

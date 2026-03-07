@@ -12,6 +12,7 @@ public class RegisterRequest {
 	private String nombre;
 	private String apellidos;
 	private String email;
+	private String DNI;
 	private String password1;
 	private String password2;
 	private String rol;
