@@ -12,5 +12,5 @@ export interface Sale {
     estadoVenta: EstadoVenta;
     precio: number;
     vendedor: Partial<User>;
-    cliente: User;
+    cliente: Partial<User>;
 }

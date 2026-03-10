@@ -71,6 +71,9 @@ public class AuthService {
 		nuevaPersona.setApellidos(request.getApellidos().trim());
 		nuevaPersona.setCorreo(request.getEmail().trim().toLowerCase());
 		nuevaPersona.setPassword(request.getPassword1().trim());
+		if (request.getDNI() != null) {
+			nuevaPersona.setDNI(request.getDNI().trim().toUpperCase());
+		}
 
 		// 3. Mapear el Rol
 		if (request.getRol() != null) {

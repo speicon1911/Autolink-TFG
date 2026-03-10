@@ -62,6 +62,10 @@ export class VehicleService {
         return this.http.put<Vehicle>(`${this.apiUrl}/vehiculos/${id}`, vehiculo);
     }
 
+    updateDisponible(id: number, disponible: boolean): Observable<any> {
+        return this.http.put(`${this.apiUrl}/vehiculos/${id}/disponible`, disponible);
+    }
+
     verificarVehiculo(id: number, verificado: boolean): Observable<any> {
         return this.http.put(`${this.apiUrl}/vehiculos/${id}/verificado`, verificado);
     }

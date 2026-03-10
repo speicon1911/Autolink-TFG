@@ -5,11 +5,12 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Vehicle } from '../../../core/models/vehicle.model';
 import { NotificationService } from '../../../core/services/notification.service';
 import { VehicleFormComponent } from './vehicle-form.component';
+import { SaleFormComponent } from './sale-form.component';
 
 @Component({
   selector: 'app-seller-stock',
   standalone: true,
-  imports: [CommonModule, VehicleFormComponent],
+  imports: [CommonModule, VehicleFormComponent, SaleFormComponent],
   template: `
     <div class="space-y-6 animate-fade-in">
       <header class="flex justify-between items-center">
@@ -31,6 +32,13 @@ import { VehicleFormComponent } from './vehicle-form.component';
                         (close)="onCloseForm()" 
                         (saved)="onVehicleSaved()">
       </app-vehicle-form>
+
+      <!-- Sale Form Modal -->
+      <app-sale-form *ngIf="sellingVehicle()"
+                     [vehicleToSell]="sellingVehicle()!"
+                     (close)="onCloseSale()"
+                     (sold)="onVehicleSold()">
+      </app-sale-form>
 
       <div *ngIf="loading()" class="flex justify-center py-20">
         <div class="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
@@ -65,6 +73,10 @@ import { VehicleFormComponent } from './vehicle-form.component';
                 <p class="text-xl font-black text-white">{{ v.precio | currency:'EUR' }}</p>
              </div>
              <div class="flex items-center gap-2">
+                <button *ngIf="v.disponible" (click)="onOpenSale(v)" class="p-2 hover:bg-emerald-900/20 rounded-lg text-emerald-500 hover:text-emerald-400 transition-colors flex items-center gap-1 text-xs font-bold" title="Vender">
+                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                   Vender
+                </button>
                 <button (click)="onEdit(v)" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors">
                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                 </button>
@@ -91,6 +103,7 @@ export class SellerStockComponent implements OnInit {
   loading = signal(true);
   showForm = signal(false);
   editingVehicle = signal<Vehicle | null>(null);
+  sellingVehicle = signal<Vehicle | null>(null);
 
   ngOnInit() {
     this.cargarStock();
@@ -139,5 +152,18 @@ export class SellerStockComponent implements OnInit {
   onEdit(v: Vehicle) {
     this.editingVehicle.set(v);
     this.showForm.set(true);
+  }
+
+  onOpenSale(v: Vehicle) {
+    this.sellingVehicle.set(v);
+  }
+
+  onCloseSale() {
+    this.sellingVehicle.set(null);
+  }
+
+  onVehicleSold() {
+    this.sellingVehicle.set(null);
+    this.cargarStock();
   }
 }

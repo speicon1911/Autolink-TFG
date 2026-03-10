@@ -5,10 +5,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Sale } from '../../../core/models/sale.model';
 
 @Component({
-    selector: 'app-seller-sales',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
+  selector: 'app-seller-sales',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
     <div class="space-y-6 animate-fade-in">
       <header>
         <h1 class="text-3xl font-black text-white">Mis Ventas</h1>
@@ -23,6 +23,19 @@ import { Sale } from '../../../core/models/sale.model';
         <p class="text-slate-500 text-lg">Aún no has registrado ninguna venta.</p>
       </div>
 
+      <!-- Resumen de Ventas -->
+      <div *ngIf="!loading() && sales().length > 0" class="bg-gradient-to-br from-emerald-900/40 to-slate-900 border border-emerald-500/30 rounded-3xl p-8 mb-8 flex items-center justify-between shadow-2xl">
+        <div>
+          <h2 class="text-emerald-400 font-bold uppercase tracking-wider text-sm mb-1">Total Ingresado</h2>
+          <p class="text-4xl font-black text-white">{{ totalSales() | currency:'EUR':'symbol':'1.0-0' }}</p>
+        </div>
+        <div class="text-right">
+          <h2 class="text-emerald-400 font-bold uppercase tracking-wider text-sm mb-1">Vehículos Vendidos</h2>
+          <p class="text-4xl font-black text-white">{{ sales().length }}</p>
+        </div>
+      </div>
+
+      <!-- Lista de Ventas -->
       <div *ngIf="!loading() && sales().length > 0" class="grid gap-4">
         <div *ngFor="let s of sales()" 
              class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex items-center justify-between gap-6 hover:border-slate-700 shadow-xl transition-all">
@@ -43,35 +56,38 @@ import { Sale } from '../../../core/models/sale.model';
              </div>
              <div class="text-right">
                 <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Precio de Venta</p>
-                <p class="text-2xl font-black text-emerald-500">{{ s.precio | currency:'EUR' }}</p>
+                <p class="text-2xl font-black text-emerald-500">{{ s.precio | currency:'EUR':'symbol':'1.0-0' }}</p>
              </div>
           </div>
         </div>
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .animate-fade-in { animation: fadeIn 0.4s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   `]
 })
 export class SellerSalesComponent implements OnInit {
-    private ventaService = inject(VentaService);
-    private authService = inject(AuthService);
+  private ventaService = inject(VentaService);
+  private authService = inject(AuthService);
 
-    sales = signal<Sale[]>([]);
-    loading = signal(true);
+  sales = signal<Sale[]>([]);
+  loading = signal(true);
+  totalSales = signal<number>(0);
 
-    ngOnInit() {
-        const user = this.authService.currentUser$();
-        if (user) {
-            this.ventaService.getSalesByVendedor(user.id).subscribe({
-                next: (data) => {
-                    this.sales.set(data);
-                    this.loading.set(false);
-                },
-                error: () => this.loading.set(false)
-            });
-        }
+  ngOnInit() {
+    const user = this.authService.currentUser$();
+    if (user) {
+      this.ventaService.getSalesByVendedor(user.id).subscribe({
+        next: (data) => {
+          this.sales.set(data);
+          const total = data.reduce((acc, curr) => acc + curr.precio, 0);
+          this.totalSales.set(total);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false)
+      });
     }
+  }
 }

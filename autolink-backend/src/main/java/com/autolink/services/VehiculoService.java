@@ -53,16 +53,16 @@ public class VehiculoService {
 
 		return vehiculos;
 	}
-	
+
 	// obtener vehículos por vendedor
 	public List<Vehiculo> getVehiculosPorVendedor(int idVendedor) {
-	    List<Vehiculo> vehiculos = this.vehiculoRepository.findByVendedorId(idVendedor);
-	    
-	    if (vehiculos.isEmpty()) {
-	        throw new VehiculoNotFoundException("Este vendedor no tiene vehículos asignados en stock");
-	    }
-	    
-	    return vehiculos;
+		List<Vehiculo> vehiculos = this.vehiculoRepository.findByVendedorId(idVendedor);
+
+		if (vehiculos.isEmpty()) {
+			throw new VehiculoNotFoundException("Este vendedor no tiene vehículos asignados en stock");
+		}
+
+		return vehiculos;
 	}
 
 	// crear
@@ -70,13 +70,13 @@ public class VehiculoService {
 		if(vehiculo.getDisponible() == null) {
 			vehiculo.setDisponible(true);
 		}
-		
+
 		if(vehiculo.getVerificado() != null && vehiculo.getVerificado()) {
 			vehiculo.setFechaVerificacion(LocalDate.now());
 		}
 		return this.vehiculoRepository.save(vehiculo);
 	}
-	
+
 	// eliminar
 	public void deleteVehiculo(int idVehiculo) {
 		if(!this.vehiculoRepository.existsById(idVehiculo)) {
@@ -84,7 +84,7 @@ public class VehiculoService {
 		}
 		this.vehiculoRepository.deleteById(idVehiculo);
 	}
-	
+
 	// actualizar datos de coche
 	public Vehiculo updateVehiculo(Vehiculo vehiculoRequest, int idVehiculo) {
 		// 1. Buscamos el vehículo existente
@@ -104,6 +104,14 @@ public class VehiculoService {
 			vehiculoBD.setModelo(vehiculoRequest.getModelo());
 		if (vehiculoRequest.getKilometraje() != null)
 			vehiculoBD.setKilometraje(vehiculoRequest.getKilometraje());
+		if (vehiculoRequest.getPuertas() != null)
+			vehiculoBD.setPuertas(vehiculoRequest.getPuertas());
+		if (vehiculoRequest.getTipoVehiculo() != null)
+			vehiculoBD.setTipoVehiculo(vehiculoRequest.getTipoVehiculo());
+		if (vehiculoRequest.getFechaFabricacion() != null)
+			vehiculoBD.setFechaFabricacion(vehiculoRequest.getFechaFabricacion());
+		if (vehiculoRequest.getDisponible() != null)
+			vehiculoBD.setDisponible(vehiculoRequest.getDisponible());
 
 		// 3. Manejo de la Marca (si envías una nueva marca)
 		if (vehiculoRequest.getMarca() != null) {
