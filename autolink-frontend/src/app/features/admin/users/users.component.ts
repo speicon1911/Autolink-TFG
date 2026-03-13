@@ -26,7 +26,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
           <thead class="bg-slate-800/50 border-b border-slate-700">
             <tr>
               <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Usuario</th>
-              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Email / DNI</th>
+              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Email</th>
               <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Rol Actual</th>
               <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Acciones</th>
             </tr>

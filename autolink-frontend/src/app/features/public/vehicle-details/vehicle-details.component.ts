@@ -80,9 +80,6 @@ import { VehicleService } from '../../../core/services/vehicle.service';
                 Contactar con el Vendedor
                 <svg class="group-hover/buy:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
             </button>
-            <button class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-5 rounded-2xl transition-all active:scale-[0.98]">
-                Financiar desde 199€/mes
-            </button>
           </div>
         </div>
       </div>

@@ -143,7 +143,7 @@ export class VehicleFormComponent implements OnInit {
     potencia: [null as number | null, [Validators.required, Validators.min(0)]],
     color: ['', Validators.required],
     plazas: [5, [Validators.required, Validators.min(1)]],
-    puertas: [5, [Validators.required, Validators.min(2)]],
+    puertas: [5, [Validators.required, Validators.min(0)]],
     disponible: [true]
   });
 
