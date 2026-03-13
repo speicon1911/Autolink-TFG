@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
     selector: 'app-seller-dashboard',
     standalone: true,
-    imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+    imports: [RouterOutlet, RouterLink, RouterLinkActive],
     template: `
     <div class="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-8">
       <aside class="space-y-2">
