@@ -14,4 +14,5 @@ export interface User {
     telefono?: number;
     salarioAnual?: number;
     ciudadAsignada?: string;
+    activo: boolean;
 }

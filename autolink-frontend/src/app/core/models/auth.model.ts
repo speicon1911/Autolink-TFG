@@ -13,6 +13,7 @@ export interface LoginResponse {
     apellidos?: string;
     correo?: string;
     rol?: string;
+    activo?: boolean;
 }
 
 export interface RegisterRequest {

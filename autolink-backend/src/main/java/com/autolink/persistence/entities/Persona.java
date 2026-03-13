@@ -57,6 +57,9 @@ public class Persona {
     @Column(name = "ciudad_asignada")
     private String ciudadAsignada;
     
+    @Column(columnDefinition = "boolean default true", nullable = false)
+    private Boolean activo = true;
+    
     @OneToMany(mappedBy = "vendedor")
     @JsonIgnore // bloquea que aparezcan las ventas realizadas al buscar
     private List<Venta> ventasRealizadas;

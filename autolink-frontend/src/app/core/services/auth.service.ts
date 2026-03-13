@@ -93,7 +93,8 @@ export class AuthService {
                     apellidos: response.apellidos || '',
                     DNI: '', // Not in response but not needed for basic stock ops
                     correo: response.correo || email,
-                    rol: (response.rol as Rol) || (roles[0]?.includes('ADMIN') ? Rol.ADMINISTRADOR : Rol.VENDEDOR)
+                    rol: (response.rol as Rol) || (roles[0]?.includes('ADMIN') ? Rol.ADMINISTRADOR : Rol.VENDEDOR),
+                    activo: response.activo !== undefined ? response.activo : true
                 };
                 if (typeof window !== 'undefined' && window.localStorage) {
                     localStorage.setItem('user', JSON.stringify(user));
@@ -137,7 +138,8 @@ export class AuthService {
                         correo: email,
                         rol: isAdmin ? Rol.ADMINISTRADOR : (isVendedor ? Rol.VENDEDOR : Rol.CLIENTE),
                         telefono: 0,
-                        salarioAnual: 0
+                        salarioAnual: 0,
+                        activo: true
                     };
                     if (typeof window !== 'undefined' && window.localStorage) {
                         localStorage.setItem('user', JSON.stringify(partialUser));

@@ -3,10 +3,14 @@ package com.autolink.persistence.repositories;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.autolink.persistence.entities.Vehiculo;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
+
+import jakarta.transaction.Transactional;
 
 public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
 
@@ -27,4 +31,9 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
 			boolean verificado, boolean aplicarVerif);
 
 	List<Vehiculo> findByVendedorId(int idVendedor);
+	
+	@Modifying
+	@Transactional
+	@Query("UPDATE Vehiculo v SET v.disponible = false WHERE v.vendedor.id = :idVendedor")
+	void desactivarTodosPorVendedor(@Param("idVendedor") int idVendedor);
 }

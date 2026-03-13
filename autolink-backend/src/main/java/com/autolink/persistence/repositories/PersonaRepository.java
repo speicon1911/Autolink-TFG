@@ -14,5 +14,6 @@ public interface PersonaRepository extends ListCrudRepository<Persona, Integer>{
 	
 	List<Persona> findByRol(Rol rol);
 	Optional<Persona> findByCorreo(String correo);
+	List<Persona> findByActivo(boolean activo);
 
 }

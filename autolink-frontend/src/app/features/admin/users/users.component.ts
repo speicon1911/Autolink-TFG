@@ -13,9 +13,23 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
   providers: [],
   template: `
     <div class="space-y-6 animate-fade-in">
-      <header>
-        <h1 class="text-3xl font-black text-white">Gestión de Usuarios</h1>
-        <p class="text-slate-400">Panel de control administrativo de roles y acceso</p>
+      <header class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-black text-white">Gestión de Usuarios</h1>
+          <p class="text-slate-400">Panel de control administrativo de roles y acceso</p>
+        </div>
+        
+        <div class="flex items-center gap-3 bg-slate-800/50 p-1.5 rounded-2xl border border-slate-700">
+          <button (click)="setFilter('todos')" 
+            [class]="filter() === 'todos' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-all">Todos</button>
+          <button (click)="setFilter('activos')" 
+            [class]="filter() === 'activos' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-all">Activos</button>
+          <button (click)="setFilter('inactivos')" 
+            [class]="filter() === 'inactivos' ? 'bg-rose-600 text-white' : 'text-slate-400 hover:text-white'"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-all">Inactivos</button>
+        </div>
       </header>
     
       @if (loading()) {
@@ -32,6 +46,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Usuario</th>
                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Email</th>
                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Rol Actual</th>
+                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Estado</th>
                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Acciones</th>
               </tr>
             </thead>
@@ -62,6 +77,12 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                       {{ u.rol }}
                     </span>
                   </td>
+                   <td class="px-6 py-5">
+                     <span [class]="u.activo ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' : 'text-rose-500 bg-rose-500/10 border-rose-500/20'" 
+                           class="px-2 py-0.5 rounded text-[10px] font-bold border">
+                       {{ u.activo ? 'ACTIVO' : 'INACTIVO' }}
+                     </span>
+                  </td>
                   <td class="px-6 py-5">
                     <div class="flex items-center gap-2">
                       <div class="relative group/select">
@@ -78,9 +99,15 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                         </div>
                       </div>
-                      <button (click)="openDeleteModal(u)" class="p-2 hover:bg-rose-900/20 rounded-lg text-slate-400 hover:text-rose-500 transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                      </button>
+                      @if (u.activo) {
+                        <button (click)="openDeleteModal(u)" class="p-2 hover:bg-rose-900/20 rounded-lg text-slate-400 hover:text-rose-500 transition-all" title="Desactivar Usuario">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+                        </button>
+                      } @else {
+                        <button (click)="reactivarUsuario(u)" class="p-2 hover:bg-emerald-900/20 rounded-lg text-slate-400 hover:text-emerald-500 transition-all" title="Reactivar Usuario">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                        </button>
+                      }
                     </div>
                   </td>
                 </tr>
@@ -125,6 +152,7 @@ export class AdminUsersComponent implements OnInit {
 
   currentPage = 1;
   itemsPerPage = 10;
+  filter = signal<'todos' | 'activos' | 'inactivos'>('todos');
 
   // Configuración del modal
   modalConfig = signal<{
@@ -147,23 +175,22 @@ export class AdminUsersComponent implements OnInit {
 
   cargarUsuarios() {
     this.loading.set(true);
-    this.personaService.listClientes().subscribe({
-      next: (clientes) => {
-        this.personaService.listVendedores().subscribe({
-          next: (vendedores) => {
-            this.personaService.listAdmins().subscribe({
-              next: (admins) => {
-                this.users.set([...admins, ...vendedores, ...clientes]);
-                this.currentPage = 1;
-                this.updatePaginatedUsers();
-                this.loading.set(false);
-              }
-            });
-          }
-        });
+    const activoParam = this.filter() === 'activos' ? true : (this.filter() === 'inactivos' ? false : undefined);
+    
+    this.personaService.listPersonas(activoParam).subscribe({
+      next: (usuarios) => {
+        this.users.set(usuarios);
+        this.currentPage = 1;
+        this.updatePaginatedUsers();
+        this.loading.set(false);
       },
       error: () => this.loading.set(false)
     });
+  }
+
+  setFilter(f: 'todos' | 'activos' | 'inactivos') {
+    this.filter.set(f);
+    this.cargarUsuarios();
   }
 
   onPageChange(page: number) {
@@ -193,10 +220,20 @@ export class AdminUsersComponent implements OnInit {
   openDeleteModal(user: User) {
     this.modalConfig.set({
       isOpen: true,
-      title: 'Eliminar Usuario',
-      message: `¿Estás seguro de que deseas eliminar permanentemente a ${user.nombre}? Esta acción no se puede deshacer.`,
+      title: 'Desactivar Usuario',
+      message: `¿Estás seguro de que deseas desactivar a ${user.nombre}? Sus vehículos publicados dejarán de estar disponibles.`,
       action: 'deleteUser',
       data: { user }
+    });
+  }
+
+  reactivarUsuario(user: User) {
+    this.personaService.updatePerfil(user.id, { activo: true }).subscribe({
+      next: () => {
+        this.ns.success(`Usuario ${user.nombre} reactivado`);
+        this.cargarUsuarios();
+      },
+      error: () => this.ns.error('Error al reactivar usuario')
     });
   }
 
@@ -220,12 +257,12 @@ export class AdminUsersComponent implements OnInit {
     } else if (config.action === 'deleteUser') {
       this.personaService.deletePersona(config.data.user.id).subscribe({
         next: () => {
-          this.ns.success('Usuario eliminado');
+          this.ns.success('Usuario desactivado correctamente');
           this.cargarUsuarios();
           this.closeModal();
         },
         error: () => {
-          this.ns.error('Error al eliminar el usuario');
+          this.ns.error('Error al desactivar el usuario');
           this.closeModal();
         }
       });

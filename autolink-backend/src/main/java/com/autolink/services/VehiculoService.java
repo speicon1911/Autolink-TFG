@@ -12,6 +12,8 @@ import com.autolink.persistence.repositories.VehiculoRepository;
 import com.autolink.services.exceptions.VehiculoExceptions;
 import com.autolink.services.exceptions.VehiculoNotFoundException;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class VehiculoService {
 
@@ -167,5 +169,15 @@ public class VehiculoService {
 		}
 
 		return this.vehiculoRepository.save(vehiculoBD);
+	}
+	
+	// asiganar no disponibles todos los vehiculos de un vendedor de baja
+	@Transactional
+	public void desactivarVehiculosVendedor(int idVendedor) {
+		List<Vehiculo> vehiculos = this.vehiculoRepository.findByVendedorId(idVendedor);
+		
+		if(!vehiculos.isEmpty()) {
+			this.vehiculoRepository.desactivarTodosPorVendedor(idVendedor);
+		}
 	}
 }

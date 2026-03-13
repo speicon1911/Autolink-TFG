@@ -10,8 +10,12 @@ export class PersonaService {
     private readonly http = inject(HttpClient);
     private readonly apiUrl = 'http://localhost:8082/personas';
 
-    listPersonas(): Observable<User[]> {
-        return this.http.get<User[]>(this.apiUrl);
+    listPersonas(activo?: boolean): Observable<User[]> {
+        let url = this.apiUrl;
+        if (activo !== undefined) {
+            url += `?activo=${activo}`;
+        }
+        return this.http.get<User[]>(url);
     }
 
     getPerfil(id: number): Observable<User> {
