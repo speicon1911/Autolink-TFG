@@ -15,11 +15,11 @@ import { SaleFormComponent } from './sale-form.component';
     <div class="space-y-6 animate-fade-in">
       <header class="flex justify-between items-center">
         <div>
-          <h1 class="text-3xl font-black text-white">Mi Stock</h1>
-          <p class="text-slate-400">Gestiona tus vehículos publicados</p>
+          <h1 class="text-3xl font-black text-pitch-black-50">Mi Stock</h1>
+          <p class="text-baltic-blue-400">Gestiona tus vehículos publicados</p>
         </div>
         <button (click)="onOpenForm()"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-blue-600/20 transition-all active:scale-95 flex items-center gap-2">
+          class="btn-primary text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-baltic-blue-600/20 transition-all active:scale-95 flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Publicar Vehículo
         </button>
@@ -46,13 +46,13 @@ import { SaleFormComponent } from './sale-form.component';
     
       @if (loading()) {
         <div class="flex justify-center py-20">
-          <div class="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+          <div class="w-12 h-12 border-4 border-baltic-blue-500/20 border-t-baltic-blue-500 rounded-full animate-spin"></div>
         </div>
       }
     
       @if (!loading() && vehicles().length === 0) {
-        <div class="text-center py-20 bg-slate-900/30 rounded-3xl border border-dashed border-slate-800">
-          <p class="text-slate-500">No tienes vehículos publicados actualmente.</p>
+        <div class="text-center py-20 bg-white/5 backdrop-blur-sm rounded-3xl border border-dashed border-dark-teal-800">
+          <p class="text-baltic-blue-300/60">No tienes vehículos publicados actualmente.</p>
         </div>
       }
     
@@ -60,40 +60,40 @@ import { SaleFormComponent } from './sale-form.component';
         <div class="grid gap-4">
           @for (v of vehicles(); track v) {
             <div
-              class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex items-center justify-between gap-6 hover:border-slate-700 transition-all shadow-xl">
+              class="bg-white/5 backdrop-blur-md border-[3px] border-pitch-black-950 rounded-2xl p-5 flex items-center justify-between gap-6 hover:border-baltic-blue-500 transition-all shadow-xl">
               <div class="flex items-center gap-4">
-                <div class="w-16 h-12 bg-slate-800 rounded-lg flex items-center justify-center text-slate-600">
+                <div class="w-16 h-12 bg-white/60 rounded-lg flex items-center justify-center text-dark-teal-300">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
                 </div>
                 <div>
-                  <h3 class="text-white font-bold">{{ v.modelo }}</h3>
+                  <h3 class="text-pitch-black-50 font-bold">{{ v.modelo }}</h3>
                   <div class="flex items-center gap-2">
                     <span class="text-xs font-bold px-2 py-0.5 rounded-full"
-                      [ngClass]="v.disponible ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-800 text-slate-500'">
+                      [ngClass]="v.disponible ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-white/10 text-baltic-blue-400/60 border border-white/5'">
                       {{ v.disponible ? 'Disponible' : 'Vendido' }}
                     </span>
                     @if (v.verificado) {
-                      <span class="text-[10px] text-blue-400 font-black uppercase tracking-widest">Verificado</span>
+                      <span class="text-[10px] text-baltic-blue-500 font-black uppercase tracking-widest">Verificado</span>
                     }
                   </div>
                 </div>
               </div>
               <div class="flex items-center gap-8">
                 <div class="text-right">
-                  <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Precio</p>
-                  <p class="text-xl font-black text-white">{{ v.precio | currency:'EUR' }}</p>
+                  <p class="text-[10px] text-baltic-blue-400 font-bold uppercase tracking-widest">Precio</p>
+                  <p class="text-xl font-black text-pitch-black-50">{{ v.precio | currency:'EUR' }}</p>
                 </div>
                 <div class="flex items-center gap-2">
                   @if (v.disponible) {
-                    <button (click)="onOpenSale(v)" class="p-2 hover:bg-emerald-900/20 rounded-lg text-emerald-500 hover:text-emerald-400 transition-colors flex items-center gap-1 text-xs font-bold" title="Vender">
+                    <button (click)="onOpenSale(v)" class="p-2 hover:bg-emerald-50 rounded-lg text-emerald-600 transition-colors flex items-center gap-1 text-xs font-bold" title="Vender">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                       Vender
                     </button>
                   }
-                  <button (click)="onEdit(v)" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors">
+                  <button (click)="onEdit(v)" class="p-2 hover:bg-white/60 rounded-lg text-dark-teal-400 hover:text-baltic-blue-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                   </button>
-                  <button (click)="onDelete(v.idVehiculo)" class="p-2 hover:bg-red-900/20 rounded-lg text-slate-400 hover:text-red-500 transition-colors">
+                  <button (click)="onDelete(v.idVehiculo)" class="p-2 hover:bg-rose-50 rounded-lg text-dark-teal-400 hover:text-rose-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                   </button>
                 </div>

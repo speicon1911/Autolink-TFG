@@ -11,14 +11,14 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [ReactiveFormsModule],
   template: `
-    <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-fade-in">
-        <header class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+    <div class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <div class="bg-dark-teal-900 border border-baltic-blue-500/20 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-fade-in text-pitch-black-50">
+        <header class="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
           <div>
-            <h2 class="text-2xl font-black text-white">{{ editMode ? 'Editar' : 'Publicar' }} Vehículo</h2>
-            <p class="text-slate-400 text-sm">Completa los detalles técnicos del vehículo</p>
+            <h2 class="text-2xl font-black text-pitch-black-50">{{ editMode ? 'Editar' : 'Publicar' }} Vehículo</h2>
+            <p class="text-baltic-blue-400 text-sm">Completa los detalles técnicos del vehículo</p>
           </div>
-          <button (click)="onClose()" class="p-2 hover:bg-slate-800 rounded-xl text-slate-400 transition-colors">
+          <button (click)="onClose()" class="p-2 hover:bg-white/10 rounded-xl text-baltic-blue-300 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </header>
@@ -27,88 +27,88 @@ import { AuthService } from '../../../core/services/auth.service';
           <!-- Basic Info -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-1">
-              <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Marca</label>
+              <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Marca</label>
               <select formControlName="id_marca"
-                class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                <option [value]="null">Selecciona una marca</option>
+                class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all appearance-none">
+                <option [value]="null" class="bg-dark-teal-900">Selecciona una marca</option>
                 @for (m of marcas(); track m) {
-                  <option [value]="m.idMarca">{{ m.nombre }}</option>
+                  <option [value]="m.idMarca" class="bg-dark-teal-900">{{ m.nombre }}</option>
                 }
               </select>
             </div>
             <div class="space-y-1">
-              <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Modelo</label>
+              <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Modelo</label>
               <input type="text" formControlName="modelo" placeholder="Ej: Golf GTI"
-                class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/20">
               </div>
             </div>
     
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-1">
-                <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Tipo de Vehículo</label>
+                <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Tipo de Vehículo</label>
                 <select formControlName="tipoVehiculo"
-                  class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                  class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all appearance-none">
                   @for (t of tipos; track t) {
-                    <option [value]="t">{{ t }}</option>
+                    <option [value]="t" class="bg-dark-teal-900">{{ t }}</option>
                   }
                 </select>
               </div>
               <div class="space-y-1">
-                <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Fecha Fabricación</label>
+                <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Fecha Fabricación</label>
                 <input type="date" formControlName="fechaFabricacion"
-                  class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                  class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all">
                 </div>
               </div>
     
               <!-- Specs -->
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="space-y-1">
-                  <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Precio (€)</label>
+                  <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Precio (€)</label>
                   <input type="number" formControlName="precio"
-                    class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all">
                   </div>
                   <div class="space-y-1">
-                    <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Kilometraje</label>
+                    <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Kilometraje</label>
                     <input type="number" formControlName="kilometraje"
-                      class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                      class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all">
                     </div>
                     <div class="space-y-1">
-                      <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Potencia (CV)</label>
+                      <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Potencia (CV)</label>
                       <input type="number" formControlName="potencia"
-                        class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                        class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all">
                       </div>
                       <div class="space-y-1">
-                        <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Color</label>
+                        <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Color</label>
                         <input type="text" formControlName="color" placeholder="Blanco"
-                          class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                          class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/20">
                         </div>
                       </div>
     
                       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <div class="space-y-1">
-                          <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Plazas</label>
+                          <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Plazas</label>
                           <input type="number" formControlName="plazas"
-                            class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                            class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all">
                           </div>
                           <div class="space-y-1">
-                            <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 ml-1">Puertas</label>
+                            <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Puertas</label>
                             <input type="number" formControlName="puertas"
-                              class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                              class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all">
                             </div>
                             <div class="flex items-center gap-3 pt-6">
                               <input type="checkbox" formControlName="disponible" id="disp"
-                                class="w-5 h-5 rounded border-slate-700 bg-slate-800 text-blue-500 focus:ring-blue-500 outline-none">
-                                <label for="disp" class="text-sm font-bold text-slate-300">Disponible</label>
+                                class="w-5 h-5 rounded border-dark-teal-800 bg-white/10 text-baltic-blue-500 focus:ring-baltic-blue-500 outline-none cursor-pointer">
+                                <label for="disp" class="text-sm font-bold text-baltic-blue-400 cursor-pointer">Disponible</label>
                               </div>
                             </div>
     
                             <div class="flex gap-4 pt-4">
                               <button type="button" (click)="onClose()"
-                                class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-2xl transition-all">
+                                class="flex-1 bg-white/10 hover:bg-white/20 text-baltic-blue-300 font-bold py-4 rounded-2xl transition-all">
                                 Cancelar
                               </button>
                               <button type="submit" [disabled]="vehicleForm.invalid || loading()"
-                                class="flex-[2] bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-blue-600/20 active:scale-[0.98] flex items-center justify-center gap-2">
+                                class="flex-[2] btn-primary text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-baltic-blue-600/20 active:scale-[0.98] flex items-center justify-center gap-2">
                                 @if (!loading()) {
                                   <span>{{ editMode ? 'Guardar Cambios' : 'Publicar Ahora' }}</span>
                                 }

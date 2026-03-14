@@ -11,32 +11,32 @@ import { Sale } from '../../../core/models/sale.model';
   template: `
     <div class="space-y-6 animate-fade-in">
       <header>
-        <h1 class="text-3xl font-black text-white">Mis Ventas</h1>
-        <p class="text-slate-400">Seguimiento de tus operaciones cerradas</p>
+        <h1 class="text-3xl font-black text-pitch-black-50">Mis Ventas</h1>
+        <p class="text-baltic-blue-400">Seguimiento de tus operaciones cerradas</p>
       </header>
     
       @if (loading()) {
         <div class="flex justify-center py-20">
-          <div class="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+          <div class="w-12 h-12 border-4 border-baltic-blue-500/20 border-t-baltic-blue-500 rounded-full animate-spin"></div>
         </div>
       }
     
       @if (!loading() && sales().length === 0) {
-        <div class="text-center py-20 bg-slate-900/30 rounded-3xl border border-dashed border-slate-800">
-          <p class="text-slate-500 text-lg">Aún no has registrado ninguna venta.</p>
+        <div class="text-center py-20 bg-white/5 backdrop-blur-sm rounded-3xl border border-dashed border-dark-teal-800">
+          <p class="text-baltic-blue-300/60 text-lg">Aún no has registrado ninguna venta.</p>
         </div>
       }
     
       <!-- Resumen de Ventas -->
       @if (!loading() && sales().length > 0) {
-        <div class="bg-gradient-to-br from-emerald-900/40 to-slate-900 border border-emerald-500/30 rounded-3xl p-8 mb-8 flex items-center justify-between shadow-2xl">
+        <div class="bg-gradient-to-br from-baltic-blue-600 to-baltic-blue-800 border border-baltic-blue-400/30 rounded-3xl p-8 mb-8 flex items-center justify-between shadow-2xl text-white shadow-baltic-blue-500/10">
           <div>
-            <h2 class="text-emerald-400 font-bold uppercase tracking-wider text-sm mb-1">Total Ingresado</h2>
-            <p class="text-4xl font-black text-white">{{ totalSales() | currency:'EUR':'symbol':'1.0-0' }}</p>
+            <h2 class="text-baltic-blue-100/60 font-black uppercase tracking-widest text-[10px] mb-1">Total Ingresado</h2>
+            <p class="text-4xl font-black">{{ totalSales() | currency:'EUR':'symbol':'1.0-0' }}</p>
           </div>
           <div class="text-right">
-            <h2 class="text-emerald-400 font-bold uppercase tracking-wider text-sm mb-1">Vehículos Vendidos</h2>
-            <p class="text-4xl font-black text-white">{{ sales().length }}</p>
+            <h2 class="text-baltic-blue-100/60 font-black uppercase tracking-widest text-[10px] mb-1">Vehículos Vendidos</h2>
+            <p class="text-4xl font-black">{{ sales().length }}</p>
           </div>
         </div>
       }
@@ -46,24 +46,24 @@ import { Sale } from '../../../core/models/sale.model';
         <div class="grid gap-4">
           @for (s of sales(); track s) {
             <div
-              class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex items-center justify-between gap-6 hover:border-slate-700 shadow-xl transition-all">
+              class="bg-white/5 backdrop-blur-md border-[3px] border-pitch-black-950 rounded-2xl p-6 flex items-center justify-between gap-6 hover:border-baltic-blue-500 shadow-xl transition-all">
               <div class="flex items-center gap-5">
-                <div class="w-14 h-14 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500">
+                <div class="w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center text-baltic-blue-400">
                   <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M22 12H2"/></svg>
                 </div>
                 <div class="space-y-1">
-                  <h3 class="text-white font-bold text-lg">Venta #{{ s.idVenta }}</h3>
-                  <p class="text-slate-500 text-sm">Cliente: {{ s.cliente.nombre }} {{ s.cliente.apellidos }}</p>
+                  <h3 class="text-pitch-black-50 font-bold text-lg">Venta #{{ s.idVenta }}</h3>
+                  <p class="text-baltic-blue-400 text-sm">Cliente: {{ s.cliente.nombre }} {{ s.cliente.apellidos }}</p>
                 </div>
               </div>
               <div class="flex items-center gap-8">
                 <div class="text-right">
-                  <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Fecha</p>
-                  <p class="text-sm text-white font-medium">{{ s.fecha | date:'mediumDate':'':'es' }}</p>
+                  <p class="text-[10px] text-baltic-blue-400 font-bold uppercase tracking-widest">Fecha</p>
+                  <p class="text-sm text-pitch-black-50 font-medium">{{ s.fecha | date:'mediumDate':'':'es' }}</p>
                 </div>
                 <div class="text-right">
-                  <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Precio de Venta</p>
-                  <p class="text-2xl font-black text-emerald-500">{{ s.precio | currency:'EUR':'symbol':'1.0-0' }}</p>
+                  <p class="text-[10px] text-baltic-blue-400 font-bold uppercase tracking-widest">Precio</p>
+                  <p class="text-2xl font-black text-baltic-blue-500">{{ s.precio | currency:'EUR':'symbol':'1.0-0' }}</p>
                 </div>
               </div>
             </div>

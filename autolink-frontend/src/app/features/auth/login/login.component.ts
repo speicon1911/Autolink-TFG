@@ -11,29 +11,29 @@ import { NotificationService } from '../../../core/services/notification.service
   imports: [ReactiveFormsModule, RouterLink],
   template: `
     <div class="max-w-md mx-auto mt-12 animate-fade-in">
-      <div class="bg-slate-900 p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-8">
+      <div class="bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-baltic-blue-500/20 shadow-2xl space-y-8">
         <header class="text-center space-y-2">
-          <h1 class="text-3xl font-black text-white">Bienvenido de nuevo</h1>
-          <p class="text-slate-400">Introduce tus credenciales para acceder</p>
+          <h1 class="text-3xl font-black text-pitch-black-50">Bienvenido de nuevo</h1>
+          <p class="text-baltic-blue-400">Introduce tus credenciales para acceder</p>
         </header>
     
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
           <div class="space-y-1">
-            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Correo Electrónico</label>
+            <label class="text-xs font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Correo Electrónico</label>
             <input type="email" formControlName="username"
-              class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-600"
+              class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/20"
               placeholder="ejemplo@autolink.com">
             </div>
     
             <div class="space-y-1">
-              <label class="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Contraseña</label>
+              <label class="text-xs font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Contraseña</label>
               <input type="password" formControlName="password"
-                class="w-full bg-slate-800 border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-600"
+                class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/20"
                 placeholder="••••••••">
               </div>
     
               <button type="submit" [disabled]="loginForm.invalid || loading()"
-                class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-[0.98] flex items-center justify-center gap-2">
+                class="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-baltic-blue-600/20 active:scale-[0.98] flex items-center justify-center gap-2">
                 @if (!loading()) {
                   <span>Iniciar Sesión</span>
                 }
@@ -44,9 +44,9 @@ import { NotificationService } from '../../../core/services/notification.service
             </form>
     
             <footer class="text-center">
-              <p class="text-slate-500 text-sm">
+              <p class="text-baltic-blue-300/60 text-sm">
                 ¿No tienes cuenta?
-                <a routerLink="/register" class="text-blue-500 hover:text-blue-400 font-bold transition-colors">Regístrate gratis</a>
+                <a routerLink="/registrar" class="text-baltic-blue-400 hover:text-dark-amaranth-400 font-bold transition-colors">Regístrate gratis</a>
               </p>
             </footer>
           </div>

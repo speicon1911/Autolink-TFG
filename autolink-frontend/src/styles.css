@@ -1,3 +1,76 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+@theme {
+  --color-dark-amaranth-50: #faebed;
+  --color-dark-amaranth-100: #f4d7db;
+  --color-dark-amaranth-200: #e9afb8;
+  --color-dark-amaranth-300: #de8794;
+  --color-dark-amaranth-400: #d35f70;
+  --color-dark-amaranth-500: #c8374d;
+  --color-dark-amaranth-600: #a02c3d;
+  --color-dark-amaranth-700: #78212e;
+  --color-dark-amaranth-800: #50161f;
+  --color-dark-amaranth-900: #280b0f;
+  --color-dark-amaranth-950: #1c080b;
+
+  --color-pitch-black-50: #f8f7ed;
+  --color-pitch-black-100: #f0efdb;
+  --color-pitch-black-200: #e2dfb6;
+  --color-pitch-black-300: #d3cf92;
+  --color-pitch-black-400: #c5bf6d;
+  --color-pitch-black-500: #b6af49;
+  --color-pitch-black-600: #928c3a;
+  --color-pitch-black-700: #6d692c;
+  --color-pitch-black-800: #49461d;
+  --color-pitch-black-900: #24230f;
+  --color-pitch-black-950: #1a190a;
+
+  --color-baltic-blue-50: #e8f5fc;
+  --color-baltic-blue-100: #d2ebf9;
+  --color-baltic-blue-200: #a5d6f3;
+  --color-baltic-blue-300: #78c2ed;
+  --color-baltic-blue-400: #4aaee8;
+  --color-baltic-blue-500: #1d9ae2;
+  --color-baltic-blue-600: #177bb5;
+  --color-baltic-blue-700: #125c87;
+  --color-baltic-blue-800: #0c3d5a;
+  --color-baltic-blue-900: #061f2d;
+  --color-baltic-blue-950: #041620;
+
+  --color-dark-teal-50: #ecf6f8;
+  --color-dark-teal-100: #daecf1;
+  --color-dark-teal-200: #b5d9e3;
+  --color-dark-teal-300: #8fc6d6;
+  --color-dark-teal-400: #6ab4c8;
+  --color-dark-teal-500: #45a1ba;
+  --color-dark-teal-600: #378195;
+  --color-dark-teal-700: #296070;
+  --color-dark-teal-800: #1c404a;
+  --color-dark-teal-900: #0e2025;
+  --color-dark-teal-950: #0a171a;
+}
+
+@layer base {
+  body {
+    @apply bg-dark-teal-950 text-pitch-black-50;
+  }
+}
+
+@layer components {
+  /* Combined button styles to avoid @apply error */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 bg-baltic-blue-500 text-white hover:bg-dark-amaranth-600;
+  }
+
+  /* Accent elements using baltic blue instead of tropical teal */
+  .accent-border {
+    @apply border-2 border-baltic-blue-500/30;
+  }
+
+  .accent-text {
+    @apply text-baltic-blue-400 hover:text-baltic-blue-300;
+  }
+}
+
