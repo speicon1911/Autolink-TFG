@@ -30,6 +30,18 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/public/vehicle-details/vehicle-details.component').then(m => m.VehicleDetailsComponent),
             },
             {
+                path: 'privacidad',
+                loadComponent: () => import('./features/public/privacy/privacy.component').then(m => m.PrivacyComponent),
+            },
+            {
+                path: 'terminos',
+                loadComponent: () => import('./features/public/terms/terms.component').then(m => m.TermsComponent),
+            },
+            {
+                path: 'contacto',
+                loadComponent: () => import('./features/public/contact/contact.component').then(m => m.ContactComponent),
+            },
+            {
                 path: 'cliente',
                 canActivate: [authGuard, roleGuard([Rol.CLIENTE])],
                 loadComponent: () => import('./features/client/dashboard/dashboard.component').then(m => m.ClientDashboardComponent),

@@ -4,10 +4,10 @@ import { AuthService } from '../../../core/services/auth.service';
 
 
 @Component({
-    selector: 'app-navbar',
-    standalone: true,
-    imports: [RouterLink, RouterLinkActive],
-    template: `
+  selector: 'app-navbar',
+  standalone: true,
+  imports: [RouterLink, RouterLinkActive],
+  template: `
     <nav class="bg-dark-teal-950/80 backdrop-blur-md border-b border-white/5 text-pitch-black-50 shadow-sm sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
@@ -21,6 +21,11 @@ import { AuthService } from '../../../core/services/auth.service';
               </span>
             </a>
           </div>
+    <div class="flex gap-6 text-baltic-blue-300/60 text-sm font-bold uppercase tracking-widest">
+      <a routerLink="/privacidad" routerLinkActive="text-baltic-blue-400" class="hover:text-baltic-blue-400 transition-colors">Privacidad</a>
+      <a routerLink="/terminos" routerLinkActive="text-baltic-blue-400" class="hover:text-baltic-blue-400 transition-colors">Términos</a>
+      <a routerLink="/contacto" routerLinkActive="text-baltic-blue-400" class="hover:text-baltic-blue-400 transition-colors">Contacto</a>
+    </div>
     
           <!-- Desktop Navigation -->
           <div class="hidden md:flex items-center gap-6">
@@ -59,9 +64,9 @@ import { AuthService } from '../../../core/services/auth.service';
     `
 })
 export class NavbarComponent {
-    authService = inject(AuthService);
+  authService = inject(AuthService);
 
-    isCliente() { return this.authService.currentUser$()?.rol === 'CLIENTE'; }
-    isVendedor() { return this.authService.currentUser$()?.rol === 'VENDEDOR'; }
-    isAdmin() { return this.authService.currentUser$()?.rol === 'ADMINISTRADOR'; }
+  isCliente() { return this.authService.currentUser$()?.rol === 'CLIENTE'; }
+  isVendedor() { return this.authService.currentUser$()?.rol === 'VENDEDOR'; }
+  isAdmin() { return this.authService.currentUser$()?.rol === 'ADMINISTRADOR'; }
 }
