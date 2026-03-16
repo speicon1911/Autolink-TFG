@@ -13,8 +13,8 @@ import { AuthService } from '../../../core/services/auth.service';
         <div class="flex justify-between h-16 items-center">
           <div class="flex items-center gap-2">
             <a routerLink="/" class="flex items-center gap-2 group">
-              <div class="w-10 h-10 bg-baltic-blue-500 rounded-lg flex items-center justify-center transform group-hover:rotate-12 transition-transform shadow-baltic-blue-500/20 shadow-lg">
-                <span class="text-xl font-bold text-white">AL</span>
+              <div class="w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110">
+                <img src="logo.png" alt="AutoLink Logo" class="w-full h-full object-contain">
               </div>
               <span class="text-2xl font-black tracking-tighter text-pitch-black-50">
                 AutoLink
