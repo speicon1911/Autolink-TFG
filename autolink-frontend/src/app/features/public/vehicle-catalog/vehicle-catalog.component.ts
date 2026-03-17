@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
 import { CommonModule } from '@angular/common';
 import { VehicleService } from '../../../core/services/vehicle.service';
-import { Vehicle, Marca, TipoVehiculo } from '../../../core/models/vehicle.model';
+import { Vehicle, Marca, TipoVehiculo, CombustibleVehiculo } from '../../../core/models/vehicle.model';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -10,7 +11,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 @Component({
   selector: 'app-vehicle-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, PaginationComponent],
+  imports: [CommonModule, FormsModule, PaginationComponent, FormatEnumPipe],
   template: `
     <div class="space-y-8 animate-fade-in px-4 sm:px-0">
       <header class="text-center space-y-4">
@@ -34,7 +35,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
               class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all cursor-pointer">
               <option value="" class="bg-dark-teal-900">Todas las marcas</option>
               @for (m of marcas(); track m) {
-                <option [value]="m?.nombre" class="bg-dark-teal-900">{{ m?.nombre }}</option>
+                <option [value]="m?.nombre" class="bg-dark-teal-900">{{ m?.nombre | formatEnum }}</option>
               }
             </select>
           </div>
@@ -52,7 +53,18 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                 class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all cursor-pointer">
                 <option value="" class="bg-dark-teal-900">Cualquier tipo</option>
                 @for (t of tipos; track t) {
-                  <option [value]="t" class="bg-dark-teal-900">{{ t }}</option>
+                  <option [value]="t" class="bg-dark-teal-900">{{ t | formatEnum }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Combustible</label>
+              <select [(ngModel)]="filtros.combustible" (change)="aplicarFiltros()"
+                class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all cursor-pointer">
+                <option value="" class="bg-dark-teal-900">Cualquier combustible</option>
+                @for (c of combustibles; track c) {
+                  <option [value]="c" class="bg-dark-teal-900">{{ c | formatEnum }}</option>
                 }
               </select>
             </div>
@@ -131,12 +143,15 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                           <div class="space-y-1">
                             <div class="flex justify-between items-start gap-4">
                               <h3 class="text-xl font-black text-pitch-black-50 group-hover:text-baltic-blue-400 transition-colors leading-tight">
+                                @if (v.marca) {
+                                  <span class="text-baltic-blue-400 text-xs block mb-1 uppercase tracking-widest">{{ v.marca.nombre | formatEnum }}</span>
+                                }
                                 {{ v.modelo }}
                               </h3>
                               <span class="text-2xl font-black text-baltic-blue-500">{{ v.precio | currency:'EUR':'symbol':'1.0-0' }}</span>
                             </div>
                             <p class="text-baltic-blue-300/60 text-sm font-bold tracking-tight uppercase">
-                              {{ v.tipoVehiculo }} · {{ v.color }}
+                              {{ v.tipoVehiculo | formatEnum }} · {{ v.color }}
                             </p>
                           </div>
                           <div class="grid grid-cols-2 gap-y-3 gap-x-6 border-y border-white/5 py-4">
@@ -209,14 +224,16 @@ export class VehicleCatalogComponent implements OnInit {
   marcas = signal<Marca[]>([]);
   loading = signal(true);
   tipos = Object.values(TipoVehiculo);
+  combustibles = Object.values(CombustibleVehiculo);
 
   currentPage = 1;
-  itemsPerPage = 6;
+  itemsPerPage = 9;
 
   filtros = {
     marca: '',
     modelo: '',
     tipo: '',
+    combustible: '',
     maxPrecio: null as number | null,
     maxKm: null as number | null,
     minPotencia: null as number | null,
@@ -279,6 +296,7 @@ export class VehicleCatalogComponent implements OnInit {
       marca: '',
       modelo: '',
       tipo: '',
+      combustible: '',
       maxPrecio: null,
       maxKm: null,
       minPotencia: null,

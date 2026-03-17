@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
 import { CommonModule } from '@angular/common';
 import { PersonaService } from '../../../core/services/persona.service';
 import { User, Rol } from '../../../core/models/user.model';
@@ -9,7 +10,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, ConfirmModalComponent, PaginationComponent],
+  imports: [CommonModule, ConfirmModalComponent, PaginationComponent, FormatEnumPipe],
   providers: [],
   template: `
     <div class="space-y-6 animate-fade-in">
@@ -74,7 +75,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                    'bg-baltic-blue-500/10 text-baltic-blue-400 border-baltic-blue-500/20': u.rol === 'VENDEDOR',
                    'bg-white/5 text-baltic-blue-300/60 border-white/5': u.rol === 'CLIENTE'
                  }" class="px-3 py-1 rounded-full text-[10px] font-black border tracking-wider uppercase">
-                      {{ u.rol }}
+                      {{ u.rol | formatEnum }}
                     </span>
                   </td>
                    <td class="px-6 py-5">
@@ -92,7 +93,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                           class="appearance-none bg-white/10 border border-white/5 text-pitch-black-50 text-xs rounded-lg focus:ring-baltic-blue-500 focus:border-baltic-blue-500 block w-full p-2 pr-8 cursor-pointer hover:bg-white/20 transition-colors"
                           >
                           @for (r of roles; track r) {
-                            <option [value]="r" class="bg-dark-teal-900 border-none">{{ r }}</option>
+                            <option [value]="r" class="bg-dark-teal-900 border-none">{{ r | formatEnum }}</option>
                           }
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-baltic-blue-400">

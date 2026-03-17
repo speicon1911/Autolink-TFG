@@ -1,3 +1,13 @@
+export enum CombustibleVehiculo {
+    G95_SP = 'G95_SP',
+    G98_SP = 'G98_SP',
+    DIESEL = 'DIESEL',
+    GLP = 'GLP',
+    GNC = 'GNC',
+    ELECTRICO = 'ELECTRICO',
+    HIDROGENO = 'HIDROGENO'
+}
+
 export enum TipoVehiculo {
     SEDAN = 'SEDAN',
     HATCHBACK = 'HATCHBACK',
@@ -29,6 +39,7 @@ export interface Vehicle {
     kilometraje: number;
     color: string;
     tipoVehiculo?: TipoVehiculo;
+    combustible?: CombustibleVehiculo;
     marca?: Marca;
     modelo?: string;
     fechaFabricacion: string;

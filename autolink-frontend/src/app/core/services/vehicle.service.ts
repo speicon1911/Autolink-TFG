@@ -26,6 +26,7 @@ export class VehicleService {
             marca: 'marca',
             modelo: 'modelo',
             tipo: 'tipo',
+            combustible: 'combustible',
             color: 'color',
             minPotencia: 'minPotencia',
             maxPrecio: 'maxPrecio',

@@ -66,6 +66,10 @@ export const routes: Routes = [
                         loadComponent: () => import('./features/seller/stock/stock.component').then(m => m.SellerStockComponent),
                     },
                     {
+                        path: 'perfil',
+                        loadComponent: () => import('./features/seller/profile/profile.component').then(m => m.SellerProfileComponent),
+                    },
+                    {
                         path: 'ventas',
                         loadComponent: () => import('./features/seller/sales/sales.component').then(m => m.SellerSalesComponent),
                     }
@@ -79,6 +83,10 @@ export const routes: Routes = [
                     {
                         path: '',
                         loadComponent: () => import('./features/admin/users/users.component').then(m => m.AdminUsersComponent),
+                    },
+                    {
+                        path: 'perfil',
+                        loadComponent: () => import('./features/admin/profile/profile.component').then(m => m.AdminProfileComponent),
                     },
                     {
                         path: 'verificaciones',

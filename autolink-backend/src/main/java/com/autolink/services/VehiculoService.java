@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.autolink.persistence.entities.Vehiculo;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
+import com.autolink.persistence.entities.enums.CombustibleVehiculo;
 import com.autolink.persistence.repositories.VehiculoRepository;
 import com.autolink.services.exceptions.VehiculoExceptions;
 import com.autolink.services.exceptions.VehiculoNotFoundException;
@@ -41,12 +42,12 @@ public class VehiculoService {
 	}
 
 	// buscar vehiculos por filtro
-	public List<Vehiculo> filtrarVehiculos(String marca, String modelo, TipoVehiculo tipo, String color,
+	public List<Vehiculo> filtrarVehiculos(String marca, String modelo, TipoVehiculo tipo, CombustibleVehiculo combustible, String color,
 			Integer minPotencia, Integer maxPrecio, Integer maxKm, Integer plazas, boolean disponible,
 			boolean aplicarDisp, boolean verificado, boolean aplicarVerif) {
 
 		// Pasamos los flags "aplicar" al repositorio
-		List<Vehiculo> vehiculos = vehiculoRepository.buscarConFiltros(marca, modelo, tipo, color, minPotencia,
+		List<Vehiculo> vehiculos = vehiculoRepository.buscarConFiltros(marca, modelo, tipo, combustible, color, minPotencia,
 				maxPrecio, maxKm, plazas, disponible, aplicarDisp, verificado, aplicarVerif);
 
 		if (vehiculos.isEmpty()) {
@@ -110,6 +111,8 @@ public class VehiculoService {
 			vehiculoBD.setPuertas(vehiculoRequest.getPuertas());
 		if (vehiculoRequest.getTipoVehiculo() != null)
 			vehiculoBD.setTipoVehiculo(vehiculoRequest.getTipoVehiculo());
+		if (vehiculoRequest.getCombustible() != null)
+			vehiculoBD.setCombustible(vehiculoRequest.getCombustible());
 		if (vehiculoRequest.getFechaFabricacion() != null)
 			vehiculoBD.setFechaFabricacion(vehiculoRequest.getFechaFabricacion());
 		if (vehiculoRequest.getDisponible() != null)

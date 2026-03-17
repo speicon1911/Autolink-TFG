@@ -103,13 +103,21 @@ export class ClientProfileComponent implements OnInit {
         const user = this.authService.currentUser$();
         if (this.profileForm.valid && user) {
             this.loading.set(true);
-            this.personaService.updatePerfil(user.id, this.profileForm.getRawValue() as User).subscribe({
+            const updatedData: User = {
+                ...user,
+                ...this.profileForm.getRawValue() as any
+            };
+            
+            this.personaService.updatePerfil(user.id, updatedData).subscribe({
                 next: (updatedUser) => {
+                    this.authService.updateUser(updatedUser);
                     this.ns.success('Perfil actualizado correctamente');
                     this.loading.set(false);
-                    // In a real app, we might want to update the auth service user signal too
                 },
-                error: () => this.loading.set(false)
+                error: (err) => {
+                    this.loading.set(false);
+                    this.ns.error(err?.error?.message || 'Error al actualizar el perfil');
+                }
             });
         }
     }

@@ -2,6 +2,7 @@ package com.autolink.persistence.entities;
 
 import java.time.LocalDate;
 
+import com.autolink.persistence.entities.enums.CombustibleVehiculo;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -42,6 +43,10 @@ public class Vehiculo {
     private Integer kilometraje;
 
     private String color;
+    
+    @Column(name = "combustible")
+    @Enumerated(EnumType.STRING)
+    private CombustibleVehiculo combustible;
 
     @Column(name = "tipo_vehiculo")
     @Enumerated(EnumType.STRING)

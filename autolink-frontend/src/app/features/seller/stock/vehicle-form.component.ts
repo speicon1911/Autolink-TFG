@@ -2,14 +2,15 @@ import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '
 
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { VehicleService } from '../../../core/services/vehicle.service';
-import { Vehicle, Marca, TipoVehiculo } from '../../../core/models/vehicle.model';
+import { Vehicle, Marca, TipoVehiculo, CombustibleVehiculo } from '../../../core/models/vehicle.model';
 import { NotificationService } from '../../../core/services/notification.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
 
 @Component({
   selector: 'app-vehicle-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FormatEnumPipe],
   template: `
     <div class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
       <div class="bg-dark-teal-900 border border-baltic-blue-500/20 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-fade-in text-pitch-black-50">
@@ -32,7 +33,7 @@ import { AuthService } from '../../../core/services/auth.service';
                 class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all appearance-none">
                 <option [value]="null" class="bg-dark-teal-900">Selecciona una marca</option>
                 @for (m of marcas(); track m) {
-                  <option [value]="m.idMarca" class="bg-dark-teal-900">{{ m.nombre }}</option>
+                  <option [value]="m.idMarca" class="bg-dark-teal-900">{{ m.nombre | formatEnum }}</option>
                 }
               </select>
             </div>
@@ -49,7 +50,16 @@ import { AuthService } from '../../../core/services/auth.service';
                 <select formControlName="tipoVehiculo"
                   class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all appearance-none">
                   @for (t of tipos; track t) {
-                    <option [value]="t" class="bg-dark-teal-900">{{ t }}</option>
+                    <option [value]="t" class="bg-dark-teal-900">{{ t | formatEnum }}</option>
+                  }
+                </select>
+              </div>
+              <div class="space-y-1">
+                <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Combustible</label>
+                <select formControlName="combustible"
+                  class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all appearance-none">
+                  @for (c of combustibles; track c) {
+                    <option [value]="c" class="bg-dark-teal-900">{{ c | formatEnum }}</option>
                   }
                 </select>
               </div>
@@ -140,11 +150,13 @@ export class VehicleFormComponent implements OnInit {
   loading = signal(false);
   marcas = signal<Marca[]>([]);
   tipos = Object.values(TipoVehiculo);
+  combustibles = Object.values(CombustibleVehiculo);
 
   vehicleForm = this.fb.group({
     id_marca: [null as number | null, Validators.required],
     modelo: ['', Validators.required],
     tipoVehiculo: [TipoVehiculo.SEDAN, Validators.required],
+    combustible: [CombustibleVehiculo.DIESEL, Validators.required],
     fechaFabricacion: [new Date().toISOString().split('T')[0], Validators.required],
     precio: [null as number | null, [Validators.required, Validators.min(0)]],
     kilometraje: [null as number | null, [Validators.required, Validators.min(0)]],
@@ -162,6 +174,7 @@ export class VehicleFormComponent implements OnInit {
         id_marca: this.vehicleToEdit.marca?.idMarca || null,
         modelo: this.vehicleToEdit.modelo,
         tipoVehiculo: this.vehicleToEdit.tipoVehiculo,
+        combustible: this.vehicleToEdit.combustible,
         fechaFabricacion: this.vehicleToEdit.fechaFabricacion,
         precio: this.vehicleToEdit.precio,
         kilometraje: this.vehicleToEdit.kilometraje,
@@ -208,6 +221,7 @@ export class VehicleFormComponent implements OnInit {
         modelo: formVal.modelo,
         fechaFabricacion: formVal.fechaFabricacion,
         tipoVehiculo: formVal.tipoVehiculo,
+        combustible: formVal.combustible,
         disponible: formVal.disponible,
         verificado: false,
         marca: { idMarca: formVal.id_marca },

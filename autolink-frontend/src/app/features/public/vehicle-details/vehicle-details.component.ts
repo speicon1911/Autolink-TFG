@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Vehicle } from '../../../core/models/vehicle.model';
@@ -7,7 +8,7 @@ import { VehicleService } from '../../../core/services/vehicle.service';
 @Component({
     selector: 'app-vehicle-details',
     standalone: true,
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, FormatEnumPipe],
     template: `
     <div class="max-w-6xl mx-auto space-y-12 animate-fade-in py-8">
       <!-- Breadcrumb / Back -->
@@ -39,21 +40,21 @@ import { VehicleService } from '../../../core/services/vehicle.service';
               }
             </div>
           </div>
-          <!-- Info Column -->
+          <!-- Informacion Vehiculo -->
           <div class="space-y-10">
             <div class="space-y-2">
               @if (vehicle()?.marca) {
-                <h2 class="text-baltic-blue-400 font-black uppercase tracking-widest text-sm">{{ vehicle()?.marca?.nombre }}</h2>
+                <h2 class="text-baltic-blue-400 font-black uppercase tracking-widest text-sm">{{ vehicle()?.marca?.nombre | formatEnum }}</h2>
               }
-              <h1 class="text-5xl font-black text-pitch-black-50 tracking-tight">{{ vehicle()?.modelo }}</h1>
+              <h1 class="text-5xl font-black text-vehicle-teal tracking-tight">{{ vehicle()?.modelo }}</h1>
               <p class="text-3xl font-black text-baltic-blue-500 pt-4">{{ vehicle()?.precio | currency:'EUR' }}</p>
             </div>
             <div class="grid grid-cols-2 gap-6 bg-white/5 backdrop-blur-md p-8 rounded-3xl border border-baltic-blue-500/20 shadow-xl">
               @if (vehicle()?.kilometraje !== undefined) {
                 <div class="space-y-1">
                   <span class="text-baltic-blue-400 text-[10px] font-black uppercase tracking-widest">Kilometraje</span>
-                  <p class="text-pitch-black-50 font-bold text-lg flex items-center gap-2">
-                    <svg class="text-baltic-blue-500" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <p class="text-vehicle-teal font-bold text-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#70ABAF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-route-icon lucide-route"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>
                     {{ vehicle()?.kilometraje }} Km
                   </p>
                 </div>
@@ -61,8 +62,8 @@ import { VehicleService } from '../../../core/services/vehicle.service';
               @if (vehicle()?.potencia !== undefined) {
                 <div class="space-y-1">
                   <span class="text-baltic-blue-400 text-[10px] font-black uppercase tracking-widest">Potencia</span>
-                  <p class="text-pitch-black-50 font-bold text-lg flex items-center gap-2">
-                    <svg class="text-baltic-blue-500" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  <p class="text-vehicle-teal font-bold text-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#70ABAF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-biceps-flexed-icon lucide-biceps-flexed"><path d="M12.409 13.017A5 5 0 0 1 22 15c0 3.866-4 7-9 7-4.077 0-8.153-.82-10.371-2.462-.426-.316-.631-.832-.62-1.362C2.118 12.723 2.627 2 10 2a3 3 0 0 1 3 3 2 2 0 0 1-2 2c-1.105 0-1.64-.444-2-1"/><path d="M15 14a5 5 0 0 0-7.584 2"/><path d="M9.964 6.825C8.019 7.977 9.5 13 8 15"/></svg>
                     {{ vehicle()?.potencia }} CV
                   </p>
                 </div>
@@ -70,19 +71,46 @@ import { VehicleService } from '../../../core/services/vehicle.service';
               @if (vehicle()?.tipoVehiculo) {
                 <div class="space-y-1">
                   <span class="text-baltic-blue-400 text-[10px] font-black uppercase tracking-widest">Tipo</span>
-                  <p class="text-pitch-black-50 font-bold text-lg flex items-center gap-2">
-                    <svg class="text-baltic-blue-500" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
-                    {{ vehicle()?.tipoVehiculo }}
+                  <p class="text-vehicle-teal font-bold text-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#70ABAF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-car-icon lucide-car"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                    {{ vehicle()?.tipoVehiculo | formatEnum }}
+                  </p>
+                </div>
+              }
+              @if (vehicle()?.combustible) {
+                <div class="space-y-1">
+                  <span class="text-baltic-blue-400 text-[10px] font-black uppercase tracking-widest">Combustible</span>
+                  <p class="text-vehicle-teal font-bold text-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#70ABAF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-fuel-icon lucide-fuel"><path d="M3 22L15 22"/><path d="M4 9L14 9"/><path d="M14 22L14 11"/><path d="M15 6L14 6L14 11"/><path d="M4 22L4 7C4 5.34315 5.34315 4 7 4H11C12.6569 4 14 5.34315 14 7V22"/><path d="M18 10C18.5523 10 19 9.55228 19 9C19 8.44772 18.5523 8 18 8C17.4477 8 17 8.44772 17 9C17 9.55228 17.4477 10 18 10Z"/><path d="M14 13L16 13C17.1046 13 18 13.8954 18 15V22"/></svg>
+                    {{ vehicle()?.combustible | formatEnum }}
                   </p>
                 </div>
               }
               @if (vehicle()?.fechaFabricacion) {
                 <div class="space-y-1">
                   <span class="text-baltic-blue-400 text-[10px] font-black uppercase tracking-widest">Año</span>
-                  <p class="text-pitch-black-50 font-bold text-lg flex items-center gap-2">
-                    <svg class="text-baltic-blue-500" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <p class="text-vehicle-teal font-bold text-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#70ABAF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-icon lucide-calendar"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
                     {{ vehicle()?.fechaFabricacion | date:'yyyy' }}
                   </p>
+                </div>
+              }
+              @if(vehicle()?.plazas){
+                <div class="space-y-1">
+                <span class="text-baltic-blue-400 text-[10px] font-black uppercase tracking-widest">Plazas</span>
+                 <p class="text-vehicle-teal font-bold text-lg flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#70ABAF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                {{ vehicle()?.plazas }}
+                </p>
+                </div>
+                }
+              @if(vehicle()?.color){
+                <div class="space-y-1">
+                <span class="text-baltic-blue-400 text-[10px] font-black uppercase tracking-widest">Color</span>
+                 <p class="text-vehicle-teal font-bold text-lg flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#70ABAF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-spray-can-icon lucide-spray-can"><path d="M3 3h.01"/><path d="M7 5h.01"/><path d="M11 7h.01"/><path d="M3 7h.01"/><path d="M7 9h.01"/><path d="M3 11h.01"/><rect width="4" height="4" x="15" y="5"/><path d="m19 9 2 2v10c0 .6-.4 1-1 1h-6c-.6 0-1-.4-1-1V11l2-2"/><path d="m13 14 8-2"/><path d="m13 19 8-2"/></svg>
+                {{ vehicle()?.color }}
+                </p>
                 </div>
               }
             </div>
@@ -118,7 +146,7 @@ export class VehicleDetailsComponent implements OnInit {
 
     ngOnInit() {
         // Try to get vehicle from router state (fast)
-        const navigation = this.router.getCurrentNavigation();
+        const navigation = this.router.currentNavigation();
         if (navigation?.extras.state?.['vehicle']) {
             this.vehicle.set(navigation.extras.state['vehicle']);
             this.loading.set(false);

@@ -154,6 +154,13 @@ export class AuthService {
         }
     }
 
+    updateUser(user: User) {
+        if (typeof window !== 'undefined' && window.localStorage) {
+            localStorage.setItem('user', JSON.stringify(user));
+        }
+        this.currentUser.set(user);
+    }
+
     getAccessToken(): string | null {
         return typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
     }

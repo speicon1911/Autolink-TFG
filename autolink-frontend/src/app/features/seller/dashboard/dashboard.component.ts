@@ -19,6 +19,11 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           Mis Ventas
         </a>
+        <a routerLink="/vendedor/perfil" routerLinkActive="bg-baltic-blue-500 text-white shadow-lg shadow-baltic-blue-600/20"
+           class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-dark-teal-600 hover:text-baltic-blue-600 hover:bg-white/40 transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Mi Perfil
+        </a>
       </aside>
 
       <section class="min-h-[500px]">

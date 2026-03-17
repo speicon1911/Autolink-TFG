@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.autolink.persistence.entities.Vehiculo;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
+import com.autolink.persistence.entities.enums.CombustibleVehiculo;
 import com.autolink.services.VehiculoService;
 
 @RestController
@@ -41,6 +42,7 @@ public class VehiculoController {
 	    @RequestParam(required = false) String marca,
 	    @RequestParam(required = false) String modelo,
 	    @RequestParam(required = false) TipoVehiculo tipo,
+	    @RequestParam(required = false) CombustibleVehiculo combustible,
 	    @RequestParam(required = false) String color,
 	    @RequestParam(required = false) Integer minPotencia,
 	    @RequestParam(required = false) Integer maxPrecio,
@@ -58,7 +60,7 @@ public class VehiculoController {
 	    boolean aplicarVerif = (filterVerif != null);
 
 	    List<Vehiculo> resultados = this.vehiculoService.filtrarVehiculos(
-	        marca, modelo, tipo, color, minPotencia, maxPrecio, maxKm, plazas, 
+	        marca, modelo, tipo, combustible, color, minPotencia, maxPrecio, maxKm, plazas, 
 	        disponible, aplicarDisp, verificado, aplicarVerif
 	    );
 	    return ResponseEntity.ok(resultados);
