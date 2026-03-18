@@ -43,12 +43,12 @@ public class VehiculoService {
 
 	// buscar vehiculos por filtro
 	public List<Vehiculo> filtrarVehiculos(String marca, String modelo, TipoVehiculo tipo, CombustibleVehiculo combustible, String color,
-			Integer minPotencia, Integer maxPrecio, Integer maxKm, Integer plazas, boolean disponible,
+			Integer minPotencia, Integer maxPrecio, Integer maxKm, Integer plazas, Integer anioFabricacion, boolean disponible,
 			boolean aplicarDisp, boolean verificado, boolean aplicarVerif) {
 
 		// Pasamos los flags "aplicar" al repositorio
 		List<Vehiculo> vehiculos = vehiculoRepository.buscarConFiltros(marca, modelo, tipo, combustible, color, minPotencia,
-				maxPrecio, maxKm, plazas, disponible, aplicarDisp, verificado, aplicarVerif);
+				maxPrecio, maxKm, plazas, anioFabricacion, disponible, aplicarDisp, verificado, aplicarVerif);
 
 		if (vehiculos.isEmpty()) {
 			throw new VehiculoNotFoundException("No se han encontrado vehiculos con los filtros asignados");
@@ -113,8 +113,8 @@ public class VehiculoService {
 			vehiculoBD.setTipoVehiculo(vehiculoRequest.getTipoVehiculo());
 		if (vehiculoRequest.getCombustible() != null)
 			vehiculoBD.setCombustible(vehiculoRequest.getCombustible());
-		if (vehiculoRequest.getFechaFabricacion() != null)
-			vehiculoBD.setFechaFabricacion(vehiculoRequest.getFechaFabricacion());
+		if (vehiculoRequest.getAnioFabricacion() != 0)
+			vehiculoBD.setAnioFabricacion(vehiculoRequest.getAnioFabricacion());
 		if (vehiculoRequest.getDisponible() != null)
 			vehiculoBD.setDisponible(vehiculoRequest.getDisponible());
 

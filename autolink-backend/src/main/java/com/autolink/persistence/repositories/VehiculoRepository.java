@@ -26,10 +26,11 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
 			+ "(:minPotencia IS NULL OR v.potencia >= :minPotencia) AND "
 			+ "(:maxPrecio IS NULL OR v.precio <= :maxPrecio) AND " + "(:maxKm IS NULL OR v.kilometraje <= :maxKm) AND "
 			+ "(:plazas IS NULL OR v.plazas = :plazas) AND "
+			+ "(:anioFabricacion IS NULL OR v.anioFabricacion >= :anioFabricacion) AND "
 			+ "(:aplicarDisp = false OR v.disponible = :disponible) AND "
 			+ "(:aplicarVerif = false OR v.verificado = :verificado)")
 	List<Vehiculo> buscarConFiltros(String marca, String modelo, TipoVehiculo tipo, CombustibleVehiculo combustible, String color, Integer minPotencia,
-			Integer maxPrecio, Integer maxKm, Integer plazas, boolean disponible, boolean aplicarDisp,
+			Integer maxPrecio, Integer maxKm, Integer plazas, Integer anioFabricacion, boolean disponible, boolean aplicarDisp,
 			boolean verificado, boolean aplicarVerif);
 
 	List<Vehiculo> findByVendedorId(int idVendedor);

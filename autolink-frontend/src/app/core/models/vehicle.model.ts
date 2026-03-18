@@ -42,7 +42,7 @@ export interface Vehicle {
     combustible?: CombustibleVehiculo;
     marca?: Marca;
     modelo?: string;
-    fechaFabricacion: string;
+    anioFabricacion: number;
     disponible: boolean;
     verificado: boolean;
     fechaVerificacion?: string;

@@ -86,12 +86,12 @@ import { VehicleService } from '../../../core/services/vehicle.service';
                   </p>
                 </div>
               }
-              @if (vehicle()?.fechaFabricacion) {
+              @if (vehicle()?.anioFabricacion) {
                 <div class="space-y-1">
                   <span class="text-baltic-blue-400 text-[10px] font-black uppercase tracking-widest">Año</span>
                   <p class="text-vehicle-teal font-bold text-lg flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#70ABAF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-icon lucide-calendar"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-                    {{ vehicle()?.fechaFabricacion | date:'yyyy' }}
+                    {{ vehicle()?.anioFabricacion }}
                   </p>
                 </div>
               }

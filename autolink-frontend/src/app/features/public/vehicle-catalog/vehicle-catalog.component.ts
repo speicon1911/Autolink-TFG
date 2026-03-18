@@ -43,7 +43,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
           <div class="space-y-1">
             <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Modelo</label>
             <input type="text" [(ngModel)]="filtros.modelo" (input)="aplicarFiltros()"
-              placeholder="Ej: Corolla"
+              placeholder="Ej: Golf"
               class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
             </div>
     
@@ -72,28 +72,34 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
             <div class="space-y-1">
               <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Precio Máx (€)</label>
               <input type="number" [(ngModel)]="filtros.maxPrecio" (input)="aplicarFiltros()"
-                placeholder="Ej: 30000"
+                placeholder="Ej: 30000" min="0"
                 class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
               </div>
+          <div class="space-y-1">
+            <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Año Mínimo</label>
+            <input type="number" [(ngModel)]="filtros.anioFabricacion" (input)="aplicarFiltros()"
+              placeholder="Ej: 2024" min="1900" max="2100"
+              class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
+          </div>
     
               <div class="space-y-1">
                 <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Km Máximo</label>
                 <input type="number" [(ngModel)]="filtros.maxKm" (input)="aplicarFiltros()"
-                  placeholder="Ej: 150000"
+                  placeholder="Ej: 150000" min="0"
                   class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
                 </div>
     
                 <div class="space-y-1">
                   <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Potencia Mín (CV)</label>
                   <input type="number" [(ngModel)]="filtros.minPotencia" (input)="aplicarFiltros()"
-                    placeholder="Ej: 120"
+                    placeholder="Ej: 120" min="1"
                     class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
                   </div>
     
                   <div class="space-y-1">
                     <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Plazas</label>
                     <input type="number" [(ngModel)]="filtros.plazas" (input)="aplicarFiltros()"
-                      placeholder="Mínimo de plazas"
+                      placeholder="Mínimo de plazas" min="1"
                       class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
                     </div>
     
@@ -179,12 +185,12 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                                 {{ v.plazas }} Plazas
                               </div>
                             }
-                            @if (v.fechaFabricacion) {
+                            @if (v.anioFabricacion) {
                               <div class="flex items-center gap-3 text-pitch-black-50/70 text-xs font-bold uppercase tracking-widest">
                                 <div class="w-8 h-8 rounded-lg bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                 </div>
-                                {{ v.fechaFabricacion | date:'yyyy' }}
+                                {{ v.anioFabricacion }}
                               </div>
                             }
                           </div>
@@ -238,7 +244,8 @@ export class VehicleCatalogComponent implements OnInit {
     maxKm: null as number | null,
     minPotencia: null as number | null,
     plazas: null as number | null,
-    disponible: true
+    disponible: true,
+    anioFabricacion: null as number | null
   };
 
   ngOnInit() {
@@ -301,7 +308,8 @@ export class VehicleCatalogComponent implements OnInit {
       maxKm: null,
       minPotencia: null,
       plazas: null,
-      disponible: true
+      disponible: true,
+      anioFabricacion: null
     };
     this.cargarVehiculos();
   }

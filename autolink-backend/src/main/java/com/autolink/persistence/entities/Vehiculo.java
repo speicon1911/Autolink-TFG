@@ -58,8 +58,8 @@ public class Vehiculo {
 
     private String modelo;
 
-    @Column(name = "fecha_fabricacion")
-    private LocalDate fechaFabricacion;
+    @Column(name = "anio_fabricacion")
+    private int anioFabricacion;
 
     private Boolean disponible;
 

@@ -48,6 +48,7 @@ public class VehiculoController {
 	    @RequestParam(required = false) Integer maxPrecio,
 	    @RequestParam(required = false) Integer maxKm,
 	    @RequestParam(required = false) Integer plazas,
+	    @RequestParam(required = false) Integer anioFabricacion,
 	    // Ponemos default "false" para que nunca sean null al entrar al método
 	    @RequestParam(defaultValue = "false") boolean disponible, 
 	    @RequestParam(defaultValue = "false") boolean verificado,
@@ -60,7 +61,7 @@ public class VehiculoController {
 	    boolean aplicarVerif = (filterVerif != null);
 
 	    List<Vehiculo> resultados = this.vehiculoService.filtrarVehiculos(
-	        marca, modelo, tipo, combustible, color, minPotencia, maxPrecio, maxKm, plazas, 
+	        marca, modelo, tipo, combustible, color, minPotencia, maxPrecio, maxKm, plazas, anioFabricacion,
 	        disponible, aplicarDisp, verificado, aplicarVerif
 	    );
 	    return ResponseEntity.ok(resultados);

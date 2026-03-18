@@ -64,8 +64,8 @@ import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
                 </select>
               </div>
               <div class="space-y-1">
-                <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Fecha Fabricación</label>
-                <input type="date" formControlName="fechaFabricacion"
+                <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Año Fabricación</label>
+                <input type="number" formControlName="anioFabricacion" placeholder="Ej: 2024" min="1900" max="2100"
                   class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all">
                 </div>
               </div>
@@ -157,7 +157,7 @@ export class VehicleFormComponent implements OnInit {
     modelo: ['', Validators.required],
     tipoVehiculo: [TipoVehiculo.SEDAN, Validators.required],
     combustible: [CombustibleVehiculo.DIESEL, Validators.required],
-    fechaFabricacion: [new Date().toISOString().split('T')[0], Validators.required],
+    anioFabricacion: [new Date().getFullYear(), [Validators.required, Validators.min(1900), Validators.max(2100)]],
     precio: [null as number | null, [Validators.required, Validators.min(0)]],
     kilometraje: [null as number | null, [Validators.required, Validators.min(0)]],
     potencia: [null as number | null, [Validators.required, Validators.min(0)]],
@@ -175,7 +175,7 @@ export class VehicleFormComponent implements OnInit {
         modelo: this.vehicleToEdit.modelo,
         tipoVehiculo: this.vehicleToEdit.tipoVehiculo,
         combustible: this.vehicleToEdit.combustible,
-        fechaFabricacion: this.vehicleToEdit.fechaFabricacion,
+        anioFabricacion: this.vehicleToEdit.anioFabricacion,
         precio: this.vehicleToEdit.precio,
         kilometraje: this.vehicleToEdit.kilometraje,
         potencia: this.vehicleToEdit.potencia,
@@ -219,7 +219,7 @@ export class VehicleFormComponent implements OnInit {
         kilometraje: formVal.kilometraje,
         color: formVal.color,
         modelo: formVal.modelo,
-        fechaFabricacion: formVal.fechaFabricacion,
+        anioFabricacion: formVal.anioFabricacion,
         tipoVehiculo: formVal.tipoVehiculo,
         combustible: formVal.combustible,
         disponible: formVal.disponible,
