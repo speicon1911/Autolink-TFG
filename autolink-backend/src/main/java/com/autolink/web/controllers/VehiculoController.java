@@ -19,6 +19,7 @@ import com.autolink.persistence.entities.Vehiculo;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 import com.autolink.persistence.entities.enums.CombustibleVehiculo;
 import com.autolink.services.VehiculoService;
+import com.autolink.services.dto.VehiculoDTO;
 
 @RestController
 @RequestMapping("/vehiculos")
@@ -28,7 +29,7 @@ public class VehiculoController {
 	private VehiculoService vehiculoService;
 
 	@GetMapping
-	public List<Vehiculo> obtenerTodos() {
+	public List<VehiculoDTO> obtenerTodos() {
 		return this.vehiculoService.getAllVehiculos();
 	}
 
@@ -49,18 +50,15 @@ public class VehiculoController {
 	    @RequestParam(required = false) Integer maxKm,
 	    @RequestParam(required = false) Integer plazas,
 	    @RequestParam(required = false) Integer anioFabricacion,
-	    // Ponemos default "false" para que nunca sean null al entrar al método
 	    @RequestParam(defaultValue = "false") boolean disponible, 
 	    @RequestParam(defaultValue = "false") boolean verificado,
-	    // Añadimos estos para saber si el usuario REALMENTE quiere filtrar por esto
 	    @RequestParam(required = false) Boolean filterDisp,
 	    @RequestParam(required = false) Boolean filterVerif
 	) {
-	    // Si filterDisp es null, significa que el usuario no puso "?disponible=..." en la URL
 	    boolean aplicarDisp = (filterDisp != null);
 	    boolean aplicarVerif = (filterVerif != null);
 
-	    List<Vehiculo> resultados = this.vehiculoService.filtrarVehiculos(
+	    List<VehiculoDTO> resultados = this.vehiculoService.filtrarVehiculos(
 	        marca, modelo, tipo, combustible, color, minPotencia, maxPrecio, maxKm, plazas, anioFabricacion,
 	        disponible, aplicarDisp, verificado, aplicarVerif
 	    );
@@ -68,7 +66,7 @@ public class VehiculoController {
 	}
 	
 	@GetMapping("/vendedor/{idVendedor}")
-	public ResponseEntity<List<Vehiculo>> getByVendedor(@PathVariable int idVendedor) {
+	public ResponseEntity<List<VehiculoDTO>> getByVendedor(@PathVariable int idVendedor) {
 	    return ResponseEntity.ok(this.vehiculoService.getVehiculosPorVendedor(idVendedor));
 	}
 
@@ -88,7 +86,7 @@ public class VehiculoController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Vehiculo> create(@RequestBody Vehiculo vehiculo) {
+	public ResponseEntity<VehiculoDTO> create(@RequestBody Vehiculo vehiculo) {
 	    return ResponseEntity.status(HttpStatus.CREATED).body(this.vehiculoService.createVehiculo(vehiculo));
 	}
 

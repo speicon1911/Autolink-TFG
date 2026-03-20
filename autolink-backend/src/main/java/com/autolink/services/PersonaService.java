@@ -2,6 +2,7 @@ package com.autolink.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -15,6 +16,8 @@ import com.autolink.persistence.entities.Persona;
 import com.autolink.persistence.entities.enums.Rol;
 import com.autolink.persistence.repositories.PersonaRepository;
 import com.autolink.persistence.repositories.VehiculoRepository;
+import com.autolink.services.dto.PersonaDTO;
+import com.autolink.services.mappers.PersonaMapper;
 import com.autolink.services.exceptions.PersonaExceptions;
 import com.autolink.services.exceptions.PersonaNotFoundException;
 
@@ -28,6 +31,9 @@ public class PersonaService implements UserDetailsService {
 	@Autowired
 	private PersonaRepository personaRepository;
 
+	@Autowired
+	private PersonaMapper personaMapper;
+
 	PersonaService(VehiculoRepository vehiculoRepository) {
 		this.vehiculoRepository = vehiculoRepository;
 	}
@@ -36,7 +42,6 @@ public class PersonaService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		// Buscamos y si no existe lanzamos UsernameNotFoundException directamente
 		Persona persona = this.personaRepository.findByCorreo(username)
 				.orElseThrow(() -> new UsernameNotFoundException("El usuario con email " + username + " no existe."));
 
@@ -50,22 +55,25 @@ public class PersonaService implements UserDetailsService {
 
 	// --- MÉTODOS DE NEGOCIO ---
 
-	public List<Persona> findAll() {
-		return this.personaRepository.findAll();
+	public List<PersonaDTO> findAll() {
+		return this.personaRepository.findAll().stream()
+				.map(personaMapper::toDto)
+				.collect(Collectors.toList());
 	}
 
-	public List<Persona> findByActivo(boolean activo) {
-		return this.personaRepository.findByActivo(activo);
+	public List<PersonaDTO> findByActivo(boolean activo) {
+		return this.personaRepository.findByActivo(activo).stream()
+				.map(personaMapper::toDto)
+				.collect(Collectors.toList());
 	}
 
-	public Persona findById(int idPersona) {
-		// Buscamos por ID y si no existe lanzamos tu excepción personalizada
-		return this.personaRepository.findById(idPersona).orElseThrow(
+	public PersonaDTO findById(int idPersona) {
+		Persona persona = this.personaRepository.findById(idPersona).orElseThrow(
 				() -> new PersonaNotFoundException("No es posible encontrar a la persona con ID: " + idPersona));
+		return personaMapper.toDto(persona);
 	}
 
-	public Persona createPersona(Persona persona) {
-		// Busca el correo y, sobre el resultado (Optional), pregunta si existe
+	public PersonaDTO createPersona(Persona persona) {
 		Optional<Persona> existenteOpt = this.personaRepository.findByCorreo(persona.getCorreo());
 
 		if (existenteOpt.isPresent()) {
@@ -73,7 +81,6 @@ public class PersonaService implements UserDetailsService {
 			if (Boolean.TRUE.equals(existente.getActivo())) {
 				throw new PersonaExceptions("El correo " + persona.getCorreo() + " ya está registrado.");
 			} else {
-				// Reactivación: Actualizamos los datos de la cuenta inactiva
 				existente.setNombre(persona.getNombre());
 				existente.setApellidos(persona.getApellidos());
 				if (persona.getPassword() != null) {
@@ -81,7 +88,7 @@ public class PersonaService implements UserDetailsService {
 				}
 				existente.setRol(persona.getRol() != null ? persona.getRol() : Rol.CLIENTE);
 				existente.setActivo(true);
-				return this.personaRepository.save(existente);
+				return personaMapper.toDto(this.personaRepository.save(existente));
 			}
 		}
 
@@ -93,30 +100,27 @@ public class PersonaService implements UserDetailsService {
 			persona.setRol(Rol.CLIENTE);
 		}
 		
-		persona.setActivo(true); // Aseguramos que sea activo al crear
-		return this.personaRepository.save(persona);
+		persona.setActivo(true);
+		return personaMapper.toDto(this.personaRepository.save(persona));
 	}
 
 	public void deletePersona(int idPersona) {
-		// Borrado lógico en lugar de físico
 		this.darDeBajaUsuario(idPersona);
 	}
 
-	public Persona updatePerfil(Persona persona, int idPersona) {
-		if (persona.getId() != idPersona) {
+	public PersonaDTO updatePerfil(Persona persona, int idPersona) {
+		if (persona.getId() != idPersona && persona.getId() != 0) {
 			throw new PersonaExceptions("Los IDs no coinciden");
 		}
 
-		// Reutilizamos findById que ya tiene el orElseThrow
-		Persona personaBD = this.findById(idPersona);
+		Persona personaBD = this.personaRepository.findById(idPersona).orElseThrow(
+				() -> new PersonaNotFoundException("No es posible encontrar a la persona con ID: " + idPersona));
 
-		// Actualización selectiva
 		if (persona.getNombre() != null && !persona.getNombre().isBlank())
 			personaBD.setNombre(persona.getNombre());
 		if (persona.getApellidos() != null && !persona.getApellidos().isBlank())
 			personaBD.setApellidos(persona.getApellidos());
 		if (persona.getCorreo() != null && !persona.getCorreo().isBlank()) {
-			// Si el correo es distinto al que ya tenía, verificamos que no exista ya
 			if (!persona.getCorreo().equalsIgnoreCase(personaBD.getCorreo())
 					&& personaRepository.findByCorreo(persona.getCorreo()).isPresent()) {
 				throw new PersonaExceptions("Ese correo ya está en uso por otro usuario");
@@ -133,61 +137,50 @@ public class PersonaService implements UserDetailsService {
 		if (persona.getTelefono() != null)
 			personaBD.setTelefono(persona.getTelefono());
 		
-		// Solo actualizamos el estado si viene explícitamente en el JSON (no es null)
 		if (persona.getActivo() != null) {
 			personaBD.setActivo(persona.getActivo());
 		}
 
-		return this.personaRepository.save(personaBD);
+		return personaMapper.toDto(this.personaRepository.save(personaBD));
 	}
 
-	public Persona updateTipoUsuario(Rol nuevo, int idPersona) {
-		Persona personaBD = this.findById(idPersona);
+	public PersonaDTO updateTipoUsuario(Rol nuevo, int idPersona) {
+		Persona personaBD = this.personaRepository.findById(idPersona).orElseThrow(
+				() -> new PersonaNotFoundException("No es posible encontrar a la persona con ID: " + idPersona));
 		personaBD.setRol(nuevo);
-		return this.personaRepository.save(personaBD);
+		return personaMapper.toDto(this.personaRepository.save(personaBD));
 	}
 
-	// --- MÉTODOS DE FILTRADO POR ROL ---
-
-	// Encontrar vendedores
-	public List<Persona> findByTipoVendedor() {
+	public List<PersonaDTO> findByTipoVendedor() {
 		List<Persona> vendedores = this.personaRepository.findByRol(Rol.VENDEDOR);
 		if (vendedores == null || vendedores.isEmpty()) {
 			throw new PersonaNotFoundException("No se han encontrado personas con el rol VENDEDOR");
 		}
-		return vendedores;
+		return vendedores.stream().map(personaMapper::toDto).collect(Collectors.toList());
 	}
 
-	// Encontrar clientes
-	public List<Persona> findByTipoCliente() {
+	public List<PersonaDTO> findByTipoCliente() {
 		List<Persona> clientes = this.personaRepository.findByRol(Rol.CLIENTE);
 		if (clientes == null || clientes.isEmpty()) {
 			throw new PersonaNotFoundException("No se han encontrado personas con el rol CLIENTE");
 		}
-		return clientes;
+		return clientes.stream().map(personaMapper::toDto).collect(Collectors.toList());
 	}
 
-	// Encontrar administradores
-	public List<Persona> findByTipoAdministrador() {
-		// Asumiendo que tu Enum es ADMINISTRADOR (ajustar si es ADMIN)
+	public List<PersonaDTO> findByTipoAdministrador() {
 		List<Persona> administradores = this.personaRepository.findByRol(Rol.ADMINISTRADOR);
 		if (administradores == null || administradores.isEmpty()) {
 			throw new PersonaNotFoundException("No se han encontrado personas con el rol ADMINISTRADOR");
 		}
-		return administradores;
+		return administradores.stream().map(personaMapper::toDto).collect(Collectors.toList());
 	}
 
-	// dar de baja
 	@Transactional
 	public void darDeBajaUsuario(int idUsuario) {
-		// Se marca usuario como inactivo
 		Persona usuario = personaRepository.findById(idUsuario).orElseThrow(
 				() -> new PersonaNotFoundException("No se encontró el usuario con ID: " + idUsuario));
 		usuario.setActivo(false);
 		personaRepository.save(usuario);
-
-		// Se asignan como no disponibles todos sus vehiculos para que el frontend no
-		// tenga que mostrarlos
 		vehiculoRepository.desactivarTodosPorVendedor(idUsuario);
 	}
 

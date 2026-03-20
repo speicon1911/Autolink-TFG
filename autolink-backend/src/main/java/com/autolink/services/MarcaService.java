@@ -1,12 +1,15 @@
 package com.autolink.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.autolink.persistence.entities.Marca;
 import com.autolink.persistence.repositories.MarcaRepository;
+import com.autolink.services.dto.MarcaDTO;
+import com.autolink.services.mappers.MarcaMapper;
 import com.autolink.services.exceptions.MarcaNotFoundException;
 
 @Service
@@ -15,13 +18,19 @@ public class MarcaService {
 	@Autowired
 	private MarcaRepository marcaRepository;
 
-	public List<Marca> findAll() {
-		return this.marcaRepository.findAll();
+	@Autowired
+	private MarcaMapper marcaMapper;
+
+	public List<MarcaDTO> findAll() {
+		return this.marcaRepository.findAll().stream()
+				.map(marcaMapper::toDto)
+				.collect(Collectors.toList());
 	}
 
 	// crear
-	public Marca createMarca(Marca marca) {
-        return this.marcaRepository.save(marca);
+	public MarcaDTO createMarca(MarcaDTO marcaDTO) {
+		Marca marca = marcaMapper.toEntity(marcaDTO);
+        return marcaMapper.toDto(this.marcaRepository.save(marca));
     }
 	
 	// eliminar
@@ -31,5 +40,4 @@ public class MarcaService {
         }
         this.marcaRepository.deleteById(idMarca);
     }
-
 }

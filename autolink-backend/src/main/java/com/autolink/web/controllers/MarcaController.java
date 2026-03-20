@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.autolink.persistence.entities.Marca;
+import com.autolink.services.dto.MarcaDTO;
 import com.autolink.services.MarcaService;
 
 @RestController
@@ -23,13 +23,13 @@ public class MarcaController {
 	private MarcaService marcaService;
 	
 	@GetMapping
-	public List<Marca> findAll(){
+	public List<MarcaDTO> findAll(){
 		return this.marcaService.findAll();
 	}
 	
 	@PostMapping
-	public ResponseEntity<Marca> create(@RequestBody Marca marca) {
-	    return ResponseEntity.status(HttpStatus.CREATED).body(this.marcaService.createMarca(marca));
+	public ResponseEntity<MarcaDTO> create(@RequestBody MarcaDTO marcaDTO) {
+	    return ResponseEntity.status(HttpStatus.CREATED).body(this.marcaService.createMarca(marcaDTO));
 	}
 
 	@DeleteMapping("/{idMarca}")

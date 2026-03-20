@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.autolink.persistence.entities.Persona;
 import com.autolink.services.PersonaService;
+import com.autolink.services.dto.PersonaDTO;
 
 @RestController
 @RequestMapping("/personas")
@@ -25,10 +26,9 @@ public class PersonaController {
 	private PersonaService personaService;
 	
 	@GetMapping
-	public ResponseEntity<List<Persona>> list(){
+	public ResponseEntity<List<PersonaDTO>> list(){
 		return ResponseEntity.status(HttpStatus.OK).body(this.personaService.findAll());
 	}
-	
 	
 	@GetMapping("/{idPersona}")
 	public ResponseEntity<?> findById(@PathVariable int idPersona){
@@ -61,7 +61,7 @@ public class PersonaController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Persona> create(@RequestBody Persona persona) {
+	public ResponseEntity<PersonaDTO> create(@RequestBody Persona persona) {
 	    return ResponseEntity.status(HttpStatus.CREATED).body(this.personaService.createPersona(persona));
 	}
 

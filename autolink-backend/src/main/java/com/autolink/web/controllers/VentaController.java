@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.autolink.persistence.entities.Venta;
 import com.autolink.services.VentaService;
+import com.autolink.services.dto.VentaDTO;
 
 @RestController
 @RequestMapping("/ventas")
@@ -25,7 +26,7 @@ public class VentaController {
 	private VentaService ventaService;
 	
 	@GetMapping
-	public List<Venta> findAll(){
+	public List<VentaDTO> findAll(){
 		return this.ventaService.findAll();
 	}
 	
@@ -45,7 +46,7 @@ public class VentaController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Venta> create(@RequestBody Venta venta) {
+	public ResponseEntity<VentaDTO> create(@RequestBody Venta venta) {
 	    return ResponseEntity.status(HttpStatus.CREATED).body(this.ventaService.createVenta(venta));
 	}
 

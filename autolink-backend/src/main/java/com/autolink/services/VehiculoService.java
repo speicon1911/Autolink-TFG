@@ -2,6 +2,7 @@ package com.autolink.services;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,9 @@ import com.autolink.persistence.entities.Vehiculo;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 import com.autolink.persistence.entities.enums.CombustibleVehiculo;
 import com.autolink.persistence.repositories.VehiculoRepository;
+import com.autolink.services.dto.VehiculoDTO;
+import com.autolink.services.mappers.VehiculoMapper;
+import com.autolink.services.mappers.MarcaMapper;
 import com.autolink.services.exceptions.VehiculoExceptions;
 import com.autolink.services.exceptions.VehiculoNotFoundException;
 
@@ -21,32 +25,36 @@ public class VehiculoService {
 	@Autowired
 	private VehiculoRepository vehiculoRepository;
 
-	public List<Vehiculo> getAllVehiculos() {
-		return this.vehiculoRepository.findAll();
+	@Autowired
+	private VehiculoMapper vehiculoMapper;
+	
+	@Autowired
+	private MarcaMapper marcaMapper;
+
+	public List<VehiculoDTO> getAllVehiculos() {
+		return this.vehiculoRepository.findAll().stream()
+				.map(vehiculoMapper::toDto)
+				.collect(Collectors.toList());
 	}
 
-	public Vehiculo findById(int idVehiculo) {
-		if (!this.vehiculoRepository.existsById(idVehiculo)) {
-			throw new VehiculoNotFoundException("No es posible encontrar el vehiculo con ID: " + idVehiculo);
-		}
-		return this.vehiculoRepository.findById(idVehiculo).get();
+	public VehiculoDTO findById(int idVehiculo) {
+		Vehiculo vehiculo = this.vehiculoRepository.findById(idVehiculo).orElseThrow(
+				() -> new VehiculoNotFoundException("No es posible encontrar el vehiculo con ID: " + idVehiculo));
+		return vehiculoMapper.toDto(vehiculo);
 	}
 
-	// buscar vehiculos disponibles
-	public List<Vehiculo> getVehiculosDisponibles() {
+	public List<VehiculoDTO> getVehiculosDisponibles() {
 		List<Vehiculo> vehiculos = this.vehiculoRepository.findByDisponibleTrue();
 		if (vehiculos.isEmpty()) {
 			throw new VehiculoNotFoundException("No se han encontrado vehiculos disponibles");
 		}
-		return vehiculos;
+		return vehiculos.stream().map(vehiculoMapper::toDto).collect(Collectors.toList());
 	}
 
-	// buscar vehiculos por filtro
-	public List<Vehiculo> filtrarVehiculos(String marca, String modelo, TipoVehiculo tipo, CombustibleVehiculo combustible, String color,
+	public List<VehiculoDTO> filtrarVehiculos(String marca, String modelo, TipoVehiculo tipo, CombustibleVehiculo combustible, String color,
 			Integer minPotencia, Integer maxPrecio, Integer maxKm, Integer plazas, Integer anioFabricacion, boolean disponible,
 			boolean aplicarDisp, boolean verificado, boolean aplicarVerif) {
 
-		// Pasamos los flags "aplicar" al repositorio
 		List<Vehiculo> vehiculos = vehiculoRepository.buscarConFiltros(marca, modelo, tipo, combustible, color, minPotencia,
 				maxPrecio, maxKm, plazas, anioFabricacion, disponible, aplicarDisp, verificado, aplicarVerif);
 
@@ -54,22 +62,20 @@ public class VehiculoService {
 			throw new VehiculoNotFoundException("No se han encontrado vehiculos con los filtros asignados");
 		}
 
-		return vehiculos;
+		return vehiculos.stream().map(vehiculoMapper::toDto).collect(Collectors.toList());
 	}
 
-	// obtener vehículos por vendedor
-	public List<Vehiculo> getVehiculosPorVendedor(int idVendedor) {
+	public List<VehiculoDTO> getVehiculosPorVendedor(int idVendedor) {
 		List<Vehiculo> vehiculos = this.vehiculoRepository.findByVendedorId(idVendedor);
 
 		if (vehiculos.isEmpty()) {
 			throw new VehiculoNotFoundException("Este vendedor no tiene vehículos asignados en stock");
 		}
 
-		return vehiculos;
+		return vehiculos.stream().map(vehiculoMapper::toDto).collect(Collectors.toList());
 	}
 
-	// crear
-	public Vehiculo createVehiculo(Vehiculo vehiculo) {
+	public VehiculoDTO createVehiculo(Vehiculo vehiculo) {
 		if(vehiculo.getDisponible() == null) {
 			vehiculo.setDisponible(true);
 		}
@@ -77,10 +83,10 @@ public class VehiculoService {
 		if(vehiculo.getVerificado() != null && vehiculo.getVerificado()) {
 			vehiculo.setFechaVerificacion(LocalDate.now());
 		}
-		return this.vehiculoRepository.save(vehiculo);
+		Vehiculo saved = this.vehiculoRepository.save(vehiculo);
+		return vehiculoMapper.toDto(saved);
 	}
 
-	// eliminar
 	public void deleteVehiculo(int idVehiculo) {
 		if(!this.vehiculoRepository.existsById(idVehiculo)) {
 			throw new VehiculoNotFoundException("No es posible encontrar un vehiculo con el ID: " + idVehiculo);
@@ -88,13 +94,10 @@ public class VehiculoService {
 		this.vehiculoRepository.deleteById(idVehiculo);
 	}
 
-	// actualizar datos de coche
-	public Vehiculo updateVehiculo(Vehiculo vehiculoRequest, int idVehiculo) {
-		// 1. Buscamos el vehículo existente
+	public VehiculoDTO updateVehiculo(Vehiculo vehiculoRequest, int idVehiculo) {
 		Vehiculo vehiculoBD = vehiculoRepository.findById(idVehiculo)
 				.orElseThrow(() -> new VehiculoNotFoundException("Vehículo no encontrado"));
 
-		// 2. Actualización selectiva de campos simples
 		if (vehiculoRequest.getPrecio() != null)
 			vehiculoBD.setPrecio(vehiculoRequest.getPrecio());
 		if (vehiculoRequest.getPlazas() != null)
@@ -117,19 +120,17 @@ public class VehiculoService {
 			vehiculoBD.setAnioFabricacion(vehiculoRequest.getAnioFabricacion());
 		if (vehiculoRequest.getDisponible() != null)
 			vehiculoBD.setDisponible(vehiculoRequest.getDisponible());
-
-		// 3. Manejo de la Marca (si envías una nueva marca)
 		if (vehiculoRequest.getMarca() != null) {
 			vehiculoBD.setMarca(vehiculoRequest.getMarca());
 		}
 
-		// 4. Guardamos los cambios
-		return vehiculoRepository.save(vehiculoBD);
+		Vehiculo saved = vehiculoRepository.save(vehiculoBD);
+		return vehiculoMapper.toDto(saved);
 	}
 
-	// actualizar disponible
-	public Vehiculo updateDisponible(boolean disponible, int idVehiculo) {
-		Vehiculo vehiculoBD = this.findById(idVehiculo);
+	public VehiculoDTO updateDisponible(boolean disponible, int idVehiculo) {
+		Vehiculo vehiculoBD = this.vehiculoRepository.findById(idVehiculo).orElseThrow(
+				() -> new VehiculoNotFoundException("No es posible encontrar el vehiculo con ID: " + idVehiculo));
 
 		boolean estadoActual = vehiculoBD.getDisponible();
 
@@ -138,43 +139,38 @@ public class VehiculoService {
 		}
 
 		vehiculoBD.setDisponible(disponible);
-		return this.vehiculoRepository.save(vehiculoBD);
+		Vehiculo saved = this.vehiculoRepository.save(vehiculoBD);
+		return vehiculoMapper.toDto(saved);
 	}
 
-	// atualizar verificado
-	public Vehiculo updateVerificado(Boolean verificado, int idVehiculo) {
-		// 1. Validar que el valor no sea nulo para este proceso
+	public VehiculoDTO updateVerificado(Boolean verificado, int idVehiculo) {
 		if (verificado == null) {
 			throw new VehiculoExceptions("El estado de verificación no puede ser nulo");
 		}
 
-		Vehiculo vehiculoBD = this.findById(idVehiculo);
+		Vehiculo vehiculoBD = this.vehiculoRepository.findById(idVehiculo).orElseThrow(
+				() -> new VehiculoNotFoundException("No es posible encontrar el vehiculo con ID: " + idVehiculo));
 
-		// 2. Obtener estado actual (manejando el posible null inicial de la BD)
 		boolean estadoActual = (vehiculoBD.getVerificado() != null) && vehiculoBD.getVerificado();
 
-		// 3. No permitir volver de true a false
 		if (estadoActual && !verificado) {
 			throw new VehiculoExceptions("Un vehículo verificado no puede volver a no verificado");
 		}
 
-		// 4. No permitir mismo estado
 		if (estadoActual == verificado) {
 			throw new VehiculoExceptions("El vehículo ya se encuentra en el estado introducido");
 		}
 
-		// 5. Aplicar cambios
 		vehiculoBD.setVerificado(verificado);
 
-		// 6. Asignar fecha automática solo si el nuevo estado es true
 		if (verificado) {
 			vehiculoBD.setFechaVerificacion(LocalDate.now());
 		}
 
-		return this.vehiculoRepository.save(vehiculoBD);
+		Vehiculo saved = this.vehiculoRepository.save(vehiculoBD);
+		return vehiculoMapper.toDto(saved);
 	}
 	
-	// asiganar no disponibles todos los vehiculos de un vendedor de baja
 	@Transactional
 	public void desactivarVehiculosVendedor(int idVendedor) {
 		List<Vehiculo> vehiculos = this.vehiculoRepository.findByVendedorId(idVendedor);
