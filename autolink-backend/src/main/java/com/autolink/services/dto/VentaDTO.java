@@ -18,4 +18,5 @@ public class VentaDTO {
     private Double precio;
     private PersonaDTO vendedor;
     private PersonaDTO cliente;
+    private VehiculoDTO vehiculo;
 }

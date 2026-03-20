@@ -20,16 +20,38 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
           <p class="text-baltic-blue-400">Panel de control administrativo de roles y acceso</p>
         </div>
         
-        <div class="flex items-center gap-3 bg-white/5 backdrop-blur-md p-1.5 rounded-2xl border border-baltic-blue-500/20 shadow-sm">
-          <button (click)="setFilter('todos')" 
-            [class]="filter() === 'todos' ? 'bg-baltic-blue-500 text-white shadow-md shadow-baltic-blue-500/20' : 'text-baltic-blue-300/60 hover:text-baltic-blue-400'"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition-all">Todos</button>
-          <button (click)="setFilter('activos')" 
-            [class]="filter() === 'activos' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'text-baltic-blue-300/60 hover:text-emerald-600'"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition-all">Activos</button>
-          <button (click)="setFilter('inactivos')" 
-            [class]="filter() === 'inactivos' ? 'bg-rose-600 text-white shadow-md shadow-rose-500/20' : 'text-baltic-blue-300/60 hover:text-rose-600'"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition-all">Inactivos</button>
+        <div class="flex items-center gap-4 bg-white/5 backdrop-blur-md p-1.5 rounded-2xl border border-baltic-blue-500/20 shadow-sm">
+          <!-- Filtros de Estado -->
+          <div class="flex items-center gap-1 border-r border-white/10 pr-3">
+            <button (click)="setFilter('todos')" 
+              [class]="filter() === 'todos' ? 'bg-baltic-blue-500 text-white shadow-md' : 'text-baltic-blue-300/60 hover:text-baltic-blue-200 hover:bg-white/5'"
+              class="px-4 py-2 rounded-xl text-xs font-bold transition-all">Todos</button>
+            <button (click)="setFilter('activos')" 
+              [class]="filter() === 'activos' ? 'bg-emerald-600 text-white shadow-md' : 'text-baltic-blue-300/60 hover:text-emerald-400 hover:bg-white/5'"
+              class="px-4 py-2 rounded-xl text-xs font-bold transition-all">Activos</button>
+            <button (click)="setFilter('inactivos')" 
+              [class]="filter() === 'inactivos' ? 'bg-rose-600 text-white shadow-md' : 'text-baltic-blue-300/60 hover:text-rose-400 hover:bg-white/5'"
+              class="px-4 py-2 rounded-xl text-xs font-bold transition-all">Inactivos</button>
+          </div>
+
+          <!-- Filtro de Rol -->
+          <div class="flex items-center gap-2 pl-1">
+            <span class="text-[10px] uppercase font-black tracking-widest text-baltic-blue-400/60 ml-1">Rol:</span>
+            <div class="relative group/filter">
+              <select
+                (change)="onRolFilterChange($event)"
+                class="appearance-none bg-white/10 border border-white/5 text-pitch-black-50 text-xs rounded-xl focus:ring-baltic-blue-500 focus:border-baltic-blue-500 block w-40 p-2 pr-8 cursor-pointer hover:bg-white/20 transition-all font-bold"
+                >
+                <option value="TODOS" class="bg-dark-teal-900">Todos</option>
+                @for (r of roles; track r) {
+                  <option [value]="r" class="bg-dark-teal-900 border-none">{{ r | formatEnum }}</option>
+                }
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-baltic-blue-400 group-hover/filter:text-baltic-blue-200 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
     
@@ -52,7 +74,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5">
-              @for (u of paginatedUsers(); track u) {
+              @for (u of users(); track u.id) {
                 <tr class="hover:bg-white/40 transition-colors group">
                   <td class="px-6 py-5">
                     <div class="flex items-center gap-3">
@@ -118,9 +140,9 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
           
           <div class="border-t border-white/5 bg-white/5">
             <app-pagination
-              [totalItems]="users().length"
+              [totalItems]="totalItems()" 
               [itemsPerPage]="itemsPerPage"
-              [currentPage]="currentPage"
+              [currentPage]="currentPage() + 1"
               (pageChange)="onPageChange($event)">
             </app-pagination>
           </div>
@@ -146,14 +168,16 @@ export class AdminUsersComponent implements OnInit {
   private personaService = inject(PersonaService);
   private ns = inject(NotificationService);
 
-  users = signal<User[]>([]);
-  paginatedUsers = signal<User[]>([]);
+  users = signal<User[]>([]);          // Solo los usuarios de la página actual
   loading = signal(true);
   roles = Object.values(Rol);
 
-  currentPage = 1;
-  itemsPerPage = 10;
+  // ESTADO DE PAGINACIÓN Y FILTRO
+  totalItems = signal(0);              // Total de elementos en la DB
+  currentPage = signal(0);             // Página actual (Base 0 para Spring)
+  itemsPerPage = 10;                   // Tamaño de página deseado
   filter = signal<'todos' | 'activos' | 'inactivos'>('todos');
+  rolFilter = signal<string>('TODOS');
 
   // Configuración del modal
   modalConfig = signal<{
@@ -174,35 +198,50 @@ export class AdminUsersComponent implements OnInit {
     this.cargarUsuarios();
   }
 
+  // [MODIFICADO] La función maestra ahora usa el servicio paginado
   cargarUsuarios() {
     this.loading.set(true);
-    const activoParam = this.filter() === 'activos' ? true : (this.filter() === 'inactivos' ? false : undefined);
     
-    this.personaService.listPersonas(activoParam).subscribe({
-      next: (usuarios) => {
-        this.users.set(usuarios);
-        this.currentPage = 1;
-        this.updatePaginatedUsers();
+    let activo: boolean | undefined;
+    if (this.filter() === 'activos') activo = true;
+    else if (this.filter() === 'inactivos') activo = false;
+
+    this.personaService.getPersonasPaginadas(
+      this.currentPage(), 
+      this.itemsPerPage,
+      this.rolFilter(),
+      activo
+    ).subscribe({
+      next: (response: any) => {
+        this.users.set(response.content);
+        this.totalItems.set(response.totalElements);
         this.loading.set(false);
       },
-      error: () => this.loading.set(false)
+      error: () => {
+        this.ns.error('Error al cargar usuarios');
+        this.loading.set(false);
+      }
     });
   }
 
+  // [MODIFICADO] Resetear a pág 0 al filtrar
   setFilter(f: 'todos' | 'activos' | 'inactivos') {
     this.filter.set(f);
+    this.currentPage.set(0); 
     this.cargarUsuarios();
   }
 
-  onPageChange(page: number) {
-    this.currentPage = page;
-    this.updatePaginatedUsers();
+  onRolFilterChange(event: Event) {
+    const val = (event.target as HTMLSelectElement).value;
+    this.rolFilter.set(val);
+    this.currentPage.set(0);
+    this.cargarUsuarios();
   }
 
-  private updatePaginatedUsers() {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.paginatedUsers.set(this.users().slice(startIndex, endIndex));
+  // [MODIFICADO] Pedir datos nuevos al cambiar página
+  onPageChange(page: number) {
+    this.currentPage.set(page - 1); // Angular envía 1, 2... Spring quiere 0, 1...
+    this.cargarUsuarios();
   }
 
   onRolChange(user: User, event: Event) {

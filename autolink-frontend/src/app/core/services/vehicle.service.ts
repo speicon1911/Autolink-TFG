@@ -19,9 +19,11 @@ export class VehicleService {
     }
 
     buscarVehiculos(filtros: any): Observable<Vehicle[]> {
-        let params = new HttpParams();
+        return this.http.get<Vehicle[]>(`${this.apiUrl}/vehiculos/buscar`, { params: this.buildParams(filtros) });
+    }
 
-        // Map frontend filter keys to backend @RequestParam names
+    private buildParams(filtros: any): HttpParams {
+        let params = new HttpParams();
         const mapping: { [key: string]: string } = {
             marca: 'marca',
             modelo: 'modelo',
@@ -33,22 +35,20 @@ export class VehicleService {
             maxKm: 'maxKm',
             plazas: 'plazas',
             disponible: 'disponible',
-            verificado: 'verificado'
+            verificado: 'verificado',
+            anioFabricacion: 'anioFabricacion'
         };
 
         Object.keys(filtros).forEach(key => {
-            const val = filtros[key];
+            const val = filtros[key as keyof typeof filtros];
             if (val !== null && val !== undefined && val !== '') {
                 const paramName = mapping[key] || key;
                 params = params.set(paramName, val.toString());
-
-                // If filtering by disponible/verificado, backend also expects filterDisp/filterVerif flags
                 if (paramName === 'disponible') params = params.set('filterDisp', 'true');
                 if (paramName === 'verificado') params = params.set('filterVerif', 'true');
             }
         });
-
-        return this.http.get<Vehicle[]>(`${this.apiUrl}/vehiculos/buscar`, { params });
+        return params;
     }
 
     getVehiculosPorVendedor(idVendedor: number): Observable<Vehicle[]> {

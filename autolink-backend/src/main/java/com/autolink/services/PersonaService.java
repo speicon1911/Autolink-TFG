@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -182,6 +184,29 @@ public class PersonaService implements UserDetailsService {
 		usuario.setActivo(false);
 		personaRepository.save(usuario);
 		vehiculoRepository.desactivarTodosPorVendedor(idUsuario);
+	}
+	
+	// paginados
+//	public Page<PersonaDTO> findAllPaged(Pageable pageable){
+//		return this.personaRepository.findAll(pageable).map(personaMapper::toDto);
+//	}
+//	
+//	public Page<PersonaDTO> findByRolPaged(Rol rol, Pageable pageable){
+//		return this.personaRepository.findByRol(rol, pageable).map(personaMapper::toDto);
+//	}
+	
+	public Page<PersonaDTO> getPersonasPaginadas(Rol rol, Boolean activo, Pageable pageable){
+		Page<Persona> resultado;
+		if(rol != null && activo != null) {
+			resultado = this.personaRepository.findByRolAndActivo(rol, activo, pageable);
+		} else if(rol != null) {
+			resultado = this.personaRepository.findByRol(rol, pageable);
+		} else if(activo != null) {
+			resultado = this.personaRepository.findByActivo(activo, pageable);
+		} else {
+			resultado = this.personaRepository.findAll(pageable);
+		}
+		return resultado.map(personaMapper::toDto);
 	}
 
 }

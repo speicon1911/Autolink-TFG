@@ -49,5 +49,9 @@ public class Venta {
 	@JoinColumn(name = "id_cliente", nullable = false)
 	private Persona cliente;
 
+	@ManyToOne
+	@JoinColumn(name = "id_vehiculo", nullable = false)
+	private Vehiculo vehiculo;
+
 	
 }

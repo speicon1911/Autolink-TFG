@@ -12,6 +12,9 @@ public class VentaMapper {
     @Autowired
     private PersonaMapper personaMapper;
 
+    @Autowired
+    private VehiculoMapper vehiculoMapper;
+
     public VentaDTO toDto(Venta venta) {
         if (venta == null) {
             return null;
@@ -23,6 +26,7 @@ public class VentaMapper {
         dto.setPrecio(venta.getPrecio());
         dto.setVendedor(personaMapper.toDto(venta.getVendedor()));
         dto.setCliente(personaMapper.toDto(venta.getCliente()));
+        dto.setVehiculo(vehiculoMapper.toDto(venta.getVehiculo()));
         return dto;
     }
 
@@ -37,6 +41,7 @@ public class VentaMapper {
         venta.setPrecio(dto.getPrecio());
         venta.setVendedor(personaMapper.toEntity(dto.getVendedor()));
         venta.setCliente(personaMapper.toEntity(dto.getCliente()));
+        venta.setVehiculo(vehiculoMapper.toEntity(dto.getVehiculo()));
         return venta;
     }
 }

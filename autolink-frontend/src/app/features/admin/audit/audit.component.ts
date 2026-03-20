@@ -29,6 +29,7 @@ import { Sale } from '../../../core/models/sale.model';
                   <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-baltic-blue-400">ID Venta</th>
                   <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-baltic-blue-400">Fecha</th>
                   <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-baltic-blue-400">Cliente</th>
+                  <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-baltic-blue-400">Vehículo</th>
                   <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-baltic-blue-400">Estado</th>
                   <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 text-right">Monto</th>
                 </tr>
@@ -41,6 +42,10 @@ import { Sale } from '../../../core/models/sale.model';
                     <td class="px-6 py-4">
                       <p class="text-pitch-black-50 text-sm font-black">{{ s.cliente.nombre }} {{ s.cliente.apellidos }}</p>
                       <p class="text-baltic-blue-400/60 text-[10px] font-bold">{{ s.cliente.correo }}</p>
+                    </td>
+                    <td class="px-6 py-4 border-l border-white/5">
+                      <p class="text-pitch-black-50 text-sm font-black">{{ s.vehiculo.marca?.nombre }} {{ s.vehiculo.modelo }}</p>
+                      <p class="text-baltic-blue-400/60 text-[10px] uppercase font-bold tracking-widest">{{ s.vehiculo.tipoVehiculo }}</p>
                     </td>
                     <td class="px-6 py-4">
                    <span [ngClass]="{
@@ -59,7 +64,7 @@ import { Sale } from '../../../core/models/sale.model';
               </tbody>
               <tfoot class="bg-white/5 border-t border-white/5">
                 <tr>
-                  <td colspan="4" class="px-6 py-4 text-right text-baltic-blue-400 font-black uppercase tracking-widest text-[10px]">Volumen Total</td>
+                  <td colspan="5" class="px-6 py-4 text-right text-baltic-blue-400 font-black uppercase tracking-widest text-[10px]">Volumen Total</td>
                   <td class="px-6 py-4 text-right text-xl font-black text-baltic-blue-500">{{ totalVolume() | currency:'EUR' }}</td>
                 </tr>
               </tfoot>

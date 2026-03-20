@@ -172,7 +172,8 @@ export class SaleFormComponent implements OnInit {
       estadoVenta: 'REALIZADA' as any,
       precio: this.precioFinal,
       vendedor: { id: user.id },
-      cliente: { id: cliente.id }
+      cliente: { id: cliente.id },
+      vehiculo: { idVehiculo: this.vehicleToSell.idVehiculo }
     };
 
     this.ventaService.createVenta(saleData).subscribe({

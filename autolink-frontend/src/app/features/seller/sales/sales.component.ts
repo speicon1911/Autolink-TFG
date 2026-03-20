@@ -52,7 +52,9 @@ import { Sale } from '../../../core/models/sale.model';
                   <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M22 12H2"/></svg>
                 </div>
                 <div class="space-y-1">
-                  <h3 class="text-pitch-black-50 font-bold text-lg">Venta #{{ s.idVenta }}</h3>
+                  <h3 class="text-pitch-black-50 font-bold text-lg">
+                    {{ s.vehiculo.marca?.nombre }} {{ s.vehiculo.modelo }}
+                  </h3>
                   <p class="text-baltic-blue-400 text-sm">Cliente: {{ s.cliente.nombre }} {{ s.cliente.apellidos }}</p>
                 </div>
               </div>

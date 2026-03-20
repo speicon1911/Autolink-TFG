@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User, Rol } from '../models/user.model';
 
@@ -45,5 +45,21 @@ export class PersonaService {
 
     deletePersona(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    }
+
+    // paginados
+    getPersonasPaginadas(page: number, size: number, rol?: string, activo?: boolean): Observable<any>{
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+
+        if(rol && rol !== 'TODOS'){
+            params = params.set('rol', rol);
+        }
+
+        if(activo !== undefined) {
+            params = params.set('activo', activo.toString());
+        }
+
+        return this.http.get<any>(`${this.apiUrl}/paged`, {params});
+
     }
 }
