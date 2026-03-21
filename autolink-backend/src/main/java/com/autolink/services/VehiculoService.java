@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.autolink.persistence.entities.Vehiculo;
@@ -43,36 +45,36 @@ public class VehiculoService {
 		return vehiculoMapper.toDto(vehiculo);
 	}
 
-	public List<VehiculoDTO> getVehiculosDisponibles() {
-		List<Vehiculo> vehiculos = this.vehiculoRepository.findByDisponibleTrue();
+	public Page<VehiculoDTO> getVehiculosDisponibles(Pageable pageable) {
+		Page<Vehiculo> vehiculos = this.vehiculoRepository.findByDisponibleTrue(pageable);
 		if (vehiculos.isEmpty()) {
 			throw new VehiculoNotFoundException("No se han encontrado vehiculos disponibles");
 		}
-		return vehiculos.stream().map(vehiculoMapper::toDto).collect(Collectors.toList());
+		return vehiculos.map(vehiculoMapper::toDto);
 	}
 
-	public List<VehiculoDTO> filtrarVehiculos(String marca, String modelo, TipoVehiculo tipo, CombustibleVehiculo combustible, String color,
+	public Page<VehiculoDTO> filtrarVehiculos(String marca, String modelo, TipoVehiculo tipo, CombustibleVehiculo combustible, String color,
 			Integer minPotencia, Integer maxPrecio, Integer maxKm, Integer plazas, Integer anioFabricacion, boolean disponible,
-			boolean aplicarDisp, boolean verificado, boolean aplicarVerif) {
+			boolean aplicarDisp, boolean verificado, boolean aplicarVerif, Pageable pageable) {
 
-		List<Vehiculo> vehiculos = vehiculoRepository.buscarConFiltros(marca, modelo, tipo, combustible, color, minPotencia,
-				maxPrecio, maxKm, plazas, anioFabricacion, disponible, aplicarDisp, verificado, aplicarVerif);
+		Page<Vehiculo> vehiculos = vehiculoRepository.buscarConFiltros(marca, modelo, tipo, combustible, color, minPotencia,
+				maxPrecio, maxKm, plazas, anioFabricacion, disponible, aplicarDisp, verificado, aplicarVerif, pageable);
 
 		if (vehiculos.isEmpty()) {
 			throw new VehiculoNotFoundException("No se han encontrado vehiculos con los filtros asignados");
 		}
 
-		return vehiculos.stream().map(vehiculoMapper::toDto).collect(Collectors.toList());
+		return vehiculos.map(vehiculoMapper::toDto);
 	}
 
-	public List<VehiculoDTO> getVehiculosPorVendedor(int idVendedor) {
-		List<Vehiculo> vehiculos = this.vehiculoRepository.findByVendedorId(idVendedor);
+	public Page<VehiculoDTO> getVehiculosPorVendedorPaginado(int idVendedor, Pageable pageable) {
+		Page<Vehiculo> vehiculos = this.vehiculoRepository.findByVendedorId(idVendedor, pageable);
 
 		if (vehiculos.isEmpty()) {
 			throw new VehiculoNotFoundException("Este vendedor no tiene vehículos asignados en stock");
 		}
 
-		return vehiculos.stream().map(vehiculoMapper::toDto).collect(Collectors.toList());
+		return vehiculos.map(vehiculoMapper::toDto);
 	}
 
 	public VehiculoDTO createVehiculo(Vehiculo vehiculo) {
@@ -171,6 +173,8 @@ public class VehiculoService {
 		return vehiculoMapper.toDto(saved);
 	}
 	
+	
+	// desactivar los vehiculos de un vendedor cuando es inactivo
 	@Transactional
 	public void desactivarVehiculosVendedor(int idVendedor) {
 		List<Vehiculo> vehiculos = this.vehiculoRepository.findByVendedorId(idVendedor);

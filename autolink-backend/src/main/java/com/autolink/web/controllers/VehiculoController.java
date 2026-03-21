@@ -3,6 +3,10 @@ package com.autolink.web.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.autolink.persistence.entities.Vehiculo;
-import com.autolink.persistence.entities.enums.TipoVehiculo;
 import com.autolink.persistence.entities.enums.CombustibleVehiculo;
+import com.autolink.persistence.entities.enums.TipoVehiculo;
 import com.autolink.services.VehiculoService;
 import com.autolink.services.dto.VehiculoDTO;
 
@@ -34,12 +38,15 @@ public class VehiculoController {
 	}
 
 	@GetMapping("/buscar-disponible")
-	public ResponseEntity<?> buscarDisponible() {
-		return ResponseEntity.ok(this.vehiculoService.getVehiculosDisponibles());
+	public ResponseEntity<?> buscarDisponible(
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+		return ResponseEntity.ok(this.vehiculoService.getVehiculosDisponibles(pageable));
 	}
 
 	@GetMapping("/buscar")
-	public ResponseEntity<?> buscarConFiltros(
+	public ResponseEntity<Page<VehiculoDTO>> buscarConFiltros(
 	    @RequestParam(required = false) String marca,
 	    @RequestParam(required = false) String modelo,
 	    @RequestParam(required = false) TipoVehiculo tipo,
@@ -53,21 +60,29 @@ public class VehiculoController {
 	    @RequestParam(defaultValue = "false") boolean disponible, 
 	    @RequestParam(defaultValue = "false") boolean verificado,
 	    @RequestParam(required = false) Boolean filterDisp,
-	    @RequestParam(required = false) Boolean filterVerif
+	    @RequestParam(required = false) Boolean filterVerif,
+	    @RequestParam(defaultValue = "0") int page,
+	    @RequestParam(defaultValue = "10") int size
 	) {
 	    boolean aplicarDisp = (filterDisp != null);
 	    boolean aplicarVerif = (filterVerif != null);
 
-	    List<VehiculoDTO> resultados = this.vehiculoService.filtrarVehiculos(
+	    Pageable pageable = PageRequest.of(page, size);
+	    
+	    Page<VehiculoDTO> resultados = this.vehiculoService.filtrarVehiculos(
 	        marca, modelo, tipo, combustible, color, minPotencia, maxPrecio, maxKm, plazas, anioFabricacion,
-	        disponible, aplicarDisp, verificado, aplicarVerif
+	        disponible, aplicarDisp, verificado, aplicarVerif, pageable
 	    );
 	    return ResponseEntity.ok(resultados);
 	}
 	
 	@GetMapping("/vendedor/{idVendedor}")
-	public ResponseEntity<List<VehiculoDTO>> getByVendedor(@PathVariable int idVendedor) {
-	    return ResponseEntity.ok(this.vehiculoService.getVehiculosPorVendedor(idVendedor));
+	public ResponseEntity<Page<VehiculoDTO>> getByVendedor(@PathVariable int idVendedor,
+			@RequestParam(defaultValue = "0") int page, 
+			@RequestParam(defaultValue = "10") int size) {
+		
+		Pageable pageable = PageRequest.of(page, size);
+	    return ResponseEntity.ok(this.vehiculoService.getVehiculosPorVendedorPaginado(idVendedor, pageable));
 	}
 
 	@PutMapping("/{idVehiculo}")

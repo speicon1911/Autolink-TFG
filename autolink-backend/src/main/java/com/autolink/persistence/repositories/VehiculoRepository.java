@@ -2,6 +2,8 @@ package com.autolink.persistence.repositories;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,9 +17,10 @@ import jakarta.transaction.Transactional;
 
 public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
 
-	List<Vehiculo> findByDisponibleTrue();
+	// mostrar los vehiculos disponibles
+	Page<Vehiculo> findByDisponibleTrue(Pageable pageable);
 
-	// filtro
+	// filtro del catalogo
 	@Query("SELECT v FROM Vehiculo v WHERE " + "(:marca IS NULL OR UPPER(v.marca.nombre) = UPPER(:marca)) AND "
 			+ "(:modelo IS NULL OR UPPER(v.modelo) LIKE UPPER(CONCAT('%', :modelo, '%'))) AND "
 			+ "(:tipo IS NULL OR v.tipoVehiculo = :tipo) AND "
@@ -29,10 +32,14 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
 			+ "(:anioFabricacion IS NULL OR v.anioFabricacion >= :anioFabricacion) AND "
 			+ "(:aplicarDisp = false OR v.disponible = :disponible) AND "
 			+ "(:aplicarVerif = false OR v.verificado = :verificado)")
-	List<Vehiculo> buscarConFiltros(String marca, String modelo, TipoVehiculo tipo, CombustibleVehiculo combustible, String color, Integer minPotencia,
+	Page<Vehiculo> buscarConFiltros(String marca, String modelo, TipoVehiculo tipo, CombustibleVehiculo combustible, String color, Integer minPotencia,
 			Integer maxPrecio, Integer maxKm, Integer plazas, Integer anioFabricacion, boolean disponible, boolean aplicarDisp,
-			boolean verificado, boolean aplicarVerif);
+			boolean verificado, boolean aplicarVerif, Pageable pageable);
 
+	// paginar los vehiculos de un vendedor
+	Page<Vehiculo> findByVendedorId(int idVendedor, Pageable pageable);
+
+	// para buscar 
 	List<Vehiculo> findByVendedorId(int idVendedor);
 	
 	@Modifying
