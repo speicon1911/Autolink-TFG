@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Vehicle, Marca } from '../models/vehicle.model';
+import { PaginatedResponse } from '../models/pagination.model';
 
 @Injectable({
     providedIn: 'root'
@@ -10,16 +11,19 @@ export class VehicleService {
     private readonly http = inject(HttpClient);
     private readonly apiUrl = 'http://localhost:8082';
 
-    getVehiculosDisponibles(): Observable<Vehicle[]> {
-        return this.http.get<Vehicle[]>(`${this.apiUrl}/vehiculos/buscar-disponible`);
+    getVehiculosDisponibles(page: number = 0, size: number = 10): Observable<PaginatedResponse<Vehicle>> {
+        const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+        return this.http.get<PaginatedResponse<Vehicle>>(`${this.apiUrl}/vehiculos/buscar-disponible`, { params });
     }
 
     getMarcas(): Observable<Marca[]> {
         return this.http.get<Marca[]>(`${this.apiUrl}/marcas`);
     }
 
-    buscarVehiculos(filtros: any): Observable<Vehicle[]> {
-        return this.http.get<Vehicle[]>(`${this.apiUrl}/vehiculos/buscar`, { params: this.buildParams(filtros) });
+    buscarVehiculos(filtros: any, page: number = 0, size: number = 10): Observable<PaginatedResponse<Vehicle>> {
+        let params = this.buildParams(filtros);
+        params = params.set('page', page.toString()).set('size', size.toString());
+        return this.http.get<PaginatedResponse<Vehicle>>(`${this.apiUrl}/vehiculos/buscar`, { params });
     }
 
     private buildParams(filtros: any): HttpParams {
@@ -36,6 +40,8 @@ export class VehicleService {
             plazas: 'plazas',
             disponible: 'disponible',
             verificado: 'verificado',
+            filterDisp: 'filterDisp',
+            filterVerif: 'filterVerif',
             anioFabricacion: 'anioFabricacion'
         };
 
@@ -51,8 +57,24 @@ export class VehicleService {
         return params;
     }
 
-    getVehiculosPorVendedor(idVendedor: number): Observable<Vehicle[]> {
-        return this.http.get<Vehicle[]>(`${this.apiUrl}/vehiculos/vendedor/${idVendedor}`);
+    getVehiculosPorVendedor(idVendedor: number, page: number = 0, size: number = 10): Observable<PaginatedResponse<Vehicle>> {
+        const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+        return this.http.get<PaginatedResponse<Vehicle>>(`${this.apiUrl}/vehiculos/vendedor/${idVendedor}`, { params });
+    }
+
+    getVehiculoById(id: number): Observable<Vehicle | undefined> {
+        // Fallback since backend doesn't have GET /vehiculos/{id} yet
+        // Usamos buscarVehiculos con una página grande para encontrarlo sin el error de ordenación del backend
+        return new Observable(observer => {
+            this.buscarVehiculos({}, 0, 100).subscribe({
+                next: (response) => {
+                    const found = response.content.find(v => v.idVehiculo === id);
+                    observer.next(found);
+                    observer.complete();
+                },
+                error: (err) => observer.error(err)
+            });
+        });
     }
 
     createVehiculo(vehiculo: Partial<Vehicle>): Observable<Vehicle> {

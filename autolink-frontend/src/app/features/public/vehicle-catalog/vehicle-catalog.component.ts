@@ -31,7 +31,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <div class="space-y-1">
             <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Marca</label>
-            <select [(ngModel)]="filtros.marca" (change)="aplicarFiltros()"
+            <select [(ngModel)]="filtros.marca" (change)="onFiltrosChange()"
               class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all cursor-pointer">
               <option value="" class="bg-dark-teal-900">Todas las marcas</option>
               @for (m of marcas(); track m) {
@@ -42,14 +42,14 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
     
           <div class="space-y-1">
             <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Modelo</label>
-            <input type="text" [(ngModel)]="filtros.modelo" (input)="aplicarFiltros()"
+            <input type="text" [(ngModel)]="filtros.modelo" (input)="onFiltrosChange()"
               placeholder="Ej: Golf"
               class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
             </div>
     
             <div class="space-y-1">
               <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Tipo</label>
-              <select [(ngModel)]="filtros.tipo" (change)="aplicarFiltros()"
+              <select [(ngModel)]="filtros.tipo" (change)="onFiltrosChange()"
                 class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all cursor-pointer">
                 <option value="" class="bg-dark-teal-900">Cualquier tipo</option>
                 @for (t of tipos; track t) {
@@ -60,7 +60,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 
             <div class="space-y-1">
               <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Combustible</label>
-              <select [(ngModel)]="filtros.combustible" (change)="aplicarFiltros()"
+              <select [(ngModel)]="filtros.combustible" (change)="onFiltrosChange()"
                 class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all cursor-pointer">
                 <option value="" class="bg-dark-teal-900">Cualquier combustible</option>
                 @for (c of combustibles; track c) {
@@ -71,34 +71,34 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
     
             <div class="space-y-1">
               <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Precio Máx (€)</label>
-              <input type="number" [(ngModel)]="filtros.maxPrecio" (input)="aplicarFiltros()"
+              <input type="number" [(ngModel)]="filtros.maxPrecio" (input)="onFiltrosChange()"
                 placeholder="Ej: 30000" min="0"
                 class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
               </div>
           <div class="space-y-1">
             <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Año Mínimo</label>
-            <input type="number" [(ngModel)]="filtros.anioFabricacion" (input)="aplicarFiltros()"
+            <input type="number" [(ngModel)]="filtros.anioFabricacion" (input)="onFiltrosChange()"
               placeholder="Ej: 2024" min="1900" max="2100"
               class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
           </div>
     
               <div class="space-y-1">
                 <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Km Máximo</label>
-                <input type="number" [(ngModel)]="filtros.maxKm" (input)="aplicarFiltros()"
+                <input type="number" [(ngModel)]="filtros.maxKm" (input)="onFiltrosChange()"
                   placeholder="Ej: 150000" min="0"
                   class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
                 </div>
     
                 <div class="space-y-1">
                   <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Potencia Mín (CV)</label>
-                  <input type="number" [(ngModel)]="filtros.minPotencia" (input)="aplicarFiltros()"
+                  <input type="number" [(ngModel)]="filtros.minPotencia" (input)="onFiltrosChange()"
                     placeholder="Ej: 120" min="1"
                     class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
                   </div>
     
                   <div class="space-y-1">
                     <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Plazas</label>
-                    <input type="number" [(ngModel)]="filtros.plazas" (input)="aplicarFiltros()"
+                    <input type="number" [(ngModel)]="filtros.plazas" (input)="onFiltrosChange()"
                       placeholder="Mínimo de plazas" min="1"
                       class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
                     </div>
@@ -122,16 +122,22 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
     
                 @if (!loading() && vehiculos().length === 0) {
                   <div class="text-center py-20 space-y-4 bg-white/5 backdrop-blur-sm rounded-3xl border border-dashed border-dark-teal-800">
-                    <div class="w-20 h-20 bg-dark-teal-800 rounded-full flex items-center justify-center mx-auto text-dark-teal-500">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <div class="w-20 h-20 bg-dark-teal-900/40 rounded-full flex items-center justify-center mx-auto mb-4 text-dark-teal-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     </div>
-                    <p class="text-pitch-black-50 text-xl font-medium opacity-80">No se encontraron vehículos que coincidan con tus filtros.</p>
+                    @if (tieneFiltrosActivos) {
+                      <p class="text-pitch-black-50 text-xl font-medium opacity-80">No se encontraron vehículos que coincidan con tus filtros.</p>
+                      <button (click)="resetFiltros()" class="text-baltic-blue-500 font-bold hover:underline">Limpiar todos los filtros</button>
+                    } @else {
+                      <p class="text-pitch-black-50 text-xl font-medium opacity-80">No hay vehículos disponibles en este momento.</p>
+                      <p class="text-baltic-blue-400 text-sm">Vuelve a consultar más tarde para ver nuevas incorporaciones.</p>
+                    }
                   </div>
                 }
     
                 @if (!loading() && vehiculos().length > 0) {
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @for (v of paginatedVehiculos(); track v) {
+                    @for (v of vehiculos(); track v.idVehiculo) {
                       <div
                         class="group bg-white/5 backdrop-blur-md border-[3px] border-pitch-black-950 rounded-3xl overflow-hidden hover:border-baltic-blue-500 transition-all duration-500 transform hover:-translate-y-2 shadow-2xl">
                         <div class="aspect-[16/10] bg-dark-teal-900/50 relative overflow-hidden">
@@ -206,9 +212,9 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                   
                   <div class="pt-8">
                     <app-pagination
-                      [totalItems]="vehiculos().length"
+                      [totalItems]="totalItems()"
                       [itemsPerPage]="itemsPerPage"
-                      [currentPage]="currentPage"
+                      [currentPage]="currentPage() + 1"
                       (pageChange)="onPageChange($event)">
                     </app-pagination>
                   </div>
@@ -226,13 +232,14 @@ export class VehicleCatalogComponent implements OnInit {
   private ns = inject(NotificationService);
 
   vehiculos = signal<Vehicle[]>([]);
-  paginatedVehiculos = signal<Vehicle[]>([]);
   marcas = signal<Marca[]>([]);
   loading = signal(true);
   tipos = Object.values(TipoVehiculo);
   combustibles = Object.values(CombustibleVehiculo);
 
-  currentPage = 1;
+  // ESTADO DE PAGINACIÓN
+  totalItems = signal(0);
+  currentPage = signal(0); // Base 0 para Spring
   itemsPerPage = 9;
 
   filtros = {
@@ -250,7 +257,7 @@ export class VehicleCatalogComponent implements OnInit {
 
   ngOnInit() {
     this.cargarMarcas();
-    this.cargarVehiculos();
+    this.fetchVehiculos();
   }
 
   cargarMarcas() {
@@ -263,39 +270,41 @@ export class VehicleCatalogComponent implements OnInit {
     });
   }
 
-  cargarVehiculos() {
+  fetchVehiculos() {
     this.loading.set(true);
-    this.vehicleService.getVehiculosDisponibles().subscribe({
-      next: (data) => {
-        this.vehiculos.set(data);
-        this.currentPage = 1;
-        this.updatePaginatedVehiculos();
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-        console.error('Error cargando vehículos');
-      }
-    });
-  }
-
-  aplicarFiltros() {
-    this.loading.set(true);
-    this.vehicleService.buscarVehiculos(this.filtros).subscribe({
-      next: (data) => {
-        this.vehiculos.set(data);
-        this.currentPage = 1;
-        this.updatePaginatedVehiculos();
+    
+    // Usamos buscarVehiculos siempre para mantener consistencia.
+    // El backend se encargará de los nulos si no hay filtros aplicados.
+    this.vehicleService.buscarVehiculos(this.filtros, this.currentPage(), this.itemsPerPage).subscribe({
+      next: (response) => {
+        this.vehiculos.set(response.content);
+        this.totalItems.set(response.totalElements);
         this.loading.set(false);
       },
       error: (err: any) => {
         this.vehiculos.set([]);
-        this.paginatedVehiculos.set([]);
+        this.totalItems.set(0);
         this.loading.set(false);
-        const errorMsg = err?.error?.message || 'No se han encontrado vehículos con estos filtros';
-        this.ns.error(errorMsg);
+        
+        // Si hay filtros activos y no es un 404 común (sin resultados), mostramos error
+        if (this.tieneFiltrosActivos && err.status !== 404) {
+          const errorMsg = err?.error?.message || 'Error al buscar vehículos';
+          this.ns.error(errorMsg);
+        }
       }
     });
+  }
+
+  get tieneFiltrosActivos(): boolean {
+    return Object.entries(this.filtros).some(([key, val]) => {
+      if (key === 'disponible') return false;
+      return val !== null && val !== '' && val !== undefined;
+    });
+  }
+
+  onFiltrosChange() {
+    this.currentPage.set(0);
+    this.fetchVehiculos();
   }
 
   resetFiltros() {
@@ -311,7 +320,8 @@ export class VehicleCatalogComponent implements OnInit {
       disponible: true,
       anioFabricacion: null
     };
-    this.cargarVehiculos();
+    this.currentPage.set(0);
+    this.fetchVehiculos();
   }
 
   verDetalles(v: Vehicle) {
@@ -319,13 +329,8 @@ export class VehicleCatalogComponent implements OnInit {
   }
 
   onPageChange(page: number) {
-    this.currentPage = page;
-    this.updatePaginatedVehiculos();
-  }
-
-  private updatePaginatedVehiculos() {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.paginatedVehiculos.set(this.vehiculos().slice(startIndex, endIndex));
+    this.currentPage.set(page - 1);
+    this.fetchVehiculos();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

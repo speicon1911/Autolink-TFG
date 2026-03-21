@@ -6,11 +6,12 @@ import { Vehicle } from '../../../core/models/vehicle.model';
 import { NotificationService } from '../../../core/services/notification.service';
 import { VehicleFormComponent } from './vehicle-form.component';
 import { SaleFormComponent } from './sale-form.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-seller-stock',
   standalone: true,
-  imports: [CommonModule, VehicleFormComponent, SaleFormComponent],
+  imports: [CommonModule, VehicleFormComponent, SaleFormComponent, PaginationComponent],
   template: `
     <div class="space-y-6 animate-fade-in">
       <header class="flex justify-between items-center">
@@ -58,7 +59,7 @@ import { SaleFormComponent } from './sale-form.component';
     
       @if (!loading() && vehicles().length > 0) {
         <div class="grid gap-4">
-          @for (v of vehicles(); track v) {
+          @for (v of vehicles(); track v.idVehiculo) {
             <div
               class="bg-white/5 backdrop-blur-md border-[3px] border-pitch-black-950 rounded-2xl p-5 flex items-center justify-between gap-6 hover:border-baltic-blue-500 transition-all shadow-xl">
               <div class="flex items-center gap-4">
@@ -101,6 +102,15 @@ import { SaleFormComponent } from './sale-form.component';
             </div>
           }
         </div>
+
+        <div class="pt-6 border-t border-white/5">
+          <app-pagination
+            [totalItems]="totalItems()"
+            [itemsPerPage]="itemsPerPage"
+            [currentPage]="currentPage() + 1"
+            (pageChange)="onPageChange($event)">
+          </app-pagination>
+        </div>
       }
     </div>
     `,
@@ -119,6 +129,11 @@ export class SellerStockComponent implements OnInit {
   showForm = signal(false);
   editingVehicle = signal<Vehicle | null>(null);
   sellingVehicle = signal<Vehicle | null>(null);
+
+  // PAGINACIÓN
+  totalItems = signal(0);
+  currentPage = signal(0);
+  itemsPerPage = 10;
 
   ngOnInit() {
     this.cargarStock();
@@ -143,9 +158,11 @@ export class SellerStockComponent implements OnInit {
   cargarStock() {
     const user = this.authService.currentUser$();
     if (user) {
-      this.vehicleService.getVehiculosPorVendedor(user.id).subscribe({
-        next: (data) => {
-          this.vehicles.set(data);
+      this.loading.set(true);
+      this.vehicleService.getVehiculosPorVendedor(user.id, this.currentPage(), this.itemsPerPage).subscribe({
+        next: (response) => {
+          this.vehicles.set(response.content);
+          this.totalItems.set(response.totalElements);
           this.loading.set(false);
         },
         error: () => this.loading.set(false)
@@ -179,6 +196,11 @@ export class SellerStockComponent implements OnInit {
 
   onVehicleSold() {
     this.sellingVehicle.set(null);
+    this.cargarStock();
+  }
+
+  onPageChange(page: number) {
+    this.currentPage.set(page - 1);
     this.cargarStock();
   }
 }

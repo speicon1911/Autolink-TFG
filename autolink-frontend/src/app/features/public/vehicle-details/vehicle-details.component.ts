@@ -144,20 +144,23 @@ export class VehicleDetailsComponent implements OnInit {
     vehicle = signal<Vehicle | null>(null);
     loading = signal(true);
 
-    ngOnInit() {
+    constructor() {
         // Try to get vehicle from router state (fast)
         const navigation = this.router.currentNavigation();
         if (navigation?.extras.state?.['vehicle']) {
             this.vehicle.set(navigation.extras.state['vehicle']);
             this.loading.set(false);
-        } else {
+        }
+    }
+
+    ngOnInit() {
+        if (!this.vehicle()) {
             // Fallback: Fetch by looking into available list since we don't have GET /vehiculos/:id
             const id = Number(this.route.snapshot.paramMap.get('id'));
-            this.vehicleService.getVehiculosDisponibles().subscribe({
-                next: (vehicles) => {
-                    const found = vehicles.find(v => v.idVehiculo === id);
-                    if (found) {
-                        this.vehicle.set(found);
+            this.vehicleService.getVehiculoById(id).subscribe({
+                next: (vehicle) => {
+                    if (vehicle) {
+                        this.vehicle.set(vehicle);
                     }
                     this.loading.set(false);
                 },

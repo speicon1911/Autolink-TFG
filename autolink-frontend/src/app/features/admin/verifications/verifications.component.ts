@@ -1,13 +1,14 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { VehicleService } from '../../../core/services/vehicle.service';
 import { Vehicle } from '../../../core/models/vehicle.model';
 import { NotificationService } from '../../../core/services/notification.service';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-admin-verifications',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, PaginationComponent],
   template: `
     <div class="space-y-6 animate-fade-in">
       <header>
@@ -29,7 +30,7 @@ import { NotificationService } from '../../../core/services/notification.service
     
       @if (!loading() && pendingVehicles().length > 0) {
         <div class="grid gap-4">
-          @for (v of pendingVehicles(); track v) {
+          @for (v of pendingVehicles(); track v.idVehiculo) {
             <div
               class="bg-white/5 backdrop-blur-md border-[3px] border-pitch-black-950 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-baltic-blue-500 transition-all shadow-xl">
               <div class="flex items-center gap-5">
@@ -54,6 +55,15 @@ import { NotificationService } from '../../../core/services/notification.service
             </div>
           }
         </div>
+
+        <div class="pt-6 border-t border-white/5">
+          <app-pagination
+            [totalItems]="totalItems()"
+            [itemsPerPage]="itemsPerPage"
+            [currentPage]="currentPage() + 1"
+            (pageChange)="onPageChange($event)">
+          </app-pagination>
+        </div>
       }
     </div>
     `,
@@ -69,16 +79,24 @@ export class AdminVerificationsComponent implements OnInit {
   pendingVehicles = signal<Vehicle[]>([]);
   loading = signal(true);
 
+  // PAGINACIÓN
+  totalItems = signal(0);
+  currentPage = signal(0);
+  itemsPerPage = 10;
+
   ngOnInit() {
     this.cargarPendientes();
   }
 
   cargarPendientes() {
     this.loading.set(true);
-    this.vehicleService.getVehiculosDisponibles().subscribe({
-      next: (data) => {
-        // Filtramos por no verificados
-        this.pendingVehicles.set(data.filter(v => !v.verificado));
+    // Usamos buscarVehiculos con filtro de no verificado
+    const filtros = { verificado: false };
+    
+    this.vehicleService.buscarVehiculos(filtros, this.currentPage(), this.itemsPerPage).subscribe({
+      next: (response) => {
+        this.pendingVehicles.set(response.content);
+        this.totalItems.set(response.totalElements);
         this.loading.set(false);
       },
       error: () => this.loading.set(false)
@@ -92,5 +110,10 @@ export class AdminVerificationsComponent implements OnInit {
         this.cargarPendientes();
       }
     });
+  }
+
+  onPageChange(page: number) {
+    this.currentPage.set(page - 1);
+    this.cargarPendientes();
   }
 }

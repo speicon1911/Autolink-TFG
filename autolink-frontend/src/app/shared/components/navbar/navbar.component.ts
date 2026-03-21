@@ -52,7 +52,7 @@ import { AuthService } from '../../../core/services/auth.service';
     
             @if (authService.isAuthenticated()) {
               @if (isCliente()) {
-                <a routerLink="/cliente" routerLinkActive="text-baltic-blue-600" class="hover:text-baltic-blue-500 transition-colors font-medium">Mis Compras</a>
+                <a routerLink="/cliente/compras" routerLinkActive="text-baltic-blue-600" class="hover:text-baltic-blue-500 transition-colors font-medium">Mis Compras</a>
               }
               @if (isVendedor()) {
                 <a routerLink="/vendedor" routerLinkActive="text-baltic-blue-600" class="hover:text-baltic-blue-500 transition-colors font-medium">Mi Stock</a>
@@ -113,7 +113,7 @@ import { AuthService } from '../../../core/services/auth.service';
           
           @if (authService.isAuthenticated()) {
             @if (isCliente()) {
-              <a routerLink="/cliente" (click)="closeMobileMenu()" class="block py-3 px-3 font-medium text-pitch-black-50 hover:text-baltic-blue-500 rounded-md hover:bg-white/5 text-lg">Mis Compras</a>
+              <a routerLink="/cliente/compras" (click)="closeMobileMenu()" class="block py-3 px-3 font-medium text-pitch-black-50 hover:text-baltic-blue-500 rounded-md hover:bg-white/5 text-lg">Mis Compras</a>
             }
             @if (isVendedor()) {
               <a routerLink="/vendedor" (click)="closeMobileMenu()" class="block py-3 px-3 font-medium text-pitch-black-50 hover:text-baltic-blue-500 rounded-md hover:bg-white/5 text-lg">Mi Stock</a>
