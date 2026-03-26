@@ -52,9 +52,9 @@ import { Sale } from '../../../core/models/sale.model';
               </div>
               <div class="flex items-center gap-3">
               <span [ngClass]="{
-                'bg-emerald-500/10 text-emerald-600 border-emerald-500/20': p.estadoVenta === 'COMPLETADA',
-                'bg-amber-500/10 text-amber-600 border-amber-500/20': p.estadoVenta === 'PENDIENTE',
-                'bg-rose-500/10 text-rose-600 border-rose-500/20': p.estadoVenta === 'CANCELADA'
+                'bg-emerald-500/10 text-emerald-600 border-emerald-500/20': p.estadoVenta === 'REALIZADA',
+                'bg-amber-500/10 text-amber-600 border-amber-500/20': p.estadoVenta === 'EN_PROGRESO',
+                'bg-rose-500/10 text-rose-600 border-rose-500/20': p.estadoVenta === 'ANULADA'
               }" class="px-3 py-1 rounded-full text-[10px] font-bold border uppercase">
                   {{ p.estadoVenta }}
                 </span>

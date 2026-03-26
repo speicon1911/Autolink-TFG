@@ -2,9 +2,9 @@ import { User } from './user.model';
 import { Vehicle } from './vehicle.model';
 
 export enum EstadoVenta {
-    PENDIENTE = 'PENDIENTE',
-    COMPLETADA = 'COMPLETADA',
-    CANCELADA = 'CANCELADA'
+    EN_PROGRESO = 'EN_PROGRESO',
+    REALIZADA = 'REALIZADA',
+    ANULADA = 'ANULADA'
 }
 
 export interface Sale {

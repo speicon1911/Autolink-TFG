@@ -39,6 +39,11 @@ public class VentaController {
 	public ResponseEntity<?> findByCliente(@PathVariable int idCliente){
 		return ResponseEntity.ok(this.ventaService.findByCliente(idCliente));
 	}
+
+	@GetMapping("/vehiculo/{idVehiculo}")
+	public ResponseEntity<?> findByVehiculo(@PathVariable int idVehiculo){
+		return ResponseEntity.ok(this.ventaService.findByVehiculo(idVehiculo));
+	}
 	
 	@PutMapping("/{idVenta}/actualizar-precio")
 	public ResponseEntity<?> updatePrecio(@PathVariable int idVenta, @RequestBody Venta venta){
@@ -54,5 +59,17 @@ public class VentaController {
 	public ResponseEntity<Void> delete(@PathVariable int idVenta) {
 	    this.ventaService.deleteVenta(idVenta);
 	    return ResponseEntity.noContent().build();
+	}
+
+	@PutMapping("/{idVenta}/anular")
+	public ResponseEntity<Void> anular(@PathVariable int idVenta) {
+		this.ventaService.anularVenta(idVenta);
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/{idVenta}/completar")
+	public ResponseEntity<Void> completar(@PathVariable int idVenta) {
+		this.ventaService.completarVenta(idVenta);
+		return ResponseEntity.ok().build();
 	}
 }

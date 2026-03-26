@@ -37,6 +37,11 @@ public class VehiculoController {
 		return this.vehiculoService.getAllVehiculos();
 	}
 
+	@GetMapping("/{idVehiculo}")
+	public ResponseEntity<VehiculoDTO> findById(@PathVariable int idVehiculo) {
+		return ResponseEntity.ok(this.vehiculoService.findById(idVehiculo));
+	}
+
 	@GetMapping("/buscar-disponible")
 	public ResponseEntity<?> buscarDisponible(
 			@RequestParam(defaultValue = "0") int page,

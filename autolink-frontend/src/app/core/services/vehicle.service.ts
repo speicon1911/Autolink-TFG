@@ -62,19 +62,8 @@ export class VehicleService {
         return this.http.get<PaginatedResponse<Vehicle>>(`${this.apiUrl}/vehiculos/vendedor/${idVendedor}`, { params });
     }
 
-    getVehiculoById(id: number): Observable<Vehicle | undefined> {
-        // Fallback since backend doesn't have GET /vehiculos/{id} yet
-        // Usamos buscarVehiculos con una página grande para encontrarlo sin el error de ordenación del backend
-        return new Observable(observer => {
-            this.buscarVehiculos({}, 0, 100).subscribe({
-                next: (response) => {
-                    const found = response.content.find(v => v.idVehiculo === id);
-                    observer.next(found);
-                    observer.complete();
-                },
-                error: (err) => observer.error(err)
-            });
-        });
+    getVehiculoById(id: number): Observable<Vehicle> {
+        return this.http.get<Vehicle>(`${this.apiUrl}/vehiculos/${id}`);
     }
 
     createVehiculo(vehiculo: Partial<Vehicle>): Observable<Vehicle> {

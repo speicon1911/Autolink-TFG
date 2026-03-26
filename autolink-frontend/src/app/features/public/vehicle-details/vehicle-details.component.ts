@@ -1,14 +1,19 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Vehicle } from '../../../core/models/vehicle.model';
 import { VehicleService } from '../../../core/services/vehicle.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { VentaService } from '../../../core/services/venta.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { Rol } from '../../../core/models/user.model';
 
 @Component({
     selector: 'app-vehicle-details',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormatEnumPipe],
+    imports: [CommonModule, RouterLink, FormatEnumPipe, FormsModule],
     template: `
     <div class="max-w-6xl mx-auto space-y-12 animate-fade-in py-8">
       <!-- Breadcrumb / Back -->
@@ -25,12 +30,20 @@ import { VehicleService } from '../../../core/services/vehicle.service';
           <div class="space-y-6">
             <div class="aspect-[16/10] bg-white/5 backdrop-blur-xl rounded-3xl border border-baltic-blue-500/20 flex items-center justify-center text-dark-teal-700 relative overflow-hidden shadow-2xl">
               <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-40"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
-              @if (vehicle()?.verificado) {
-                <div class="absolute top-8 left-8 bg-baltic-blue-500 text-white font-black px-4 py-2 rounded-full shadow-2xl flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                  VEHÍCULO VERIFICADO
-                </div>
-              }
+              
+              <div class="absolute top-8 right-8 flex flex-col gap-2 items-end">
+                @if (vehicle()?.verificado) {
+                  <div class="bg-baltic-blue-500 text-white font-black px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 text-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    VERIFICADO
+                  </div>
+                }
+                @if (!vehicle()?.disponible) {
+                  <div class="bg-rose-600 text-white font-black px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 text-xs">
+                    VENDIDO
+                  </div>
+                }
+              </div>
             </div>
             <div class="grid grid-cols-3 gap-6">
               @for (i of [1,2,3]; track i) {
@@ -115,10 +128,36 @@ import { VehicleService } from '../../../core/services/vehicle.service';
               }
             </div>
             <div class="space-y-4">
-              <button class="btn-primary w-full text-white font-black py-5 rounded-2xl transition-all shadow-2xl shadow-baltic-blue-600/30 active:scale-[0.98] flex items-center justify-center gap-3 group/buy">
-                Contactar con el Vendedor
-                <svg class="group-hover/buy:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
-              </button>
+              @if (isClient() && vehicle()?.disponible) {
+                <div class="space-y-4 bg-baltic-blue-500/10 p-6 rounded-2xl border border-baltic-blue-500/20">
+                  <label class="text-[10px] text-baltic-blue-400 font-black uppercase tracking-widest block mb-2">Tu Oferta (€)</label>
+                  <div class="relative">
+                    <input type="number" [(ngModel)]="offerPrice" 
+                      class="w-full bg-pitch-black/20 border-2 border-baltic-blue-500/30 rounded-xl py-3 px-4 text-white font-bold text-xl outline-none focus:border-baltic-blue-500 transition-all"
+                      placeholder="Ej: 15000">
+                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-baltic-blue-400 font-bold">€</span>
+                  </div>
+                </div>
+
+                <button (click)="buy()" [disabled]="buying()"
+                  class="btn-primary w-full text-white font-black py-5 rounded-2xl transition-all shadow-2xl shadow-baltic-blue-600/30 active:scale-[0.98] flex items-center justify-center gap-3 group/buy disabled:opacity-50">
+                  @if (buying()) {
+                    <div class="w-6 h-6 border-3 border-white/20 border-t-white rounded-full animate-spin"></div>
+                  } @else {
+                    Confirmar Solicitud
+                    <svg class="group-hover/buy:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                  }
+                </button>
+              } @else if (vehicle()?.disponible) {
+                <button class="btn-primary w-full text-white font-black py-5 rounded-2xl transition-all shadow-2xl shadow-baltic-blue-600/30 active:scale-[0.98] flex items-center justify-center gap-3 group/buy">
+                  Contactar con el Vendedor
+                  <svg class="group-hover/buy:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+                </button>
+              } @else {
+                <div class="w-full bg-white/5 border border-white/10 text-baltic-blue-400/40 font-black py-5 rounded-2xl text-center uppercase tracking-widest text-sm">
+                  Vehículo No Disponible
+                </div>
+              }
             </div>
           </div>
         </div>
@@ -140,9 +179,19 @@ export class VehicleDetailsComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private vehicleService = inject(VehicleService);
+    private authService = inject(AuthService);
+    private ventaService = inject(VentaService);
+    private ns = inject(NotificationService);
 
     vehicle = signal<Vehicle | null>(null);
     loading = signal(true);
+    buying = signal(false);
+    offerPrice = signal(0);
+
+    isClient = computed(() => {
+        const user = this.authService.currentUser$();
+        return user?.rol === Rol.CLIENTE;
+    });
 
     constructor() {
         // Try to get vehicle from router state (fast)
@@ -155,17 +204,47 @@ export class VehicleDetailsComponent implements OnInit {
 
     ngOnInit() {
         if (!this.vehicle()) {
-            // Fallback: Fetch by looking into available list since we don't have GET /vehiculos/:id
             const id = Number(this.route.snapshot.paramMap.get('id'));
             this.vehicleService.getVehiculoById(id).subscribe({
                 next: (vehicle) => {
                     if (vehicle) {
                         this.vehicle.set(vehicle);
+                        this.offerPrice.set(vehicle.precio);
                     }
                     this.loading.set(false);
                 },
                 error: () => this.loading.set(false)
             });
         }
+    }
+
+    buy() {
+        const v = this.vehicle();
+        const user = this.authService.currentUser$();
+        if (!v || !user) return;
+
+        this.buying.set(true);
+
+        // Formato yyyy-MM-dd para LocalDate del backend
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+
+        this.ventaService.createVenta({
+            vehiculo: { idVehiculo: v.idVehiculo },
+            cliente: { id: user.id },
+            vendedor: { id: v.vendedor?.id },
+            precio: this.offerPrice(),
+            fecha: formattedDate
+        }).subscribe({
+            next: () => {
+                this.ns.success('Solicitud de compra enviada con éxito');
+                this.router.navigate(['/cliente/compras']);
+            },
+            error: (err) => {
+                console.error('Error en compra:', err);
+                this.ns.error('Error al procesar la solicitud de compra');
+                this.buying.set(false);
+            }
+        });
     }
 }

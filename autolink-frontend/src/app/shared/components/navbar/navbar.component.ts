@@ -55,7 +55,8 @@ import { AuthService } from '../../../core/services/auth.service';
                 <a routerLink="/cliente/compras" routerLinkActive="text-baltic-blue-600" class="hover:text-baltic-blue-500 transition-colors font-medium">Mis Compras</a>
               }
               @if (isVendedor()) {
-                <a routerLink="/vendedor" routerLinkActive="text-baltic-blue-600" class="hover:text-baltic-blue-500 transition-colors font-medium">Mi Stock</a>
+                <a routerLink="/vendedor" routerLinkActive="text-baltic-blue-600" [routerLinkActiveOptions]="{exact: true}" class="hover:text-baltic-blue-500 transition-colors font-medium">Mi Stock</a>
+                <a routerLink="/vendedor/ventas" routerLinkActive="text-baltic-blue-600" class="hover:text-baltic-blue-500 transition-colors font-medium">Mis Ventas</a>
               }
               @if (isAdmin()) {
                 <a routerLink="/admin" routerLinkActive="text-baltic-blue-600" class="hover:text-baltic-blue-500 transition-colors font-medium">Panel Admin</a>
@@ -117,6 +118,7 @@ import { AuthService } from '../../../core/services/auth.service';
             }
             @if (isVendedor()) {
               <a routerLink="/vendedor" (click)="closeMobileMenu()" class="block py-3 px-3 font-medium text-pitch-black-50 hover:text-baltic-blue-500 rounded-md hover:bg-white/5 text-lg">Mi Stock</a>
+              <a routerLink="/vendedor/ventas" (click)="closeMobileMenu()" class="block py-3 px-3 font-medium text-pitch-black-50 hover:text-baltic-blue-500 rounded-md hover:bg-white/5 text-lg">Mis Ventas</a>
             }
             @if (isAdmin()) {
               <a routerLink="/admin" (click)="closeMobileMenu()" class="block py-3 px-3 font-medium text-pitch-black-50 hover:text-baltic-blue-500 rounded-md hover:bg-white/5 text-lg">Panel Admin</a>
