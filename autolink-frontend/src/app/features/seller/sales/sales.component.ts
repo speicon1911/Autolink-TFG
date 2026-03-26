@@ -89,15 +89,22 @@ import { Sale } from '../../../core/models/sale.model';
                 </div>
                 <div class="flex items-center gap-2 border-l border-white/5 pl-6">
                   @if (s.estadoVenta === 'EN_PROGRESO') {
-                    <button (click)="completeSale(s)" class="p-2 hover:bg-emerald-500/10 rounded-lg text-baltic-blue-400 hover:text-emerald-500 transition-all tooltip" title="Finalizar Venta">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    </button>
-                    <button (click)="startEdit(s)" class="p-2 hover:bg-baltic-blue-500/10 rounded-lg text-baltic-blue-400 hover:text-baltic-blue-300 transition-all tooltip" title="Editar Precio">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-                    </button>
-                    <button (click)="cancelSale(s)" class="p-2 hover:bg-rose-500/10 rounded-lg text-baltic-blue-400 hover:text-rose-500 transition-all tooltip" title="Anular Operación">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                    </button>
+                    @if (s.rolUltimoModificador !== 'VENDEDOR') {
+                      <button (click)="completeSale(s)" class="p-2 hover:bg-emerald-500/10 rounded-lg text-baltic-blue-400 hover:text-emerald-500 transition-all tooltip" title="Finalizar Venta">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                      </button>
+                      <button (click)="startEdit(s)" class="p-2 hover:bg-baltic-blue-500/10 rounded-lg text-baltic-blue-400 hover:text-baltic-blue-300 transition-all tooltip" title="Editar Precio (Negociar)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                      </button>
+                      <button (click)="cancelSale(s)" class="p-2 hover:bg-rose-500/10 rounded-lg text-baltic-blue-400 hover:text-rose-500 transition-all tooltip" title="Anular Operación">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                      </button>
+                    } @else {
+                      <span class="text-amber-500 text-xs italic mr-2 whitespace-nowrap">Esperando respuesta...</span>
+                      <button (click)="cancelSale(s)" class="p-2 hover:bg-rose-500/10 rounded-lg text-baltic-blue-400 hover:text-rose-500 transition-all tooltip" title="Anular Operación">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                      </button>
+                    }
                   } @else {
                     <span [ngClass]="{
                       'bg-emerald-500/10 text-emerald-500 border-emerald-500/20': s.estadoVenta === 'REALIZADA',
@@ -170,13 +177,13 @@ export class SellerSalesComponent implements OnInit {
       return;
     }
 
-    this.ventaService.updatePrecioVenta(sale.idVenta, this.newPrice).subscribe({
+    this.ventaService.updatePrecioVenta(sale.idVenta, this.newPrice, 'VENDEDOR').subscribe({
       next: () => {
-        this.ns.success('Precio actualizado correctamente');
+        this.ns.success('Contraoferta enviada correctamente');
         this.editingId.set(null);
         this.loadSales();
       },
-      error: () => this.ns.error('Error al actualizar el precio')
+      error: () => this.ns.error('Error al enviar la contraoferta')
     });
   }
 

@@ -80,9 +80,11 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                                   </button>
                                 </div>
                               } @else {
-                                <span class="text-baltic-blue-500 font-bold flex items-center gap-1 cursor-pointer hover:text-baltic-blue-400" (click)="s.estadoVenta === 'EN_PROGRESO' && startEditPrice(s)">
+                                <span class="text-baltic-blue-500 font-bold flex items-center gap-1"
+                                  [ngClass]="{'cursor-pointer hover:text-baltic-blue-400': s.estadoVenta === 'EN_PROGRESO' && s.rolUltimoModificador !== 'VENDEDOR'}"
+                                  (click)="s.estadoVenta === 'EN_PROGRESO' && s.rolUltimoModificador !== 'VENDEDOR' && startEditPrice(s)">
                                   {{ s.precio | currency:'EUR':'symbol':'1.0-0' }}
-                                  @if (s.estadoVenta === 'EN_PROGRESO') {
+                                  @if (s.estadoVenta === 'EN_PROGRESO' && s.rolUltimoModificador !== 'VENDEDOR') {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                                   }
                                 </span>
@@ -99,14 +101,23 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                           </td>
                           <td class="py-4">
                             @if (s.estadoVenta === 'EN_PROGRESO') {
-                              <div class="flex items-center gap-2">
-                                <button (click)="onCompleteSale(s)" class="px-2 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded text-[10px] font-bold transition-all">
-                                  Aceptar
-                                </button>
-                                <button (click)="onAnularSale(s)" class="px-2 py-1 bg-white/10 hover:bg-rose-500/20 hover:text-rose-500 text-baltic-blue-400 rounded text-[10px] font-bold transition-all border border-white/5">
-                                  Anular
-                                </button>
-                              </div>
+                              @if (s.rolUltimoModificador !== 'VENDEDOR') {
+                                <div class="flex items-center gap-2">
+                                  <button (click)="onCompleteSale(s)" class="px-2 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded text-[10px] font-bold transition-all">
+                                    Aceptar
+                                  </button>
+                                  <button (click)="onAnularSale(s)" class="px-2 py-1 bg-white/10 hover:bg-rose-500/20 hover:text-rose-500 text-baltic-blue-400 rounded text-[10px] font-bold transition-all border border-white/5">
+                                    Anular
+                                  </button>
+                                </div>
+                              } @else {
+                                <div class="flex items-center gap-2">
+                                  <span class="text-amber-500 text-[10px] font-bold px-2 py-1 rounded bg-amber-500/10 border border-amber-500/20">Esperando</span>
+                                  <button (click)="onAnularSale(s)" class="px-2 py-1 bg-white/10 hover:bg-rose-500/20 hover:text-rose-500 text-baltic-blue-400 rounded text-[10px] font-bold transition-all border border-white/5">
+                                    Anular
+                                  </button>
+                                </div>
+                              }
                             }
                           </td>
                         </tr>
@@ -349,9 +360,9 @@ export class SellerStockComponent implements OnInit {
       this.ns.error('El precio debe ser mayor a 0');
       return;
     }
-    this.ventaService.updatePrecioVenta(sale.idVenta, this.tempPrice).subscribe({
+    this.ventaService.updatePrecioVenta(sale.idVenta, this.tempPrice, 'VENDEDOR').subscribe({
       next: () => {
-        this.ns.success('Precio actualizado');
+        this.ns.success('Contraoferta enviada con éxito');
         this.editingPriceId.set(null);
         if (this.selectedVehicle()?.idVehiculo) {
           this.loadVehicleSales(this.selectedVehicle()!.idVehiculo);

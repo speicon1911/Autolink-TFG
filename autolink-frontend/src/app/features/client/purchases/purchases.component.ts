@@ -1,13 +1,15 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { VentaService } from '../../../core/services/venta.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { Sale } from '../../../core/models/sale.model';
 
 @Component({
     selector: 'app-client-purchases',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, FormsModule],
     template: `
     <div class="space-y-6 animate-fade-in">
       <header>
@@ -48,19 +50,47 @@ import { Sale } from '../../../core/models/sale.model';
               </div>
               <div class="flex flex-col md:items-end gap-1">
                 <span class="text-baltic-blue-400 text-[10px] font-bold uppercase tracking-wider">Monto Total</span>
-                <span class="text-2xl font-black text-baltic-blue-500">{{ p.precio | currency:'EUR' }}</span>
+                @if (editingId() === p.idVenta) {
+                  <div class="flex items-center gap-2 mt-1">
+                    <input type="number" [(ngModel)]="newPrice" class="w-24 bg-white/10 border border-baltic-blue-500 rounded p-1 text-white text-right outline-none">
+                    <button (click)="savePrice(p)" class="text-emerald-500 hover:text-emerald-400 tooltip" title="Guardar Precio">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </button>
+                    <button (click)="editingId.set(null)" class="text-rose-500 hover:text-rose-400 tooltip" title="Cancelar Edición">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
+                } @else {
+                  <span class="text-2xl font-black text-baltic-blue-500">{{ p.precio | currency:'EUR' }}</span>
+                }
               </div>
               <div class="flex items-center gap-3">
-              <span [ngClass]="{
-                'bg-emerald-500/10 text-emerald-600 border-emerald-500/20': p.estadoVenta === 'REALIZADA',
-                'bg-amber-500/10 text-amber-600 border-amber-500/20': p.estadoVenta === 'EN_PROGRESO',
-                'bg-rose-500/10 text-rose-600 border-rose-500/20': p.estadoVenta === 'ANULADA'
-              }" class="px-3 py-1 rounded-full text-[10px] font-bold border uppercase">
-                  {{ p.estadoVenta }}
-                </span>
-                <button class="p-2 hover:bg-white/60 rounded-lg text-dark-teal-400 hover:text-baltic-blue-600 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                </button>
+                @if (p.estadoVenta === 'EN_PROGRESO') {
+                  @if (p.rolUltimoModificador !== 'CLIENTE') {
+                    <button (click)="completeSale(p)" class="p-2 hover:bg-emerald-500/10 rounded-lg text-emerald-600 hover:text-emerald-500 transition-all tooltip" title="Aceptar y Formalizar Compra">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </button>
+                    <button (click)="startEdit(p)" class="p-2 hover:bg-baltic-blue-500/10 rounded-lg text-baltic-blue-400 hover:text-baltic-blue-300 transition-all tooltip" title="Editar Oferta (Negociar)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                    </button>
+                    <button (click)="cancelSale(p)" class="p-2 hover:bg-rose-500/10 rounded-lg text-rose-600 hover:text-rose-500 transition-all tooltip" title="Anular Petición">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                  } @else {
+                    <span class="text-amber-500 text-xs italic mr-2 whitespace-nowrap">Esperando respuesta...</span>
+                    <!-- El cliente solo puede retractarse si ya hizo una oferta y espera -->
+                    <button (click)="cancelSale(p)" class="p-2 hover:bg-rose-500/10 rounded-lg text-rose-600 hover:text-rose-500 transition-all tooltip" title="Anular Petición">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                  }
+                } @else {
+                  <span [ngClass]="{
+                    'bg-emerald-500/10 text-emerald-600 border-emerald-500/20': p.estadoVenta === 'REALIZADA',
+                    'bg-rose-500/10 text-rose-600 border-rose-500/20': p.estadoVenta === 'ANULADA'
+                  }" class="px-3 py-1 rounded-full text-[10px] font-bold border uppercase">
+                    {{ p.estadoVenta }}
+                  </span>
+                }
               </div>
             </div>
           }
@@ -76,19 +106,72 @@ import { Sale } from '../../../core/models/sale.model';
 export class ClientPurchasesComponent implements OnInit {
     private ventaService = inject(VentaService);
     private authService = inject(AuthService);
+    private ns = inject(NotificationService);
 
     purchases = signal<Sale[]>([]);
     loading = signal(true);
+    editingId = signal<number | null>(null);
+    newPrice: number = 0;
 
     ngOnInit() {
+        this.loadPurchases();
+    }
+
+    loadPurchases() {
         const user = this.authService.currentUser$();
         if (user) {
+            this.loading.set(true);
             this.ventaService.getPurchasesByCliente(user.id).subscribe({
                 next: (data) => {
-                    this.purchases.set(data);
+                    this.purchases.set(data.sort((a, b) => b.idVenta - a.idVenta));
                     this.loading.set(false);
                 },
                 error: () => this.loading.set(false)
+            });
+        }
+    }
+
+    startEdit(sale: Sale) {
+        this.editingId.set(sale.idVenta);
+        this.newPrice = sale.precio;
+    }
+
+    savePrice(sale: Sale) {
+        if (this.newPrice <= 0) {
+            this.ns.error('El precio debe ser un valor positivo');
+            return;
+        }
+
+        this.ventaService.updatePrecioVenta(sale.idVenta, this.newPrice, 'CLIENTE').subscribe({
+            next: () => {
+                this.ns.success('Oferta enviada correctamente');
+                this.editingId.set(null);
+                this.loadPurchases();
+            },
+            error: () => this.ns.error('Error al enviar la oferta')
+        });
+    }
+
+    completeSale(sale: Sale) {
+        if (confirm(`¿Confirmas que aceptas la compra por ${sale.precio}€? La operación se formalizará inmediatamente y el vehículo será tuyo.`)) {
+            this.ventaService.completarVenta(sale.idVenta).subscribe({
+                next: () => {
+                    this.ns.success('¡Felicidades! Compra completada con éxito');
+                    this.loadPurchases();
+                },
+                error: () => this.ns.error('Error al completar la compra')
+            });
+        }
+    }
+
+    cancelSale(sale: Sale) {
+        if (confirm(`¿Estás seguro de que deseas ANULAR esta petición de compra? La operación no se podrá revertir.`)) {
+            this.ventaService.anularVenta(sale.idVenta).subscribe({
+                next: () => {
+                    this.ns.success('Petición anulada correctamente');
+                    this.loadPurchases();
+                },
+                error: () => this.ns.error('Error al anular la petición')
             });
         }
     }

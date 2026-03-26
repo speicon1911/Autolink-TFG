@@ -12,6 +12,7 @@ export interface Sale {
     fecha: string;
     estadoVenta: EstadoVenta;
     precio: number;
+    rolUltimoModificador?: string;
     vendedor: Partial<User>;
     cliente: Partial<User>;
     vehiculo: Partial<Vehicle>;

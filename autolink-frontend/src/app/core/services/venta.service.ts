@@ -30,8 +30,8 @@ export class VentaService {
         return this.http.post<Sale>(this.apiUrl, venta);
     }
 
-    updatePrecioVenta(idVenta: number, precio: number): Observable<Sale> {
-        return this.http.put<Sale>(`${this.apiUrl}/${idVenta}/actualizar-precio`, { precio });
+    updatePrecioVenta(idVenta: number, precio: number, rolUltimoModificador: string): Observable<Sale> {
+        return this.http.put<Sale>(`${this.apiUrl}/${idVenta}/actualizar-precio`, { idVenta, precio, rolUltimoModificador });
     }
 
     anularVenta(id: number): Observable<void> {

@@ -24,6 +24,7 @@ public class VentaMapper {
         dto.setFecha(venta.getFecha());
         dto.setEstadoVenta(venta.getEstadoVenta());
         dto.setPrecio(venta.getPrecio());
+        dto.setRolUltimoModificador(venta.getRolUltimoModificador());
         dto.setVendedor(personaMapper.toDto(venta.getVendedor()));
         dto.setCliente(personaMapper.toDto(venta.getCliente()));
         dto.setVehiculo(vehiculoMapper.toDto(venta.getVehiculo()));
@@ -39,6 +40,7 @@ public class VentaMapper {
         venta.setFecha(dto.getFecha());
         venta.setEstadoVenta(dto.getEstadoVenta());
         venta.setPrecio(dto.getPrecio());
+        venta.setRolUltimoModificador(dto.getRolUltimoModificador());
         venta.setVendedor(personaMapper.toEntity(dto.getVendedor()));
         venta.setCliente(personaMapper.toEntity(dto.getCliente()));
         venta.setVehiculo(vehiculoMapper.toEntity(dto.getVehiculo()));

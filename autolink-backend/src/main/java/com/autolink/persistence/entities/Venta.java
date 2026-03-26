@@ -3,6 +3,7 @@ package com.autolink.persistence.entities;
 import java.time.LocalDate;
 
 import com.autolink.persistence.entities.enums.EstadoVenta;
+import com.autolink.persistence.entities.enums.Rol;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -38,6 +39,10 @@ public class Venta {
 	private EstadoVenta estadoVenta;
 	
 	private Double precio;
+	
+	@Enumerated(value = EnumType.STRING)
+	@Column(name = "rol_ultimo_modificador")
+	private Rol rolUltimoModificador;
 	
 	@ManyToOne
 	@JoinColumn(name = "id_vendedor", nullable = false)

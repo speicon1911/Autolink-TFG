@@ -11,6 +11,7 @@ import com.autolink.persistence.entities.Persona;
 import com.autolink.persistence.entities.Vehiculo;
 import com.autolink.persistence.entities.Venta;
 import com.autolink.persistence.entities.enums.EstadoVenta;
+import com.autolink.persistence.entities.enums.Rol;
 import com.autolink.persistence.repositories.PersonaRepository;
 import com.autolink.persistence.repositories.VehiculoRepository;
 import com.autolink.persistence.repositories.VentaRepository;
@@ -85,8 +86,9 @@ public class VentaService {
             venta.setFecha(LocalDate.now());
         }
 
-        // Siempre empezamos en progreso
+        // Siempre empezamos en progreso y el primer modificador es el cliente
         venta.setEstadoVenta(EstadoVenta.EN_PROGRESO);
+        venta.setRolUltimoModificador(Rol.CLIENTE);
 
         // El vehículo NO se marca como no disponible aquí (se mantiene en el mercado)
         return ventaMapper.toDto(this.ventaRepository.save(venta));
@@ -154,6 +156,10 @@ public class VentaService {
             ventaBD.setPrecio(venta.getPrecio());
         } else {
             throw new VentaExceptions("El precio debe ser un valor positivo");
+        }
+
+        if (venta.getRolUltimoModificador() != null) {
+            ventaBD.setRolUltimoModificador(venta.getRolUltimoModificador());
         }
 
         return ventaMapper.toDto(this.ventaRepository.save(ventaBD));
