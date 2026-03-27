@@ -170,7 +170,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                             @if (v.potencia) {
                               <div class="flex items-center gap-3 text-pitch-black-50/70 text-xs font-bold uppercase tracking-widest">
                                 <div class="w-8 h-8 rounded-lg bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#70ABAF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity-icon lucide-activity"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
                                 </div>
                                 {{ v.potencia }} CV
                               </div>
@@ -178,7 +178,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                             @if (v.kilometraje !== undefined) {
                               <div class="flex items-center gap-3 text-pitch-black-50/70 text-xs font-bold uppercase tracking-widest">
                                 <div class="w-8 h-8 rounded-lg bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#70ABAF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-route-icon lucide-route"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>
                                 </div>
                                 {{ v.kilometraje }} Km
                               </div>
@@ -186,7 +186,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                             @if (v.plazas) {
                               <div class="flex items-center gap-3 text-pitch-black-50/70 text-xs font-bold uppercase tracking-widest">
                                 <div class="w-8 h-8 rounded-lg bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v5"/><path d="M10 11V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M2 9v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9"/><path d="M20 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v5"/></svg>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#70ABAF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                 </div>
                                 {{ v.plazas }} Plazas
                               </div>
@@ -194,7 +194,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                             @if (v.anioFabricacion) {
                               <div class="flex items-center gap-3 text-pitch-black-50/70 text-xs font-bold uppercase tracking-widest">
                                 <div class="w-8 h-8 rounded-lg bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#70ABAF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-icon lucide-calendar"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
                                 </div>
                                 {{ v.anioFabricacion }}
                               </div>
@@ -240,7 +240,7 @@ export class VehicleCatalogComponent implements OnInit {
   // ESTADO DE PAGINACIÓN
   totalItems = signal(0);
   currentPage = signal(0); // Base 0 para Spring
-  itemsPerPage = 9;
+  itemsPerPage = 12;
 
   filtros = {
     marca: '',
