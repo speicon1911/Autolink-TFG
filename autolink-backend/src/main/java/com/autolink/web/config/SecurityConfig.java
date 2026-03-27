@@ -84,7 +84,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/ventas/vehiculo/**").hasAnyRole("VENDEDOR", "ADMINISTRADOR")
 						.requestMatchers(HttpMethod.POST, "/ventas").hasAnyRole("CLIENTE", "VENDEDOR", "ADMINISTRADOR")
 						.requestMatchers(HttpMethod.PUT, "/ventas/*/anular").hasAnyRole("CLIENTE", "VENDEDOR", "ADMINISTRADOR")
-						.requestMatchers(HttpMethod.PUT, "/ventas/*/completar").hasAnyRole("VENDEDOR", "ADMINISTRADOR")
+						.requestMatchers(HttpMethod.PUT, "/ventas/*/completar").hasAnyRole("CLIENTE", "VENDEDOR", "ADMINISTRADOR")
 						.requestMatchers(HttpMethod.DELETE, "/ventas/*").hasRole("ADMINISTRADOR")
 
 						// --- 5. MARCAS (MarcaController) ---

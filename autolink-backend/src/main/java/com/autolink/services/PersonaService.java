@@ -187,14 +187,6 @@ public class PersonaService implements UserDetailsService {
 	}
 	
 	// paginados
-//	public Page<PersonaDTO> findAllPaged(Pageable pageable){
-//		return this.personaRepository.findAll(pageable).map(personaMapper::toDto);
-//	}
-//	
-//	public Page<PersonaDTO> findByRolPaged(Rol rol, Pageable pageable){
-//		return this.personaRepository.findByRol(rol, pageable).map(personaMapper::toDto);
-//	}
-	
 	public Page<PersonaDTO> getPersonasPaginadas(Rol rol, Boolean activo, Pageable pageable){
 		Page<Persona> resultado;
 		if(rol != null && activo != null) {
