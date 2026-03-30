@@ -7,6 +7,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import com.autolink.services.exceptions.MarcaExceptions;
 import com.autolink.services.exceptions.MarcaNotFoundException;
@@ -85,5 +86,10 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(MarcaExceptions.class)
 	public ResponseEntity<String> handleMarcaExceptions(MarcaExceptions ex){
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	}
+
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT).body("Error de integridad de datos: Es posible que el registro esté siendo utilizado por otras entidades.");
 	}
 }

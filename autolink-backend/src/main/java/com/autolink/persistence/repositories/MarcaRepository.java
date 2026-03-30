@@ -6,4 +6,6 @@ import com.autolink.persistence.entities.Marca;
 
 public interface MarcaRepository extends JpaRepository<Marca, Integer>{
 
+	boolean existsByNombre(String nombre);
+	
 }
