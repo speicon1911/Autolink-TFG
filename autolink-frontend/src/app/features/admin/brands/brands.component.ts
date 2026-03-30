@@ -1,16 +1,18 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 import { MarcaService } from '../../../core/services/marca.service';
 import { Marca } from '../../../core/models/vehicle.model';
 import { NotificationService } from '../../../core/services/notification.service';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-admin-brands',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PaginationComponent, ConfirmModalComponent],
   template: `
-    <div class="space-y-6 animate-fade-in">
+    <div class="space-y-6 animate-fade-in relative z-0">
       <header>
         <h1 class="text-3xl font-black text-pitch-black-50">Gestión de Marcas</h1>
         <p class="text-baltic-blue-400">Administra las marcas de vehículos disponibles en el sistema</p>
@@ -38,7 +40,7 @@ import { NotificationService } from '../../../core/services/notification.service
                     <td class="px-6 py-4 font-mono text-xs text-baltic-blue-400">#{{ m.idMarca }}</td>
                     <td class="px-6 py-4 text-pitch-black-50 font-bold uppercase tracking-tight">{{ m.nombre }}</td>
                     <td class="px-6 py-4 text-right">
-                      <button (click)="deleteBrand(m)" class="p-2 hover:bg-rose-500/10 rounded-lg text-baltic-blue-400 hover:text-rose-500 transition-all">
+                      <button (click)="requestDeleteBrand(m)" class="p-2 hover:bg-rose-500/10 rounded-lg text-baltic-blue-400 hover:text-rose-500 transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                       </button>
                     </td>
@@ -46,6 +48,18 @@ import { NotificationService } from '../../../core/services/notification.service
                 }
               </tbody>
             </table>
+            
+            @if (totalItems() > 0) {
+              <div class="px-2 sm:px-6 py-4 border-t border-white/5 bg-white/5 flex justify-center w-full">
+                <app-pagination
+                  [totalItems]="totalItems()"
+                  [itemsPerPage]="itemsPerPage"
+                  [currentPage]="currentPage() + 1"
+                  (pageChange)="onPageChange($event)"
+                  class="w-full">
+                </app-pagination>
+              </div>
+            }
           }
         </div>
 
@@ -90,6 +104,15 @@ import { NotificationService } from '../../../core/services/notification.service
           </div>
         </div>
       </div>
+
+      <app-confirm-modal
+        [isOpen]="showConfirmModal()"
+        title="Eliminar Marca"
+        [message]="'¿Estás seguro de que deseas eliminar la marca ' + brandToDelete()?.nombre + '? Esto podría afectar a los vehículos asociados.'"
+        (confirmed)="confirmDelete()"
+        (cancelled)="cancelDelete()"
+      ></app-confirm-modal>
+
     </div>
   `,
   styles: [`
@@ -106,19 +129,37 @@ export class AdminBrandsComponent implements OnInit {
   saving = signal(false);
   newBrandName = signal('');
 
+  // Pagination state
+  totalItems = signal(0);
+  currentPage = signal(0); // 0-indexed for backend
+  itemsPerPage = 10;
+
+  showConfirmModal = signal(false);
+  brandToDelete = signal<Marca | null>(null);
+
   ngOnInit() {
     this.loadBrands();
   }
 
   loadBrands() {
     this.loading.set(true);
-    this.marcaService.getAll().subscribe({
-      next: (data) => {
-        this.brands.set(data);
+    this.marcaService.getAll(this.currentPage(), this.itemsPerPage, 'idMarca,desc').subscribe({
+      next: (response) => {
+        this.brands.set(response.content);
+        this.totalItems.set(response.totalElements);
         this.loading.set(false);
       },
-      error: () => this.loading.set(false)
+      error: () => {
+        this.brands.set([]);
+        this.totalItems.set(0);
+        this.loading.set(false);
+      }
     });
+  }
+
+  onPageChange(page: number) {
+    this.currentPage.set(page - 1);
+    this.loadBrands();
   }
 
   createBrand(event: Event) {
@@ -135,6 +176,7 @@ export class AdminBrandsComponent implements OnInit {
         this.ns.success(`Marca "${name}" añadida correctamente`);
         this.newBrandName.set('');
         this.saving.set(false);
+        this.currentPage.set(0);
         this.loadBrands();
       },
       error: () => {
@@ -144,15 +186,32 @@ export class AdminBrandsComponent implements OnInit {
     });
   }
 
-  deleteBrand(marca: Marca) {
-    if (confirm(`¿Estás seguro de que deseas eliminar la marca "${marca.nombre}"? Esto podría afectar a los vehículos asociados.`)) {
-      this.marcaService.delete(marca.idMarca).subscribe({
-        next: () => {
-          this.ns.success('Marca eliminada');
-          this.loadBrands();
-        },
-        error: () => this.ns.error('No se pudo eliminar la marca. Es posible que tenga vehículos asociados.')
-      });
-    }
+  requestDeleteBrand(marca: Marca) {
+    this.brandToDelete.set(marca);
+    this.showConfirmModal.set(true);
+  }
+
+  cancelDelete() {
+    this.showConfirmModal.set(false);
+    this.brandToDelete.set(null);
+  }
+
+  confirmDelete() {
+    const marca = this.brandToDelete();
+    if (!marca) return;
+
+    this.marcaService.delete(marca.idMarca).subscribe({
+      next: () => {
+        this.ns.success('Marca eliminada');
+        this.showConfirmModal.set(false);
+        this.brandToDelete.set(null);
+        this.loadBrands();
+      },
+      error: () => {
+        this.ns.error('No se pudo eliminar la marca. Es posible que tenga vehículos asociados.');
+        this.showConfirmModal.set(false);
+        this.brandToDelete.set(null);
+      }
+    });
   }
 }

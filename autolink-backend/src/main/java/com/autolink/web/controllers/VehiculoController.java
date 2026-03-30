@@ -45,7 +45,7 @@ public class VehiculoController {
 	@GetMapping("/buscar-disponible")
 	public ResponseEntity<?> buscarDisponible(
 			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
+			@RequestParam(defaultValue = "12") int size) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 		return ResponseEntity.ok(this.vehiculoService.getVehiculosDisponibles(pageable));
 	}

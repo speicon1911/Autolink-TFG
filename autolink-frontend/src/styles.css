@@ -56,6 +56,30 @@
   body {
     @apply bg-dark-teal-950 text-pitch-black-50;
   }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-dark-teal-950;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-baltic-blue-600/30 rounded-full border-2 border-dark-teal-950 transition-all;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-baltic-blue-500/50;
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.baltic-blue-600 / 30%') theme('colors.dark-teal-950');
+  }
 }
 
 @layer components {

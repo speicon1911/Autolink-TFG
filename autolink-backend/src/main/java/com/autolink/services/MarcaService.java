@@ -1,16 +1,15 @@
 package com.autolink.services;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.autolink.persistence.entities.Marca;
 import com.autolink.persistence.repositories.MarcaRepository;
 import com.autolink.services.dto.MarcaDTO;
-import com.autolink.services.mappers.MarcaMapper;
 import com.autolink.services.exceptions.MarcaNotFoundException;
+import com.autolink.services.mappers.MarcaMapper;
 
 @Service
 public class MarcaService {
@@ -21,10 +20,9 @@ public class MarcaService {
 	@Autowired
 	private MarcaMapper marcaMapper;
 
-	public List<MarcaDTO> findAll() {
-		return this.marcaRepository.findAll().stream()
-				.map(marcaMapper::toDto)
-				.collect(Collectors.toList());
+	public Page<MarcaDTO> findAll(Pageable pageable) {
+		Page<Marca> resultado = this.marcaRepository.findAll(pageable);
+		return resultado.map(marcaMapper::toDto);
 	}
 
 	// crear

@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Vehicle, Marca } from '../models/vehicle.model';
 import { PaginatedResponse } from '../models/pagination.model';
 
@@ -11,16 +12,20 @@ export class VehicleService {
     private readonly http = inject(HttpClient);
     private readonly apiUrl = 'http://localhost:8082';
 
-    getVehiculosDisponibles(page: number = 0, size: number = 10): Observable<PaginatedResponse<Vehicle>> {
+    getVehiculosDisponibles(page: number = 0, size: number = 12): Observable<PaginatedResponse<Vehicle>> {
         const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
         return this.http.get<PaginatedResponse<Vehicle>>(`${this.apiUrl}/vehiculos/buscar-disponible`, { params });
     }
 
     getMarcas(): Observable<Marca[]> {
-        return this.http.get<Marca[]>(`${this.apiUrl}/marcas`);
+        const params = new HttpParams()
+            .set('size', '1000')
+            .set('sort', 'nombre,asc');
+        return this.http.get<PaginatedResponse<Marca>>(`${this.apiUrl}/marcas`, { params })
+            .pipe(map(res => res.content));
     }
 
-    buscarVehiculos(filtros: any, page: number = 0, size: number = 10): Observable<PaginatedResponse<Vehicle>> {
+    buscarVehiculos(filtros: any, page: number = 0, size: number = 12): Observable<PaginatedResponse<Vehicle>> {
         let params = this.buildParams(filtros);
         params = params.set('page', page.toString()).set('size', size.toString());
         return this.http.get<PaginatedResponse<Vehicle>>(`${this.apiUrl}/vehiculos/buscar`, { params });

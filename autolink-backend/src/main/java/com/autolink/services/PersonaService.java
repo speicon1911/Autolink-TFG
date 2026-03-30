@@ -19,9 +19,9 @@ import com.autolink.persistence.entities.enums.Rol;
 import com.autolink.persistence.repositories.PersonaRepository;
 import com.autolink.persistence.repositories.VehiculoRepository;
 import com.autolink.services.dto.PersonaDTO;
-import com.autolink.services.mappers.PersonaMapper;
 import com.autolink.services.exceptions.PersonaExceptions;
 import com.autolink.services.exceptions.PersonaNotFoundException;
+import com.autolink.services.mappers.PersonaMapper;
 
 import jakarta.transaction.Transactional;
 

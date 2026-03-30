@@ -7,18 +7,18 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 sm:px-6">
+    <div class="flex flex-col xl:flex-row items-center justify-between gap-4 py-3 w-full">
       
       <!-- Info + Jump to page -->
-      <div class="flex items-center gap-4">
-        <p class="text-sm text-baltic-blue-400 whitespace-nowrap">
+      <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 text-center sm:text-left">
+        <p class="text-xs sm:text-sm text-baltic-blue-400 whitespace-nowrap">
           Mostrando <span class="font-bold text-pitch-black-50">{{ startIndex + 1 }}</span>–<span class="font-bold text-pitch-black-50">{{ endIndex }}</span>
           de <span class="font-bold text-pitch-black-50">{{ totalItems }}</span>
         </p>
 
         <!-- Jump to page input -->
         <div class="flex items-center gap-2">
-          <label class="text-xs text-dark-teal-500 whitespace-nowrap hidden sm:block">Ir a:</label>
+          <label class="text-[10px] sm:text-xs text-dark-teal-500 whitespace-nowrap hidden sm:block">Ir a:</label>
           <input
             type="number"
             [(ngModel)]="jumpPage"
@@ -26,11 +26,11 @@ import { FormsModule } from '@angular/forms';
             [min]="1"
             [max]="totalPages"
             placeholder="{{ currentPage }}"
-            class="w-14 bg-white/5 border border-white/5 text-pitch-black-50 text-xs rounded-lg px-2 py-1.5 text-center focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            class="w-12 sm:w-14 bg-white/5 border border-white/5 text-pitch-black-50 text-[10px] sm:text-xs rounded-lg px-2 py-1.5 text-center focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           <button
             (click)="goToPage()"
-            class="px-2.5 py-1.5 text-xs bg-white/10 hover:bg-baltic-blue-500 text-baltic-blue-300 hover:text-white rounded-lg transition-all font-bold"
+            class="px-2 sm:px-2.5 py-1.5 text-[10px] sm:text-xs bg-white/10 hover:bg-baltic-blue-500 text-baltic-blue-300 hover:text-white rounded-lg transition-all font-bold"
           >
             Ir
           </button>
@@ -38,16 +38,16 @@ import { FormsModule } from '@angular/forms';
       </div>
 
       <!-- Navigation -->
-      <nav class="flex items-center gap-1">
+      <nav class="flex flex-wrap items-center justify-center gap-1 sm:gap-1.5">
 
         <!-- First page -->
         <button
           (click)="onPageChange(1)"
           [disabled]="currentPage === 1"
           title="Primera página"
-          class="relative inline-flex items-center px-2 py-2 rounded-l-lg border border-white/5 bg-white/5 text-sm text-baltic-blue-400 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          class="relative inline-flex items-center p-1.5 sm:px-2 sm:py-2 rounded-lg sm:rounded-l-lg sm:rounded-none border border-white/5 bg-white/5 text-sm text-baltic-blue-400 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/>
           </svg>
         </button>
@@ -57,9 +57,9 @@ import { FormsModule } from '@angular/forms';
           (click)="onPageChange(currentPage - 1)"
           [disabled]="currentPage === 1"
           title="Página anterior"
-          class="relative inline-flex items-center px-2 py-2 border border-white/5 bg-white/5 text-sm text-baltic-blue-400 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          class="relative inline-flex items-center p-1.5 sm:px-2 sm:py-2 rounded-lg sm:rounded-none border border-white/5 bg-white/5 text-sm text-baltic-blue-400 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="15 18 9 12 15 6"/>
           </svg>
         </button>
@@ -69,8 +69,8 @@ import { FormsModule } from '@angular/forms';
           <button
             (click)="onPageChange(page)"
             [class]="currentPage === page
-              ? 'relative inline-flex items-center px-3.5 py-2 border border-baltic-blue-500 bg-baltic-blue-500 text-sm font-bold text-white transition-colors'
-              : 'relative inline-flex items-center px-3.5 py-2 border border-white/5 bg-white/5 text-sm font-medium text-baltic-blue-400 hover:bg-white/10 transition-colors'"
+              ? 'relative inline-flex items-center px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-none border border-baltic-blue-500 bg-baltic-blue-500 text-xs sm:text-sm font-bold text-white transition-colors'
+              : 'relative inline-flex items-center px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-none border border-white/5 bg-white/5 text-xs sm:text-sm font-medium text-baltic-blue-400 hover:bg-white/10 transition-colors'"
           >
             {{ page }}
           </button>
@@ -81,9 +81,9 @@ import { FormsModule } from '@angular/forms';
           (click)="onPageChange(currentPage + 1)"
           [disabled]="currentPage === totalPages"
           title="Página siguiente"
-          class="relative inline-flex items-center px-2 py-2 border border-white/5 bg-white/5 text-sm text-baltic-blue-400 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          class="relative inline-flex items-center p-1.5 sm:px-2 sm:py-2 rounded-lg sm:rounded-none border border-white/5 bg-white/5 text-sm text-baltic-blue-400 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="9 18 15 12 9 6"/>
           </svg>
         </button>
@@ -93,9 +93,9 @@ import { FormsModule } from '@angular/forms';
           (click)="onPageChange(totalPages)"
           [disabled]="currentPage === totalPages"
           title="Última página"
-          class="relative inline-flex items-center px-2 py-2 rounded-r-lg border border-white/5 bg-white/5 text-sm text-baltic-blue-400 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          class="relative inline-flex items-center p-1.5 sm:px-2 sm:py-2 rounded-lg sm:rounded-r-lg sm:rounded-none border border-white/5 bg-white/5 text-sm text-baltic-blue-400 hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/>
           </svg>
         </button>

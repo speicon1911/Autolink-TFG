@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Marca } from '../models/vehicle.model';
+import { PaginatedResponse } from '../models/pagination.model';
 
 @Injectable({
     providedIn: 'root'
@@ -10,8 +11,12 @@ export class MarcaService {
     private readonly http = inject(HttpClient);
     private readonly apiUrl = 'http://localhost:8082/marcas';
 
-    getAll(): Observable<Marca[]> {
-        return this.http.get<Marca[]>(this.apiUrl);
+    getAll(page: number = 0, size: number = 10, sort: string = 'nombre,asc'): Observable<PaginatedResponse<Marca>> {
+        const params = new HttpParams()
+            .set('page', page.toString())
+            .set('size', size.toString())
+            .set('sort', sort);
+        return this.http.get<PaginatedResponse<Marca>>(this.apiUrl, { params });
     }
 
     create(marca: Partial<Marca>): Observable<Marca> {
