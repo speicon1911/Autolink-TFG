@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.autolink.persistence.entities.Vehiculo;
+import com.autolink.services.dto.ImagenVehiculoDTO;
 import com.autolink.services.dto.VehiculoDTO;
 
 @Component
@@ -36,6 +37,15 @@ public class VehiculoMapper {
         dto.setFechaVerificacion(vehiculo.getFechaVerificacion());
         dto.setMarca(marcaMapper.toDto(vehiculo.getMarca()));
         dto.setVendedor(personaMapper.toDto(vehiculo.getVendedor()));
+        if (vehiculo.getImagenes() != null) {
+            dto.setImagenes(vehiculo.getImagenes().stream()
+                .map(img -> {
+                    ImagenVehiculoDTO imgDto = new ImagenVehiculoDTO();
+                    imgDto.setId(img.getId());
+                    imgDto.setUrl(img.getUrl());
+                    return imgDto;
+                }).toList());
+        }
         return dto;
     }
 

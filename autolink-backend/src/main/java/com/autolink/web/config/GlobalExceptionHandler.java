@@ -1,5 +1,8 @@
 package com.autolink.web.config;
 
+import java.io.IOException;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -7,7 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import com.autolink.services.exceptions.MarcaExceptions;
 import com.autolink.services.exceptions.MarcaNotFoundException;
@@ -92,4 +95,16 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body("Error de integridad de datos: Es posible que el registro esté siendo utilizado por otras entidades.");
 	}
+	
+	// --- EXCEPCIONES DE ARCHIVOS / SUBIDA ---ç
+	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	public ResponseEntity<String> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex){
+		return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+	            .body("El archivo es demasiado grande. El límite máximo permitido es de 5MB por foto.");
+	}
+	
+	public ResponseEntity<String> handleIOException(IOException ex){
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar el archivo o al conectar con el servidor de imágenes: " + ex.getMessage());
+	}
+	
 }

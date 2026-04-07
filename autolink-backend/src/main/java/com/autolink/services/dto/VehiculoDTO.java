@@ -1,6 +1,7 @@
 package com.autolink.services.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.autolink.persistence.entities.enums.CombustibleVehiculo;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
@@ -29,4 +30,6 @@ public class VehiculoDTO {
     private Boolean verificado;
     private LocalDate fechaVerificacion;
     private PersonaDTO vendedor;
+    
+    private List<ImagenVehiculoDTO> imagenes;
 }
