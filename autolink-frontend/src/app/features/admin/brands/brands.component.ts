@@ -145,8 +145,9 @@ export class AdminBrandsComponent implements OnInit {
     this.loading.set(true);
     this.marcaService.getAll(this.currentPage(), this.itemsPerPage, 'idMarca,desc').subscribe({
       next: (response) => {
-        this.brands.set(response.content);
-        this.totalItems.set(response.totalElements);
+        this.brands.set(response.content || []);
+        const total = response.page?.totalElements ?? response.totalElements ?? response.content?.length ?? 0;
+        this.totalItems.set(total);
         this.loading.set(false);
       },
       error: () => {

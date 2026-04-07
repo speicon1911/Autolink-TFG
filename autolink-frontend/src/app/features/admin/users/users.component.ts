@@ -6,6 +6,7 @@ import { User, Rol } from '../../../core/models/user.model';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { PaginatedResponse } from '../../../core/models/pagination.model';
 
 @Component({
   selector: 'app-admin-users',
@@ -212,9 +213,10 @@ export class AdminUsersComponent implements OnInit {
       this.rolFilter(),
       activo
     ).subscribe({
-      next: (response: any) => {
-        this.users.set(response.content);
-        this.totalItems.set(response.totalElements);
+      next: (response: PaginatedResponse<User>) => {
+        this.users.set(response.content || []);
+        const total = response.page?.totalElements ?? response.totalElements ?? response.content?.length ?? 0;
+        this.totalItems.set(total);
         this.loading.set(false);
       },
       error: () => {

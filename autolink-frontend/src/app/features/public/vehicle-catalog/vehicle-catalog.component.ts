@@ -141,11 +141,18 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                       <div
                         class="group bg-white/5 backdrop-blur-md border-[3px] border-pitch-black-950 rounded-3xl overflow-hidden hover:border-baltic-blue-500 transition-all duration-500 transform hover:-translate-y-2 shadow-2xl">
                         <div class="aspect-[16/10] bg-dark-teal-900/50 relative overflow-hidden">
-                          <div class="absolute inset-0 flex items-center justify-center text-dark-teal-700 opacity-40 group-hover:scale-110 transition-transform duration-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
-                          </div>
+                          @if (v.imagenes && v.imagenes.length > 0) {
+                            <img [src]="v.imagenes[0].url" 
+                              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                              alt="Vehículo">
+                          } @else {
+                            <div class="absolute inset-0 flex items-center justify-center text-dark-teal-700 opacity-40 group-hover:scale-110 transition-transform duration-700">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                            </div>
+                          }
+                          
                           @if (v.verificado) {
-                            <div class="absolute top-5 right-5 bg-baltic-blue-500 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-2xl flex items-center gap-1.5 z-10">
+                            <div class="absolute top-5 right-5 bg-baltic-blue-500 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-2xl flex items-center gap-1.5 z-10 transition-transform duration-300 group-hover:scale-105">
                               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                               VERIFICADO
                             </div>
@@ -277,8 +284,12 @@ export class VehicleCatalogComponent implements OnInit {
     // El backend se encargará de los nulos si no hay filtros aplicados.
     this.vehicleService.buscarVehiculos(this.filtros, this.currentPage(), this.itemsPerPage).subscribe({
       next: (response) => {
-        this.vehiculos.set(response.content);
-        this.totalItems.set(response.totalElements);
+        this.vehiculos.set(response.content || []);
+        
+        // Detección robusta del total de elementos
+        const total = response.page?.totalElements ?? response.totalElements ?? response.content?.length ?? 0;
+        this.totalItems.set(total);
+        
         this.loading.set(false);
       },
       error: (err: any) => {

@@ -30,6 +30,11 @@ export interface Marca {
     nombre: string;
 }
 
+export interface ImagenVehiculo {
+    id: number;
+    url: string;
+}
+
 export interface Vehicle {
     idVehiculo: number;
     precio: number;
@@ -47,4 +52,5 @@ export interface Vehicle {
     verificado: boolean;
     fechaVerificacion?: string;
     vendedor?: any; // To avoid circular dependency initially or just use partial User
+    imagenes?: ImagenVehiculo[];
 }

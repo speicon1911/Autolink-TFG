@@ -115,4 +115,10 @@ public class VehiculoController {
 		return ResponseEntity.ok(dto);
 
 	}
+
+	@DeleteMapping("/fotos/{idFoto}")
+	public ResponseEntity<Void> eliminarFoto(@PathVariable int idFoto) {
+		this.vehiculoService.deleteFoto(idFoto);
+		return ResponseEntity.noContent().build();
+	}
 }

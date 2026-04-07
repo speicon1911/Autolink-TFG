@@ -230,4 +230,13 @@ public class VehiculoService {
 		}
 		return vehiculoMapper.toDto(vehiculo);
 	}
+
+	// borrar una imagen especifica
+	@Transactional
+	public void deleteFoto(int idFoto) {
+		if (!this.imagenVehiculoRepository.existsById(idFoto)) {
+			throw new VehiculoExceptions("No existe la imagen con ID: " + idFoto);
+		}
+		this.imagenVehiculoRepository.deleteById(idFoto);
+	}
 }

@@ -283,8 +283,9 @@ export class SellerStockComponent implements OnInit {
       this.loading.set(true);
       this.vehicleService.getVehiculosPorVendedor(user.id, this.currentPage(), this.itemsPerPage).subscribe({
         next: (response) => {
-          this.vehicles.set(response.content);
-          this.totalItems.set(response.totalElements);
+          this.vehicles.set(response.content || []);
+          const total = response.page?.totalElements ?? response.totalElements ?? response.content?.length ?? 0;
+          this.totalItems.set(total);
           this.loading.set(false);
         },
         error: () => this.loading.set(false)

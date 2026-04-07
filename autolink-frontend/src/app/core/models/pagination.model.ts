@@ -1,10 +1,16 @@
 export interface PaginatedResponse<T> {
     content: T[];
-    totalElements: number;
-    totalPages: number;
-    size: number;
-    number: number;
-    first: boolean;
-    last: boolean;
-    empty: boolean;
+    // Formato antiguo/plano
+    totalElements?: number;
+    totalPages?: number;
+    size?: number;
+    number?: number;
+    
+    // Formato nuevo/anidado (Spring Data REST / PagedModel)
+    page?: {
+        totalElements: number;
+        totalPages: number;
+        size: number;
+        number: number;
+    }
 }

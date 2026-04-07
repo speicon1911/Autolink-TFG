@@ -90,4 +90,16 @@ export class VehicleService {
     deleteVehiculo(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/vehiculos/${id}`);
     }
+
+    uploadImages(idVehiculo: number, archivos: File[]): Observable<Vehicle> {
+        const formData = new FormData();
+        archivos.forEach(archivo => {
+            formData.append('archivos', archivo);
+        });
+        return this.http.post<Vehicle>(`${this.apiUrl}/vehiculos/${idVehiculo}/fotos`, formData);
+    }
+
+    deleteImage(idFoto: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/vehiculos/fotos/${idFoto}`);
+    }
 }

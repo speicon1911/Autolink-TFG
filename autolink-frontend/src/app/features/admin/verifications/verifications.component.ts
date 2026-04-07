@@ -95,8 +95,12 @@ export class AdminVerificationsComponent implements OnInit {
     
     this.vehicleService.buscarVehiculos(filtros, this.currentPage(), this.itemsPerPage).subscribe({
       next: (response) => {
-        this.pendingVehicles.set(response.content);
-        this.totalItems.set(response.totalElements);
+        this.pendingVehicles.set(response.content || []);
+        
+        // Detección robusta del total de elementos
+        const total = response.page?.totalElements ?? response.totalElements ?? response.content?.length ?? 0;
+        this.totalItems.set(total);
+        
         this.loading.set(false);
       },
       error: () => this.loading.set(false)
