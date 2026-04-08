@@ -1,5 +1,6 @@
 package com.autolink.services;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.autolink.persistence.entities.Persona;
 import com.autolink.persistence.entities.enums.Rol;
@@ -28,7 +30,8 @@ import jakarta.transaction.Transactional;
 @Service
 public class PersonaService implements UserDetailsService {
 
-	private final VehiculoRepository vehiculoRepository;
+	@Autowired
+	private VehiculoRepository vehiculoRepository;
 
 	@Autowired
 	private PersonaRepository personaRepository;
@@ -36,9 +39,8 @@ public class PersonaService implements UserDetailsService {
 	@Autowired
 	private PersonaMapper personaMapper;
 
-	PersonaService(VehiculoRepository vehiculoRepository) {
-		this.vehiculoRepository = vehiculoRepository;
-	}
+	@Autowired
+	private ImgBBService imgBBService;
 
 	// --- SEGURIDAD (Spring Security) ---
 
@@ -58,14 +60,11 @@ public class PersonaService implements UserDetailsService {
 	// --- MÉTODOS DE NEGOCIO ---
 
 	public List<PersonaDTO> findAll() {
-		return this.personaRepository.findAll().stream()
-				.map(personaMapper::toDto)
-				.collect(Collectors.toList());
+		return this.personaRepository.findAll().stream().map(personaMapper::toDto).collect(Collectors.toList());
 	}
 
 	public List<PersonaDTO> findByActivo(boolean activo) {
-		return this.personaRepository.findByActivo(activo).stream()
-				.map(personaMapper::toDto)
+		return this.personaRepository.findByActivo(activo).stream().map(personaMapper::toDto)
 				.collect(Collectors.toList());
 	}
 
@@ -101,7 +100,7 @@ public class PersonaService implements UserDetailsService {
 		if (persona.getRol() == null) {
 			persona.setRol(Rol.CLIENTE);
 		}
-		
+
 		persona.setActivo(true);
 		return personaMapper.toDto(this.personaRepository.save(persona));
 	}
@@ -138,7 +137,7 @@ public class PersonaService implements UserDetailsService {
 			personaBD.setSalarioAnual(persona.getSalarioAnual());
 		if (persona.getTelefono() != null)
 			personaBD.setTelefono(persona.getTelefono());
-		
+
 		if (persona.getActivo() != null) {
 			personaBD.setActivo(persona.getActivo());
 		}
@@ -179,21 +178,35 @@ public class PersonaService implements UserDetailsService {
 
 	@Transactional
 	public void darDeBajaUsuario(int idUsuario) {
-		Persona usuario = personaRepository.findById(idUsuario).orElseThrow(
-				() -> new PersonaNotFoundException("No se encontró el usuario con ID: " + idUsuario));
+		Persona usuario = personaRepository.findById(idUsuario)
+				.orElseThrow(() -> new PersonaNotFoundException("No se encontró el usuario con ID: " + idUsuario));
 		usuario.setActivo(false);
 		personaRepository.save(usuario);
 		vehiculoRepository.desactivarTodosPorVendedor(idUsuario);
 	}
-	
+
+	// actualizar foto perfil
+	@Transactional
+	public PersonaDTO actualizarFotoPerfil(int idPersona, MultipartFile archivo) throws IOException {
+		Persona persona = personaRepository.findById(idPersona)
+				.orElseThrow(() -> new PersonaNotFoundException("Usuario no encontrado"));
+
+		String urlFoto = imgBBService.subirAImgBB(archivo);
+
+		persona.setFotoPerfil(urlFoto);
+		personaRepository.save(persona);
+
+		return personaMapper.toDto(persona);
+	}
+
 	// paginados
-	public Page<PersonaDTO> getPersonasPaginadas(Rol rol, Boolean activo, Pageable pageable){
+	public Page<PersonaDTO> getPersonasPaginadas(Rol rol, Boolean activo, Pageable pageable) {
 		Page<Persona> resultado;
-		if(rol != null && activo != null) {
+		if (rol != null && activo != null) {
 			resultado = this.personaRepository.findByRolAndActivo(rol, activo, pageable);
-		} else if(rol != null) {
+		} else if (rol != null) {
 			resultado = this.personaRepository.findByRol(rol, pageable);
-		} else if(activo != null) {
+		} else if (activo != null) {
 			resultado = this.personaRepository.findByActivo(activo, pageable);
 		} else {
 			resultado = this.personaRepository.findAll(pageable);

@@ -45,6 +45,10 @@ public class Persona {
     @Enumerated(EnumType.STRING)
     private Rol rol;
 
+    // foto de perfil
+    @Column(name = "foto_perfil")
+    private String fotoPerfil;
+    
     // --- CAMPOS ESPECÍFICOS (Antes en subclases) ---
 
     // De Vendedor
@@ -59,6 +63,8 @@ public class Persona {
     
     @Column(columnDefinition = "boolean default true", nullable = false)
     private Boolean activo = true;
+    
+    // Conexiones a otras tablas
     
     @OneToMany(mappedBy = "vendedor")
     @JsonIgnore // bloquea que aparezcan las ventas realizadas al buscar

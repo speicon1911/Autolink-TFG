@@ -20,4 +20,5 @@ public class PersonaDTO {
     private Double salarioAnual;
     private String ciudadAsignada;
     private Boolean activo;
+    private String fotoPerfil;
 }
