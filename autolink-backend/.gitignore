@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Ficheros de Entorno ###
+*.env
+spc.env
