@@ -26,142 +26,177 @@ import jakarta.transaction.Transactional;
 @Service
 public class VentaService {
 
-    @Autowired
-    private VentaRepository ventaRepository;
+	@Autowired
+	private VentaRepository ventaRepository;
 
-    @Autowired
-    private VehiculoRepository vehiculoRepository;
+	@Autowired
+	private VehiculoRepository vehiculoRepository;
 
-    @Autowired
-    private PersonaRepository personaRepository;
+	@Autowired
+	private PersonaRepository personaRepository;
 
-    @Autowired
-    private VentaMapper ventaMapper;
+	@Autowired
+	private VentaMapper ventaMapper;
 
-    @Transactional
-    public List<VentaDTO> findAll() {
-        return this.ventaRepository.findAll().stream()
-                .map(ventaMapper::toDto)
-                .collect(Collectors.toList());
-    }
+	@Autowired
+	private EmailService emailService;
 
-    @Transactional
-    public List<VentaDTO> findByVendedor(int idVendedor) {
-        List<Venta> ventas = this.ventaRepository.findByVendedor_Id(idVendedor);
-        return ventas.stream().map(ventaMapper::toDto).collect(Collectors.toList());
-    }
+	@Transactional
+	public List<VentaDTO> findAll() {
+		return this.ventaRepository.findAll().stream().map(ventaMapper::toDto).collect(Collectors.toList());
+	}
 
-    @Transactional
-    public List<VentaDTO> findByCliente(int idCliente) {
-        List<Venta> compras = this.ventaRepository.findByCliente_Id(idCliente);
-        return compras.stream().map(ventaMapper::toDto).collect(Collectors.toList());
-    }
+	@Transactional
+	public List<VentaDTO> findByVendedor(int idVendedor) {
+		List<Venta> ventas = this.ventaRepository.findByVendedor_Id(idVendedor);
+		return ventas.stream().map(ventaMapper::toDto).collect(Collectors.toList());
+	}
 
-    @Transactional
-    public List<VentaDTO> findByVehiculo(int idVehiculo) {
-        List<Venta> ventas = this.ventaRepository.findByVehiculo_IdVehiculo(idVehiculo);
-        return ventas.stream().map(ventaMapper::toDto).collect(Collectors.toList());
-    }
+	@Transactional
+	public List<VentaDTO> findByCliente(int idCliente) {
+		List<Venta> compras = this.ventaRepository.findByCliente_Id(idCliente);
+		return compras.stream().map(ventaMapper::toDto).collect(Collectors.toList());
+	}
 
-    public VentaDTO createVenta(Venta venta) {
-        if (venta.getVendedor() == null || venta.getCliente() == null || venta.getVehiculo() == null) {
-            throw new VentaExceptions("La venta debe estar asociada a un vendedor, un cliente y un vehículo");
-        }
+	@Transactional
+	public List<VentaDTO> findByVehiculo(int idVehiculo) {
+		List<Venta> ventas = this.ventaRepository.findByVehiculo_IdVehiculo(idVehiculo);
+		return ventas.stream().map(ventaMapper::toDto).collect(Collectors.toList());
+	}
 
-        // Recuperar entidades reales de la BD para asegurar persistencia correcta
-        Persona vendedorActual = personaRepository.findById(venta.getVendedor().getId())
-                .orElseThrow(
-                        () -> new VentaNotFoundException("Vendedor no encontrado: " + venta.getVendedor().getId()));
-        Persona clienteActual = personaRepository.findById(venta.getCliente().getId())
-                .orElseThrow(() -> new VentaNotFoundException("Cliente no encontrado: " + venta.getCliente().getId()));
-        Vehiculo vehiculoActual = vehiculoRepository.findById(venta.getVehiculo().getIdVehiculo())
-                .orElseThrow(() -> new VehiculoNotFoundException(
-                        "Vehículo no encontrado: " + venta.getVehiculo().getIdVehiculo()));
+	public VentaDTO createVenta(Venta venta) {
+		if (venta.getVendedor() == null || venta.getCliente() == null || venta.getVehiculo() == null) {
+			throw new VentaExceptions("La venta debe estar asociada a un vendedor, un cliente y un vehículo");
+		}
 
-        venta.setVendedor(vendedorActual);
-        venta.setCliente(clienteActual);
-        venta.setVehiculo(vehiculoActual);
+		// Recuperar entidades reales de la BD para asegurar persistencia correcta
+		Persona vendedorActual = personaRepository.findById(venta.getVendedor().getId()).orElseThrow(
+				() -> new VentaNotFoundException("Vendedor no encontrado: " + venta.getVendedor().getId()));
+		Persona clienteActual = personaRepository.findById(venta.getCliente().getId())
+				.orElseThrow(() -> new VentaNotFoundException("Cliente no encontrado: " + venta.getCliente().getId()));
+		Vehiculo vehiculoActual = vehiculoRepository.findById(venta.getVehiculo().getIdVehiculo()).orElseThrow(
+				() -> new VehiculoNotFoundException("Vehículo no encontrado: " + venta.getVehiculo().getIdVehiculo()));
 
-        if (venta.getFecha() == null) {
-            venta.setFecha(LocalDate.now());
-        }
+		venta.setVendedor(vendedorActual);
+		venta.setCliente(clienteActual);
+		venta.setVehiculo(vehiculoActual);
 
-        // Siempre empezamos en progreso y el primer modificador es el cliente
-        venta.setEstadoVenta(EstadoVenta.EN_PROGRESO);
-        venta.setRolUltimoModificador(Rol.CLIENTE);
+		if (venta.getFecha() == null) {
+			venta.setFecha(LocalDate.now());
+		}
 
-        // El vehículo NO se marca como no disponible aquí (se mantiene en el mercado)
-        return ventaMapper.toDto(this.ventaRepository.save(venta));
-    }
+		venta.setEstadoVenta(EstadoVenta.EN_PROGRESO);
+		venta.setRolUltimoModificador(Rol.CLIENTE);
 
-    @Transactional
-    public void anularVenta(int idVenta) {
-        Venta venta = this.ventaRepository.findById(idVenta)
-                .orElseThrow(() -> new VentaNotFoundException("No es posible encontrar la venta con ID: " + idVenta));
+		// 1. Guardamos primero
+		Venta ventaGuardada = this.ventaRepository.save(venta);
 
-        venta.setEstadoVenta(EstadoVenta.ANULADA);
+		// 2. Enviamos el correo (ahora que sabemos que se ha guardado bien)
+		emailService.notificarNuevaOferta(vendedorActual.getCorreo(), clienteActual.getNombre(),
+				vehiculoActual.getModelo(), venta.getPrecio());
 
-        // Asegurar que el vehículo esté disponible (por si acaso estaba en otro estado)
-        if (venta.getVehiculo() != null) {
-            Vehiculo vehiculo = venta.getVehiculo();
-            vehiculo.setDisponible(true);
-            vehiculoRepository.save(vehiculo);
-        }
+		// 3. Devolvemos el resultado
+		return ventaMapper.toDto(ventaGuardada);
+	}
 
-        this.ventaRepository.save(venta);
-    }
+	@Transactional
+	public void anularVenta(int idVenta) {
+		Venta venta = this.ventaRepository.findById(idVenta)
+				.orElseThrow(() -> new VentaNotFoundException("No es posible encontrar la venta con ID: " + idVenta));
 
-    @Transactional
-    public void completarVenta(int idVenta) {
-        Venta venta = this.ventaRepository.findById(idVenta)
-                .orElseThrow(() -> new VentaNotFoundException("Venta no encontrada"));
-        
-        // 1. Marcar el vehículo como vendido
-        Vehiculo vehiculo = venta.getVehiculo();
-        vehiculo.setDisponible(false);
-        this.vehiculoRepository.save(vehiculo);
+		venta.setEstadoVenta(EstadoVenta.ANULADA);
 
-        // 2. Marcar esta venta como REALIZADA
-        venta.setEstadoVenta(EstadoVenta.REALIZADA);
-        this.ventaRepository.save(venta);
+		// Asegurar que el vehículo esté disponible (por si acaso estaba en otro estado)
+		if (venta.getVehiculo() != null) {
+			Vehiculo vehiculo = venta.getVehiculo();
+			vehiculo.setDisponible(true);
+			vehiculoRepository.save(vehiculo);
+		}
 
-        // 3. ANULAR automáticamente todas las demás ofertas EN_PROGRESO para este mismo vehículo
-        List<Venta> otrasOfertas = this.ventaRepository.findByVehiculo_IdVehiculo(vehiculo.getIdVehiculo());
-        for (Venta v : otrasOfertas) {
-            if (v.getIdVenta() != idVenta && v.getEstadoVenta() == EstadoVenta.EN_PROGRESO) {
-                v.setEstadoVenta(EstadoVenta.ANULADA);
-                this.ventaRepository.save(v);
-            }
-        }
-    }
+		this.ventaRepository.save(venta);
+		
+		// Notificamos a las partes que la venta ha sido cancelada
+		emailService.notificarOfertaCancelada(venta.getVendedor().getCorreo(), venta.getVehiculo().getModelo());
+		emailService.notificarOfertaCancelada(venta.getCliente().getCorreo(), venta.getVehiculo().getModelo());
+	}
 
-    public void deleteVenta(int idVenta) {
-        if (!this.ventaRepository.existsById(idVenta)) {
-            throw new VentaNotFoundException("No es posible eliminar la venta con ID: " + idVenta);
-        }
-        this.ventaRepository.deleteById(idVenta);
-    }
+	@Transactional
+	public void completarVenta(int idVenta) {
+		Venta venta = this.ventaRepository.findById(idVenta)
+				.orElseThrow(() -> new VentaNotFoundException("Venta no encontrada"));
 
-    public VentaDTO updatePrecioVenta(Venta venta, int idVenta) {
-        if (venta.getIdVenta() != idVenta) {
-            throw new VentaExceptions(
-                    String.format("El id introducido en el cuerpo (%d) y el de la ruta (%d) no coinciden",
-                            venta.getIdVenta(), idVenta));
-        }
+		// 1. Marcar el vehículo como vendido
+		Vehiculo vehiculo = venta.getVehiculo();
+		vehiculo.setDisponible(false);
+		this.vehiculoRepository.save(vehiculo);
 
-        Venta ventaBD = this.ventaRepository.findById(idVenta)
-                .orElseThrow(() -> new VentaNotFoundException("No es posible encontrar la venta con ID: " + idVenta));
+		// 2. Marcar esta venta como REALIZADA
+		venta.setEstadoVenta(EstadoVenta.REALIZADA);
+		this.ventaRepository.save(venta);
+		
+		// Avisar de venta confirmada
+		emailService.notificarOfertaAceptada(venta.getCliente().getCorreo(), vehiculo.getModelo(), venta.getPrecio());
+		emailService.notificarOfertaAceptada(venta.getVendedor().getCorreo(), vehiculo.getModelo(), venta.getPrecio());
 
-        if (venta.getPrecio() != null && venta.getPrecio() > 0) {
-            ventaBD.setPrecio(venta.getPrecio());
-        } else {
-            throw new VentaExceptions("El precio debe ser un valor positivo");
-        }
+		// 3. ANULAR automáticamente todas las demás ofertas EN_PROGRESO para este mismo vehículo
+		List<Venta> otrasOfertas = this.ventaRepository.findByVehiculo_IdVehiculo(vehiculo.getIdVehiculo());
+		for (Venta v : otrasOfertas) {
+			if (v.getIdVenta() != idVenta && v.getEstadoVenta() == EstadoVenta.EN_PROGRESO) {
+				v.setEstadoVenta(EstadoVenta.ANULADA);
+				this.ventaRepository.save(v);
+				
+				// Avisar al otro cliente de que este coche ya se ha vendido
+				emailService.notificarOfertaCancelada(v.getCliente().getCorreo(), vehiculo.getModelo());
+			}
+		}
+	}
 
-        if (venta.getRolUltimoModificador() != null) {
-            ventaBD.setRolUltimoModificador(venta.getRolUltimoModificador());
-        }
+	public void deleteVenta(int idVenta) {
+		if (!this.ventaRepository.existsById(idVenta)) {
+			throw new VentaNotFoundException("No es posible eliminar la venta con ID: " + idVenta);
+		}
+		this.ventaRepository.deleteById(idVenta);
+	}
 
-        return ventaMapper.toDto(this.ventaRepository.save(ventaBD));
-    }
+	public VentaDTO updatePrecioVenta(Venta venta, int idVenta) {
+		if (venta.getIdVenta() != idVenta) {
+			throw new VentaExceptions(
+					String.format("El id introducido en el cuerpo (%d) y el de la ruta (%d) no coinciden",
+							venta.getIdVenta(), idVenta));
+		}
+
+		Venta ventaBD = this.ventaRepository.findById(idVenta)
+				.orElseThrow(() -> new VentaNotFoundException("No es posible encontrar la venta con ID: " + idVenta));
+
+		// 1. Actualizamos los datos
+		if (venta.getPrecio() != null && venta.getPrecio() > 0) {
+			ventaBD.setPrecio(venta.getPrecio());
+		} else {
+			throw new VentaExceptions("El precio debe ser un valor positivo");
+		}
+
+		if (venta.getRolUltimoModificador() != null) {
+			ventaBD.setRolUltimoModificador(venta.getRolUltimoModificador());
+		}
+
+		// 2. Guardamos los cambios
+		Venta ventaGuardada = this.ventaRepository.save(ventaBD);
+
+		// 3. Enviamos la notificación a la persona contraria
+		// Si el último que tocó la oferta fue el VENDEDOR, avisamos al CLIENTE
+		if (ventaGuardada.getRolUltimoModificador() == Rol.VENDEDOR) {
+			emailService.notificarRespuestaOferta(ventaGuardada.getCliente().getCorreo(),
+					ventaGuardada.getVendedor().getNombre(), ventaGuardada.getVehiculo().getModelo(),
+					ventaGuardada.getPrecio());
+		}
+		// Si el último que tocó la oferta fue el CLIENTE, avisamos al VENDEDOR
+		else if (ventaGuardada.getRolUltimoModificador() == Rol.CLIENTE) {
+			emailService.notificarNuevaOferta(ventaGuardada.getVendedor().getCorreo(),
+					ventaGuardada.getCliente().getNombre(), ventaGuardada.getVehiculo().getModelo(),
+					ventaGuardada.getPrecio());
+		}
+
+		return ventaMapper.toDto(ventaGuardada);
+	}
+
 }

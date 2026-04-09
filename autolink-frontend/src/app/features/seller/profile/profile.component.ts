@@ -112,7 +112,7 @@ export class SellerProfileComponent implements OnInit {
   profileForm = this.fb.group({
     nombre: ['', Validators.required],
     apellidos: ['', Validators.required],
-    telefono: [null as number | null, [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],
+    telefono: [null as number | null, [Validators.pattern(/^[0-9]{9}$/)]],
     DNI: [{ value: '', disabled: true }],
     correo: [{ value: '', disabled: true }]
   });
@@ -153,9 +153,11 @@ export class SellerProfileComponent implements OnInit {
     const user = this.authService.currentUser$();
     if (this.profileForm.valid && user) {
       this.loading.set(true);
+      const formVal = this.profileForm.getRawValue();
       const updatedData: User = {
         ...user,
-        ...this.profileForm.getRawValue() as any
+        ...(formVal as any),
+        telefono: formVal.telefono ? formVal.telefono : user.telefono
       };
 
       this.personaService.updatePerfil(user.id, updatedData).subscribe({

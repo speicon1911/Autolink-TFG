@@ -41,6 +41,10 @@ public class PersonaService implements UserDetailsService {
 
 	@Autowired
 	private ImgBBService imgBBService;
+	
+	@Autowired
+	private EmailService emailService;
+	
 
 	// --- SEGURIDAD (Spring Security) ---
 
@@ -146,10 +150,16 @@ public class PersonaService implements UserDetailsService {
 	}
 
 	public PersonaDTO updateTipoUsuario(Rol nuevo, int idPersona) {
-		Persona personaBD = this.personaRepository.findById(idPersona).orElseThrow(
-				() -> new PersonaNotFoundException("No es posible encontrar a la persona con ID: " + idPersona));
-		personaBD.setRol(nuevo);
-		return personaMapper.toDto(this.personaRepository.save(personaBD));
+	    Persona personaBD = this.personaRepository.findById(idPersona).orElseThrow(
+	            () -> new PersonaNotFoundException("No es posible encontrar a la persona con ID: " + idPersona));
+	    
+	    // 1. Cambiamos el rol y guardamos
+	    personaBD.setRol(nuevo);
+	    Persona personaGuardada = this.personaRepository.save(personaBD);
+	    // 2. Enviamos la notificación
+	    emailService.notificarCambioRol(personaGuardada.getCorreo(), nuevo.name());
+	    // 3. Devolvemos el DTO
+	    return personaMapper.toDto(personaGuardada);
 	}
 
 	public List<PersonaDTO> findByTipoVendedor() {

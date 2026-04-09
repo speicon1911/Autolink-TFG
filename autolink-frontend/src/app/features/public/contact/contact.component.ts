@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ContactoService } from '../../../core/services/contacto.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-contact',
@@ -91,6 +93,8 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 })
 export class ContactComponent {
   private fb = inject(FormBuilder);
+  private contactoService = inject(ContactoService);
+  private ns = inject(NotificationService);
   
   contactForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -105,15 +109,27 @@ export class ContactComponent {
     if (this.contactForm.valid) {
       this.isSubmitting = true;
       
-      // Simulación de envío
-      setTimeout(() => {
-        console.log('Form data:', this.contactForm.value);
-        this.isSubmitting = false;
-        this.submitted = true;
-        this.contactForm.reset();
-        
-        setTimeout(() => this.submitted = false, 5000);
-      }, 1500);
+      const contactoDTO = {
+        nombre: this.contactForm.value.name!,
+        email: this.contactForm.value.email!,
+        asunto: 'Consulta desde Autolink',
+        mensaje: this.contactForm.value.message!
+      };
+
+      this.contactoService.enviarMensaje(contactoDTO).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.submitted = true;
+          this.contactForm.reset();
+          this.ns.success('Mensaje enviado correctamente. Nos pondremos en contacto contigo pronto.');
+          
+          setTimeout(() => this.submitted = false, 5000);
+        },
+        error: () => {
+          this.isSubmitting = false;
+          this.ns.error('Error al enviar el mensaje. Por favor, inténtalo de nuevo.');
+        }
+      });
     }
   }
 }
