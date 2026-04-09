@@ -56,6 +56,7 @@ public class SecurityConfig {
 						.requestMatchers("/auth/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/marcas").permitAll()
 						.requestMatchers(HttpMethod.GET, "/vehiculos/**").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/contacto").permitAll()
 
 						// --- 2. PERSONAS (PersonaController) ---
 						.requestMatchers(HttpMethod.GET, "/personas").hasRole("ADMINISTRADOR")
