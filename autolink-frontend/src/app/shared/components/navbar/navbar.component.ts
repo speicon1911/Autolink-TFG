@@ -68,8 +68,12 @@ import { AuthService } from '../../../core/services/auth.service';
                     <span class="text-sm font-semibold text-pitch-black-50 group-hover:text-baltic-blue-500 transition-colors">{{ authService.currentUser$()?.nombre }}</span>
                     <span class="text-[10px] uppercase tracking-wider text-baltic-blue-400">{{ authService.currentUser$()?.rol }}</span>
                   </div>
-                  <div class="w-8 h-8 rounded-full bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500 group-hover:bg-baltic-blue-500 group-hover:text-white transition-all shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <div class="w-8 h-8 rounded-full bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500 group-hover:ring-2 group-hover:ring-baltic-blue-500 transition-all shadow-sm overflow-hidden">
+                    @if (authService.currentUser$()?.fotoPerfil) {
+                      <img [src]="authService.currentUser$()?.fotoPerfil" alt="Profile" class="w-full h-full object-cover">
+                    } @else {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    }
                   </div>
                 </a>
                 <button (click)="authService.logout()" class="p-2 hover:bg-dark-amaranth-500/10 rounded-full text-dark-amaranth-400 hover:text-dark-amaranth-500 transition-all cursor-pointer" title="Cerrar Sesión">
@@ -126,8 +130,12 @@ import { AuthService } from '../../../core/services/auth.service';
             
             <div class="flex items-center justify-between py-4 mt-2 border-t border-dark-teal-800 pt-4">
               <a [routerLink]="getProfileRoute()" (click)="closeMobileMenu()" class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/5 transition-colors group flex-1">
-                <div class="w-10 h-10 rounded-full bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500 group-hover:bg-baltic-blue-500 group-hover:text-white transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <div class="w-10 h-10 rounded-full bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500 group-hover:ring-2 group-hover:ring-baltic-blue-500 transition-all overflow-hidden shadow-sm">
+                  @if (authService.currentUser$()?.fotoPerfil) {
+                    <img [src]="authService.currentUser$()?.fotoPerfil" alt="Profile" class="w-full h-full object-cover">
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  }
                 </div>
                 <div class="flex flex-col">
                   <span class="text-base font-semibold text-pitch-black-50 group-hover:text-baltic-blue-400 transition-colors">{{ authService.currentUser$()?.nombre }}</span>

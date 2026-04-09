@@ -15,4 +15,5 @@ export interface User {
     salarioAnual?: number;
     ciudadAsignada?: string;
     activo: boolean;
+    fotoPerfil?: string;
 }

@@ -48,6 +48,7 @@ export class PersonaService {
     }
 
     // paginados
+
     getPersonasPaginadas(page: number, size: number, rol?: string, activo?: boolean): Observable<any>{
         let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
@@ -61,5 +62,11 @@ export class PersonaService {
 
         return this.http.get<any>(`${this.apiUrl}/paged`, {params});
 
+    }
+
+    actualizarFotoPerfil(id: number, archivo: File): Observable<User> {
+        const formData = new FormData();
+        formData.append('archivo', archivo);
+        return this.http.post<User>(`${this.apiUrl}/${id}/foto`, formData);
     }
 }

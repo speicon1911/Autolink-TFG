@@ -14,6 +14,7 @@ export interface LoginResponse {
     correo?: string;
     rol?: string;
     activo?: boolean;
+    fotoPerfil?: string;
 }
 
 export interface RegisterRequest {

@@ -94,7 +94,8 @@ export class AuthService {
                     DNI: '', // Not in response but not needed for basic stock ops
                     correo: response.correo || email,
                     rol: (response.rol as Rol) || (roles[0]?.includes('ADMIN') ? Rol.ADMINISTRADOR : Rol.VENDEDOR),
-                    activo: response.activo !== undefined ? response.activo : true
+                    activo: response.activo !== undefined ? response.activo : true,
+                    fotoPerfil: response.fotoPerfil
                 };
                 if (typeof window !== 'undefined' && window.localStorage) {
                     localStorage.setItem('user', JSON.stringify(user));

@@ -52,6 +52,7 @@ public class AuthService {
 			response.setApellidos(p.getApellidos());
 			response.setCorreo(p.getCorreo());
 			response.setRol(p.getRol().name());
+			response.setFotoPerfil(p.getFotoPerfil());
 		});
 
 		return response;
@@ -116,6 +117,7 @@ public class AuthService {
 			response.setApellidos(p.getApellidos());
 			response.setCorreo(p.getCorreo());
 			response.setRol(p.getRol().name());
+			response.setFotoPerfil(p.getFotoPerfil());
 		});
 
 		return response;

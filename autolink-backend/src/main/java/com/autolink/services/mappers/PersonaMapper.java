@@ -23,6 +23,7 @@ public class PersonaMapper {
         dto.setSalarioAnual(persona.getSalarioAnual());
         dto.setCiudadAsignada(persona.getCiudadAsignada());
         dto.setActivo(persona.getActivo());
+        dto.setFotoPerfil(persona.getFotoPerfil());
         return dto;
     }
 

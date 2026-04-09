@@ -16,10 +16,32 @@ import { User } from '../../../core/models/user.model';
         <div class="h-32 bg-gradient-to-r from-baltic-blue-600 to-dark-teal-900"></div>
     
         <div class="px-8 pb-8">
-          <div class="relative -mt-12 mb-6">
-            <div class="w-24 h-24 bg-dark-teal-900 border-4 border-dark-teal-950 rounded-2xl flex items-center justify-center text-3xl font-bold text-baltic-blue-400 shadow-xl">
-              {{ authService.currentUser$()?.nombre?.charAt(0) }}{{ authService.currentUser$()?.apellidos?.charAt(0) }}
+          <div class="relative -mt-12 mb-6 group">
+            <div class="relative w-24 h-24">
+              <div class="w-full h-full bg-dark-teal-900 border-4 border-dark-teal-950 rounded-2xl flex items-center justify-center text-3xl font-bold text-baltic-blue-400 shadow-xl overflow-hidden">
+                @if (authService.currentUser$()?.fotoPerfil) {
+                  <img [src]="authService.currentUser$()?.fotoPerfil" alt="Profile" class="w-full h-full object-cover">
+                } @else {
+                  {{ authService.currentUser$()?.nombre?.charAt(0) }}{{ authService.currentUser$()?.apellidos?.charAt(0) }}
+                }
+                
+                @if (uploadingPhoto()) {
+                  <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
+                    <div class="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                  </div>
+                }
+              </div>
+              
+              <button (click)="fileInput.click()" [disabled]="uploadingPhoto()"
+                class="absolute -bottom-2 -right-2 w-8 h-8 bg-baltic-blue-600 border-2 border-dark-teal-950 rounded-lg flex items-center justify-center text-white shadow-lg hover:bg-baltic-blue-500 transition-all active:scale-95 group-hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+              <input #fileInput type="file" class="hidden" (change)="onFileSelected($event)" accept="image/*">
             </div>
+
             <div class="mt-4">
               <h1 class="text-2xl font-black text-pitch-black-50">Mi Perfil</h1>
               <p class="text-baltic-blue-400 text-sm">Gestiona tu información personal</p>
@@ -79,6 +101,7 @@ export class ClientProfileComponent implements OnInit {
     private ns = inject(NotificationService);
 
     loading = signal(false);
+    uploadingPhoto = signal(false);
 
     profileForm = this.fb.group({
         nombre: ['', Validators.required],
@@ -95,6 +118,25 @@ export class ClientProfileComponent implements OnInit {
                 apellidos: user.apellidos,
                 DNI: user.DNI,
                 correo: user.correo
+            });
+        }
+    }
+
+    onFileSelected(event: any) {
+        const file = event.target.files[0];
+        const user = this.authService.currentUser$();
+        if (file && user) {
+            this.uploadingPhoto.set(true);
+            this.personaService.actualizarFotoPerfil(user.id, file).subscribe({
+                next: (updatedUser) => {
+                    this.authService.updateUser(updatedUser);
+                    this.ns.success('Foto de perfil actualizada');
+                    this.uploadingPhoto.set(false);
+                },
+                error: (err) => {
+                    this.uploadingPhoto.set(false);
+                    this.ns.error(err?.error?.message || 'Error al subir la foto');
+                }
             });
         }
     }
