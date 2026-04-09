@@ -27,7 +27,7 @@ import { NotificationService } from '../../../core/services/notification.service
                 </div>
                 <div>
                   <h3 class="font-bold text-white">Email</h3>
-                  <p class="text-baltic-blue-300/60">speicon1911@g.eduaand.es</p>
+                  <p class="text-baltic-blue-300/60">speicon1911@g.educaand.es</p>
                 </div>
               </div>
 
