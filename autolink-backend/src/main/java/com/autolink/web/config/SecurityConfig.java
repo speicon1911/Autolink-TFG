@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,6 +27,9 @@ import com.autolink.services.PersonaService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+	@Value("${app.cors.allowed-origin}")
+	private String corsAllowedOrigin;
 
 	@Autowired
 	private PersonaService personaService;
@@ -106,7 +110,7 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+		configuration.setAllowedOrigins(Arrays.asList(corsAllowedOrigin));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
 		configuration.setExposedHeaders(List.of("Authorization"));

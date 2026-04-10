@@ -15,10 +15,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImgBBService {
 	@Value("${imgbb.api.key}")
 	private String apiKey;
+
+	@Value("${imgbb.api.url}")
+	private String imgBBUrl;
 	
 	public String subirAImgBB(MultipartFile archivo) throws IOException{
 		RestTemplate restTemplate = new RestTemplate();
-		String url = "https://api.imgbb.com/1/upload?key=" + apiKey;
+		String url = imgBBUrl + "?key=" + apiKey;
 		
 		// convertir la imagen a base64 para imgbb
 		String base64Image = Base64.getEncoder().encodeToString(archivo.getBytes());

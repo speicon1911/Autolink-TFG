@@ -35,3 +35,4 @@ build/
 ### Ficheros de Entorno ###
 *.env
 spc.env
+application-secrets.properties

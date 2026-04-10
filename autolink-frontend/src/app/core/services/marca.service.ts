@@ -3,13 +3,14 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Marca } from '../models/vehicle.model';
 import { PaginatedResponse } from '../models/pagination.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class MarcaService {
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:8082/marcas';
+    private readonly apiUrl = `${environment.apiUrl}/marcas`;
 
     getAll(page: number = 0, size: number = 10, sort: string = 'nombre,asc'): Observable<PaginatedResponse<Marca>> {
         const params = new HttpParams()

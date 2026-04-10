@@ -6,6 +6,7 @@ import { LoginRequest, LoginResponse, RegisterRequest } from '../models/auth.mod
 import { User, Rol } from '../models/user.model';
 import { jwtDecode } from 'jwt-decode';
 import { PersonaService } from './persona.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -14,7 +15,7 @@ export class AuthService {
     private readonly http = inject(HttpClient);
     private readonly router = inject(Router);
     private readonly personaService = inject(PersonaService);
-    private readonly apiUrl = 'http://localhost:8082/auth';
+    private readonly apiUrl = `${environment.apiUrl}/auth`;
 
     private currentUser = signal<User | null>(null);
     public readonly currentUser$ = this.currentUser.asReadonly();

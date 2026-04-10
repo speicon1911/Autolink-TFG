@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User, Rol } from '../models/user.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class PersonaService {
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:8082/personas';
+    private readonly apiUrl = `${environment.apiUrl}/personas`;
 
     listPersonas(activo?: boolean): Observable<User[]> {
         let url = this.apiUrl;

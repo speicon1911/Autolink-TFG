@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Vehicle, Marca } from '../models/vehicle.model';
 import { PaginatedResponse } from '../models/pagination.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class VehicleService {
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:8082';
+    private readonly apiUrl = environment.apiUrl;
 
     getVehiculosDisponibles(page: number = 0, size: number = 12): Observable<PaginatedResponse<Vehicle>> {
         const params = new HttpParams().set('page', page.toString()).set('size', size.toString());
