@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '@angular/core';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { VehicleService } from '../../../core/services/vehicle.service';
@@ -11,7 +12,7 @@ import { ImagenVehiculo } from '../../../core/models/vehicle.model';
 @Component({
   selector: 'app-vehicle-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormatEnumPipe],
+  imports: [ReactiveFormsModule, FormatEnumPipe, ConfirmModalComponent],
   template: `
     <div class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
       <div class="bg-dark-teal-900 border border-baltic-blue-500/20 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-fade-in text-pitch-black-50">
@@ -190,6 +191,15 @@ import { ImagenVehiculo } from '../../../core/models/vehicle.model';
                           </form>
                         </div>
                       </div>
+
+    <!-- Modal de Confirmación -->
+    <app-confirm-modal
+      [isOpen]="modalConfig().isOpen"
+      [title]="modalConfig().title"
+      [message]="modalConfig().message"
+      (confirmed)="handleModalConfirm()"
+      (cancelled)="handleModalCancel()"
+    ></app-confirm-modal>
     `,
   styles: [`
     .animate-fade-in { animation: fadeIn 0.3s ease-out; }
@@ -230,6 +240,21 @@ export class VehicleFormComponent implements OnInit {
   selectedFiles = signal<File[]>([]);
   previews = signal<string[]>([]);
   existingImages = signal<ImagenVehiculo[]>([]);
+
+  // MODAL DE CONFIRMACIÓN
+  modalConfig = signal<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    action: 'deleteImage' | null;
+    data: any;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    action: null,
+    data: null
+  });
 
   ngOnInit() {
     this.cargarMarcas();
@@ -366,15 +391,41 @@ export class VehicleFormComponent implements OnInit {
   }
 
   removeExistingImage(id: number) {
-    if (confirm('¿Estás seguro de que quieres eliminar esta imagen de forma permanente?')) {
+    this.modalConfig.set({
+      isOpen: true,
+      title: 'Eliminar Imagen',
+      message: '¿Estás seguro de que quieres eliminar esta imagen de forma permanente? Esta acción no se puede deshacer.',
+      action: 'deleteImage',
+      data: id
+    });
+  }
+
+  handleModalConfirm() {
+    const config = this.modalConfig();
+    if (!config.action) return;
+
+    if (config.action === 'deleteImage') {
+      const id = config.data as number;
       this.vehicleService.deleteImage(id).subscribe({
         next: () => {
           this.existingImages.update(current => current.filter(img => img.id !== id));
           this.ns.success('Imagen eliminada');
+          this.closeConfirmModal();
         },
-        error: () => this.ns.error('Error al eliminar la imagen')
+        error: () => {
+          this.ns.error('Error al eliminar la imagen');
+          this.closeConfirmModal();
+        }
       });
     }
+  }
+
+  handleModalCancel() {
+    this.closeConfirmModal();
+  }
+
+  private closeConfirmModal() {
+    this.modalConfig.update(prev => ({ ...prev, isOpen: false, action: null, data: null }));
   }
 
   uploadSelectedPhotos() {

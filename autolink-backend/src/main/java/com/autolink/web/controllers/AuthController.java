@@ -16,10 +16,10 @@ import com.autolink.services.dto.RegisterRequest;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-	
+
 	@Autowired
 	private AuthService authService;
-	
+
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
 		return ResponseEntity.ok(this.authService.login(request));
@@ -30,7 +30,7 @@ public class AuthController {
 		// Corregido: Ahora recibe RegisterRequest para tener nombre, email, etc.
 		return ResponseEntity.ok(this.authService.registrar(request));
 	}
-	
+
 	@PostMapping("/refresh")
 	public ResponseEntity<LoginResponse> refresh(@RequestBody RefreshDTO request) {
 		return ResponseEntity.ok(this.authService.refresh(request));

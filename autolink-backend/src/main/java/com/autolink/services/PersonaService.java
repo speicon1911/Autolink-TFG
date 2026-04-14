@@ -208,6 +208,12 @@ public class PersonaService implements UserDetailsService {
 
 		return personaMapper.toDto(persona);
 	}
+	
+	// correo
+	public Persona findByCorreoEntity(String correo) {
+	    return personaRepository.findByCorreo(correo)
+	        .orElseThrow(() -> new PersonaNotFoundException("Usuario no encontrado"));
+	}
 
 	// paginados
 	public Page<PersonaDTO> getPersonasPaginadas(Rol rol, Boolean activo, Pageable pageable) {

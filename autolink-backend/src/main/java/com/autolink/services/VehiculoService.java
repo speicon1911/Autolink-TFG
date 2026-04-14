@@ -239,4 +239,10 @@ public class VehiculoService {
 		}
 		this.imagenVehiculoRepository.deleteById(idFoto);
 	}
+	
+	// correo
+	public Vehiculo findByIdEntity(int id) {
+	    return vehiculoRepository.findById(id)
+	        .orElseThrow(() -> new VehiculoNotFoundException("Vehículo no encontrado"));
+	}
 }

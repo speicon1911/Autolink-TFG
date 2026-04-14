@@ -20,4 +20,8 @@ export class ContactoService {
     enviarMensaje(contacto: ContactoDTO): Observable<void> {
         return this.http.post<void>(this.apiUrl, contacto);
     }
+
+    enviarMensajeVehiculo(idVehiculo: number, mensaje: string): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/vehiculo/${idVehiculo}`, { mensaje });
+    }
 }

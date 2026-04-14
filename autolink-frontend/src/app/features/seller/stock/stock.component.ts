@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VehicleService } from '../../../core/services/vehicle.service';
@@ -14,7 +15,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 @Component({
   selector: 'app-seller-stock',
   standalone: true,
-  imports: [CommonModule, VehicleFormComponent, SaleFormComponent, PaginationComponent, FormsModule],
+  imports: [CommonModule, VehicleFormComponent, SaleFormComponent, PaginationComponent, FormsModule, ConfirmModalComponent],
   template: `
     <div class="space-y-6 animate-fade-in">
       <header class="flex justify-between items-center">
@@ -227,6 +228,15 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
         </div>
       }
     </div>
+
+    <!-- Modal de Confirmación -->
+    <app-confirm-modal
+      [isOpen]="modalConfig().isOpen"
+      [title]="modalConfig().title"
+      [message]="modalConfig().message"
+      (confirmed)="handleModalConfirm()"
+      (cancelled)="handleModalCancel()"
+    ></app-confirm-modal>
     `,
   styles: [`
     .animate-fade-in { animation: fadeIn 0.4s ease-out; }
@@ -256,6 +266,21 @@ export class SellerStockComponent implements OnInit {
   totalItems = signal(0);
   currentPage = signal(0);
   itemsPerPage = 10;
+
+  // MODAL DE CONFIRMACIÓN
+  modalConfig = signal<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    action: 'deleteVehicle' | 'completeSale' | 'anularSale' | null;
+    data: any;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    action: null,
+    data: null
+  });
 
   ngOnInit() {
     this.cargarStock();
@@ -294,14 +319,13 @@ export class SellerStockComponent implements OnInit {
   }
 
   onDelete(id: number) {
-    if (confirm('¿Estás seguro de que deseas eliminar este vehículo?')) {
-      this.vehicleService.deleteVehiculo(id).subscribe({
-        next: () => {
-          this.ns.success('Vehículo eliminado con éxito');
-          this.cargarStock();
-        }
-      });
-    }
+    this.modalConfig.set({
+      isOpen: true,
+      title: 'Eliminar Vehículo',
+      message: '¿Estás seguro de que deseas eliminar este vehículo? Esta acción no se puede deshacer.',
+      action: 'deleteVehicle',
+      data: id
+    });
   }
 
   onEdit(v: Vehicle) {
@@ -373,28 +397,80 @@ export class SellerStockComponent implements OnInit {
   }
 
   onCompleteSale(sale: Sale) {
-    if (confirm('¿Confirmas la venta de este vehículo? Se marcará como no disponible.')) {
+    this.modalConfig.set({
+      isOpen: true,
+      title: 'Confirmar Venta',
+      message: '¿Confirmas la venta de este vehículo? Se marcará como no disponible.',
+      action: 'completeSale',
+      data: sale
+    });
+  }
+
+  onAnularSale(sale: Sale) {
+    this.modalConfig.set({
+      isOpen: true,
+      title: 'Anular Solicitud',
+      message: '¿Estás seguro de anular esta solicitud? El vehículo seguirá disponible para otros clientes.',
+      action: 'anularSale',
+      data: sale
+    });
+  }
+
+  handleModalConfirm() {
+    const config = this.modalConfig();
+    if (!config.action) return;
+
+    if (config.action === 'deleteVehicle') {
+      const id = config.data as number;
+      this.vehicleService.deleteVehiculo(id).subscribe({
+        next: () => {
+          this.ns.success('Vehículo eliminado con éxito');
+          this.cargarStock();
+          this.closeConfirmModal();
+        },
+        error: () => {
+          this.ns.error('Error al eliminar el vehículo');
+          this.closeConfirmModal();
+        }
+      });
+    } else if (config.action === 'completeSale') {
+      const sale = config.data as Sale;
       this.ventaService.completarVenta(sale.idVenta).subscribe({
         next: () => {
           this.ns.success('¡Venta realizada con éxito!');
           this.onCloseSalesModal();
           this.cargarStock();
+          this.closeConfirmModal();
+        },
+        error: () => {
+          this.ns.error('Error al completar la venta');
+          this.closeConfirmModal();
         }
       });
-    }
-  }
-
-  onAnularSale(sale: Sale) {
-    if (confirm('¿Estás seguro de anular esta solicitud?')) {
+    } else if (config.action === 'anularSale') {
+      const sale = config.data as Sale;
       this.ventaService.anularVenta(sale.idVenta).subscribe({
         next: () => {
           this.ns.success('Solicitud anulada');
           if (sale.vehiculo.idVehiculo) {
             this.loadVehicleSales(sale.vehiculo.idVehiculo);
           }
+          this.closeConfirmModal();
+        },
+        error: () => {
+          this.ns.error('Error al anular la solicitud');
+          this.closeConfirmModal();
         }
       });
     }
+  }
+
+  handleModalCancel() {
+    this.closeConfirmModal();
+  }
+
+  private closeConfirmModal() {
+    this.modalConfig.update(prev => ({ ...prev, isOpen: false, action: null, data: null }));
   }
 
   onPageChange(page: number) {

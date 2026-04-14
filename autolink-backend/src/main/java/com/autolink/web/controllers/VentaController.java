@@ -24,41 +24,41 @@ public class VentaController {
 
 	@Autowired
 	private VentaService ventaService;
-	
+
 	@GetMapping
-	public List<VentaDTO> findAll(){
+	public List<VentaDTO> findAll() {
 		return this.ventaService.findAll();
 	}
-	
+
 	@GetMapping("/vendedor/{idVendedor}")
-	public ResponseEntity<?> findByVendedor(@PathVariable int idVendedor){
+	public ResponseEntity<?> findByVendedor(@PathVariable int idVendedor) {
 		return ResponseEntity.ok(this.ventaService.findByVendedor(idVendedor));
 	}
-	
+
 	@GetMapping("/cliente/{idCliente}")
-	public ResponseEntity<?> findByCliente(@PathVariable int idCliente){
+	public ResponseEntity<?> findByCliente(@PathVariable int idCliente) {
 		return ResponseEntity.ok(this.ventaService.findByCliente(idCliente));
 	}
 
 	@GetMapping("/vehiculo/{idVehiculo}")
-	public ResponseEntity<?> findByVehiculo(@PathVariable int idVehiculo){
+	public ResponseEntity<?> findByVehiculo(@PathVariable int idVehiculo) {
 		return ResponseEntity.ok(this.ventaService.findByVehiculo(idVehiculo));
 	}
-	
+
 	@PutMapping("/{idVenta}/actualizar-precio")
-	public ResponseEntity<?> updatePrecio(@PathVariable int idVenta, @RequestBody Venta venta){
+	public ResponseEntity<?> updatePrecio(@PathVariable int idVenta, @RequestBody Venta venta) {
 		return ResponseEntity.ok(this.ventaService.updatePrecioVenta(venta, idVenta));
 	}
-	
+
 	@PostMapping
 	public ResponseEntity<VentaDTO> create(@RequestBody Venta venta) {
-	    return ResponseEntity.status(HttpStatus.CREATED).body(this.ventaService.createVenta(venta));
+		return ResponseEntity.status(HttpStatus.CREATED).body(this.ventaService.createVenta(venta));
 	}
 
 	@DeleteMapping("/{idVenta}")
 	public ResponseEntity<Void> delete(@PathVariable int idVenta) {
-	    this.ventaService.deleteVenta(idVenta);
-	    return ResponseEntity.noContent().build();
+		this.ventaService.deleteVenta(idVenta);
+		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping("/{idVenta}/anular")

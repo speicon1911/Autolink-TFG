@@ -9,6 +9,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { VentaService } from '../../../core/services/venta.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Rol } from '../../../core/models/user.model';
+import { ContactoService } from '../../../core/services/contacto.service';
 
 @Component({
     selector: 'app-vehicle-details',
@@ -201,8 +202,8 @@ import { Rol } from '../../../core/models/user.model';
                     <svg class="group-hover/buy:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                   }
                 </button>
-              } @else if (vehicle()?.disponible) {
-                <button class="btn-primary w-full text-white font-black py-5 rounded-2xl transition-all shadow-2xl shadow-baltic-blue-600/30 active:scale-[0.98] flex items-center justify-center gap-3 group/buy">
+              } @else if (vehicle()?.disponible && (canContact() || !authService.isAuthenticated())) {
+                <button (click)="openContactModal()" class="btn-primary w-full text-white font-black py-5 rounded-2xl transition-all shadow-2xl shadow-baltic-blue-600/30 active:scale-[0.98] flex items-center justify-center gap-3 group/buy">
                   Contactar con el Vendedor
                   <svg class="group-hover/buy:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
                 </button>
@@ -257,6 +258,56 @@ import { Rol } from '../../../core/models/user.model';
         </div>
       </div>
     }
+
+    <!-- Contact Modal -->
+    @if (showContactModal()) {
+      <div 
+        class="fixed inset-0 z-[100] bg-pitch-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+        (click)="closeContactModal()">
+        
+        <div 
+          class="bg-[#0A1622]/90 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-8 lg:p-12 max-w-lg w-full shadow-2xl relative overflow-hidden animate-zoom-in"
+          (click)="$event.stopPropagation()">
+          
+          <!-- Background Glow -->
+          <div class="absolute top-0 right-0 w-64 h-64 bg-baltic-blue-500/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
+
+          <button (click)="closeContactModal()" class="absolute top-6 right-6 text-white/40 hover:text-white transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+
+          <div class="relative z-10 space-y-8">
+            <div class="space-y-2 text-center">
+              <h3 class="text-3xl font-black text-white tracking-tight">Contactar con el Vendedor</h3>
+              <p class="text-baltic-blue-400 font-medium whitespace-nowrap overflow-hidden text-ellipsis">Envía un mensaje sobre este {{ vehicle()?.modelo }}</p>
+            </div>
+
+            <div class="space-y-4">
+              <div class="space-y-2">
+                <label class="text-[10px] text-baltic-blue-400 font-black uppercase tracking-widest px-1">Tu Mensaje</label>
+                <textarea 
+                  [(ngModel)]="contactMessage"
+                  rows="5"
+                  class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white placeholder:text-white/20 outline-none focus:border-baltic-blue-500 transition-all resize-none shadow-inner"
+                  placeholder="Escribe aquí tu consulta o interés por el vehículo..."></textarea>
+              </div>
+            </div>
+
+            <button 
+              (click)="sendContactMessage()"
+              [disabled]="isSendingContact() || !contactMessage().trim()"
+              class="btn-primary w-full text-white font-black py-5 rounded-2xl transition-all shadow-2xl shadow-baltic-blue-600/30 active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed">
+              @if (isSendingContact()) {
+                <div class="w-6 h-6 border-3 border-white/20 border-t-white rounded-full animate-spin"></div>
+              } @else {
+                Enviar Mensaje
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    }
     `,
     styles: [`
     .animate-fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -272,8 +323,9 @@ export class VehicleDetailsComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private vehicleService = inject(VehicleService);
-    private authService = inject(AuthService);
+    public authService = inject(AuthService);
     private ventaService = inject(VentaService);
+    private contactoService = inject(ContactoService);
     private ns = inject(NotificationService);
 
     vehicle = signal<Vehicle | null>(null);
@@ -282,6 +334,14 @@ export class VehicleDetailsComponent implements OnInit {
     offerPrice = signal(0);
     selectedImageIndex = signal(0);
     isLightboxOpen = signal(false);
+    showContactModal = signal(false);
+    contactMessage = signal('');
+    isSendingContact = signal(false);
+
+    canContact = computed(() => {
+        const user = this.authService.currentUser$();
+        return user?.rol === Rol.ADMINISTRADOR || user?.rol === Rol.VENDEDOR;
+    });
 
     isClient = computed(() => {
         const user = this.authService.currentUser$();
@@ -372,10 +432,56 @@ export class VehicleDetailsComponent implements OnInit {
                 this.ns.success('Solicitud de compra enviada con éxito');
                 this.router.navigate(['/cliente/compras']);
             },
-            error: (err) => {
+            error: (err: any) => {
                 console.error('Error en compra:', err);
                 this.ns.error('Error al procesar la solicitud de compra');
                 this.buying.set(false);
+            }
+        });
+    }
+
+    // CONTACT LOGIC
+    openContactModal() {
+        if (!this.authService.isAuthenticated()) {
+            this.ns.info('Debes iniciar sesión para contactar con el vendedor');
+            this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+            return;
+        }
+
+        if (!this.canContact()) {
+            this.ns.error('Solo los vendedores o administradores pueden contactar directamente. Como cliente, puedes realizar una oferta.');
+            return;
+        }
+
+        this.showContactModal.set(true);
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeContactModal() {
+        this.showContactModal.set(false);
+        this.contactMessage.set('');
+        if (!this.isLightboxOpen()) {
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    sendContactMessage() {
+        const v = this.vehicle();
+        const msg = this.contactMessage().trim();
+        
+        if (!v || !msg) return;
+
+        this.isSendingContact.set(true);
+        this.contactoService.enviarMensajeVehiculo(v.idVehiculo, msg).subscribe({
+            next: () => {
+                this.ns.success('Mensaje enviado al vendedor correctamente');
+                this.closeContactModal();
+                this.isSendingContact.set(false);
+            },
+            error: (err) => {
+                console.error('Error al enviar mensaje:', err);
+                this.ns.error('No se pudo enviar el mensaje. Inténtalo de nuevo.');
+                this.isSendingContact.set(false);
             }
         });
     }

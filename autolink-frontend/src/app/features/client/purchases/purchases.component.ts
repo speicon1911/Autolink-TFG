@@ -5,11 +5,12 @@ import { VentaService } from '../../../core/services/venta.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Sale } from '../../../core/models/sale.model';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
     selector: 'app-client-purchases',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ConfirmModalComponent],
     template: `
     <div class="space-y-6 animate-fade-in">
       <header>
@@ -97,6 +98,15 @@ import { Sale } from '../../../core/models/sale.model';
         </div>
       }
     </div>
+
+    <!-- Modal de Confirmación -->
+    <app-confirm-modal
+      [isOpen]="modalConfig().isOpen"
+      [title]="modalConfig().title"
+      [message]="modalConfig().message"
+      (confirmed)="handleModalConfirm()"
+      (cancelled)="handleModalCancel()"
+    ></app-confirm-modal>
     `,
     styles: [`
     .animate-fade-in { animation: fadeIn 0.4s ease-out; }
@@ -112,6 +122,21 @@ export class ClientPurchasesComponent implements OnInit {
     loading = signal(true);
     editingId = signal<number | null>(null);
     newPrice: number = 0;
+
+    // MODAL DE CONFIRMACIÓN
+    modalConfig = signal<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        action: 'completePurchase' | 'cancelPurchase' | null;
+        data: any;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        action: null,
+        data: null
+    });
 
     ngOnInit() {
         this.loadPurchases();
@@ -153,26 +178,63 @@ export class ClientPurchasesComponent implements OnInit {
     }
 
     completeSale(sale: Sale) {
-        if (confirm(`¿Confirmas que aceptas la compra por ${sale.precio}€? La operación se formalizará inmediatamente y el vehículo será tuyo.`)) {
+        this.modalConfig.set({
+            isOpen: true,
+            title: 'Confirmar Compra',
+            message: `¿Confirmas que aceptas la compra por ${sale.precio}€? La operación se formalizará inmediatamente y el vehículo será tuyo.`,
+            action: 'completePurchase',
+            data: sale
+        });
+    }
+
+    cancelSale(sale: Sale) {
+        this.modalConfig.set({
+            isOpen: true,
+            title: 'Anular Petición',
+            message: '¿Estás seguro de que deseas ANULAR esta petición de compra? La operación no se podrá revertir.',
+            action: 'cancelPurchase',
+            data: sale
+        });
+    }
+
+    handleModalConfirm() {
+        const config = this.modalConfig();
+        if (!config.action) return;
+
+        if (config.action === 'completePurchase') {
+            const sale = config.data as Sale;
             this.ventaService.completarVenta(sale.idVenta).subscribe({
                 next: () => {
                     this.ns.success('¡Felicidades! Compra completada con éxito');
                     this.loadPurchases();
+                    this.closeConfirmModal();
                 },
-                error: () => this.ns.error('Error al completar la compra')
+                error: () => {
+                    this.ns.error('Error al completar la compra');
+                    this.closeConfirmModal();
+                }
             });
-        }
-    }
-
-    cancelSale(sale: Sale) {
-        if (confirm(`¿Estás seguro de que deseas ANULAR esta petición de compra? La operación no se podrá revertir.`)) {
+        } else if (config.action === 'cancelPurchase') {
+            const sale = config.data as Sale;
             this.ventaService.anularVenta(sale.idVenta).subscribe({
                 next: () => {
                     this.ns.success('Petición anulada correctamente');
                     this.loadPurchases();
+                    this.closeConfirmModal();
                 },
-                error: () => this.ns.error('Error al anular la petición')
+                error: () => {
+                    this.ns.error('Error al anular la petición');
+                    this.closeConfirmModal();
+                }
             });
         }
+    }
+
+    handleModalCancel() {
+        this.closeConfirmModal();
+    }
+
+    private closeConfirmModal() {
+        this.modalConfig.update(prev => ({ ...prev, isOpen: false, action: null, data: null }));
     }
 }

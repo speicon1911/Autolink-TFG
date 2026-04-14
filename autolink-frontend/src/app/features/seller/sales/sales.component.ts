@@ -5,11 +5,12 @@ import { VentaService } from '../../../core/services/venta.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Sale } from '../../../core/models/sale.model';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-seller-sales',
   standalone: true,
-  imports: [CommonModule, FormsModule, CurrencyPipe, DatePipe],
+  imports: [CommonModule, FormsModule, CurrencyPipe, DatePipe, ConfirmModalComponent],
   template: `
     <div class="space-y-6 animate-fade-in">
       <header>
@@ -120,6 +121,15 @@ import { Sale } from '../../../core/models/sale.model';
         </div>
       }
     </div>
+
+    <!-- Modal de Confirmación -->
+    <app-confirm-modal
+      [isOpen]="modalConfig().isOpen"
+      [title]="modalConfig().title"
+      [message]="modalConfig().message"
+      (confirmed)="handleModalConfirm()"
+      (cancelled)="handleModalCancel()"
+    ></app-confirm-modal>
   `,
   styles: [`
     .animate-fade-in { animation: fadeIn 0.4s ease-out; }
@@ -137,6 +147,21 @@ export class SellerSalesComponent implements OnInit {
   totalSales = signal<number>(0);
   editingId = signal<number | null>(null);
   newPrice: number = 0;
+
+  // MODAL DE CONFIRMACIÓN
+  modalConfig = signal<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    action: 'completeSale' | 'cancelSale' | null;
+    data: any;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    action: null,
+    data: null
+  });
 
   ngOnInit() {
     this.loadSales();
@@ -188,26 +213,63 @@ export class SellerSalesComponent implements OnInit {
   }
 
   completeSale(sale: Sale) {
-    if (confirm(`¿Confirmas que la venta del ${sale.vehiculo.marca?.nombre} ${sale.vehiculo.modelo} ha sido finalizada con éxito? El vehículo ya no aparecerá disponible.`)) {
+    this.modalConfig.set({
+      isOpen: true,
+      title: 'Finalizar Venta',
+      message: `¿Confirmas que la venta del ${sale.vehiculo.marca?.nombre} ${sale.vehiculo.modelo} ha sido finalizada con éxito? El vehículo ya no aparecerá disponible.`,
+      action: 'completeSale',
+      data: sale
+    });
+  }
+
+  cancelSale(sale: Sale) {
+    this.modalConfig.set({
+      isOpen: true,
+      title: 'Anular Operación',
+      message: '¿Estás seguro de que deseas ANULAR la solicitud del cliente? La operación quedará registrada como anulada y el vehículo seguirá a la venta.',
+      action: 'cancelSale',
+      data: sale
+    });
+  }
+
+  handleModalConfirm() {
+    const config = this.modalConfig();
+    if (!config.action) return;
+
+    if (config.action === 'completeSale') {
+      const sale = config.data as Sale;
       this.ventaService.completarVenta(sale.idVenta).subscribe({
         next: () => {
           this.ns.success('Venta finalizada con éxito');
           this.loadSales();
+          this.closeConfirmModal();
         },
-        error: () => this.ns.error('Error al finalizar la venta')
+        error: () => {
+          this.ns.error('Error al finalizar la venta');
+          this.closeConfirmModal();
+        }
       });
-    }
-  }
-
-  cancelSale(sale: Sale) {
-    if (confirm(`¿Estás seguro de que deseas ANULAR la solicitud del cliente? La operación quedará registrada como anulada y el vehículo seguirá a la venta.`)) {
+    } else if (config.action === 'cancelSale') {
+      const sale = config.data as Sale;
       this.ventaService.anularVenta(sale.idVenta).subscribe({
         next: () => {
           this.ns.success('Operación anulada correctamente');
           this.loadSales();
+          this.closeConfirmModal();
         },
-        error: () => this.ns.error('Error al anular la operación')
+        error: () => {
+          this.ns.error('Error al anular la operación');
+          this.closeConfirmModal();
+        }
       });
     }
+  }
+
+  handleModalCancel() {
+    this.closeConfirmModal();
+  }
+
+  private closeConfirmModal() {
+    this.modalConfig.update(prev => ({ ...prev, isOpen: false, action: null, data: null }));
   }
 }
