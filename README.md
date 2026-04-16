@@ -116,7 +116,7 @@ La seguridad es un pilar fundamental en AutoLink:
 
 ## ✒️ Autores
 
-* **Sergio Palacios** - *Desarrollador Full Stack* - [speicon1911](https://github.com/speicon1911)
+* **Salvador Peinado** - *Desarrollador Full Stack* - [speicon1911](https://github.com/speicon1911)
 
 ---
 *Este proyecto ha sido realizado para el módulo de Proyecto Intermodular de Desarrollo de Aplicaciones Web.*
