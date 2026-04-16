@@ -7,7 +7,7 @@ import { NotificationService } from '../../../core/services/notification.service
     standalone: true,
     imports: [CommonModule],
     template: `
-    <div class="fixed top-20 right-5 z-[60] flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+    <div class="fixed top-20 left-4 right-4 md:left-auto md:right-5 z-[60] flex flex-col gap-3 md:max-w-sm pointer-events-none">
       @for (n of notificationService.notifications$(); track n) {
         <div
           class="pointer-events-auto p-4 rounded-xl shadow-2xl border flex items-center gap-3 animate-slide-in"

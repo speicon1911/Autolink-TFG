@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { NgOptimizedImage } from '@angular/common';
 
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, NgOptimizedImage],
   styles: [`
     @media (max-width: 1023px) {
       .desktop-only {
@@ -32,7 +33,7 @@ import { AuthService } from '../../../core/services/auth.service';
           <div class="flex items-center gap-2">
             <a routerLink="/" class="flex items-center gap-2 group">
               <div class="w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110">
-                <img src="logo.png" alt="AutoLink Logo" class="w-full h-full object-contain">
+                <img ngSrc="logo.png" width="47" height="40" alt="AutoLink Logo" priority class="object-contain">
               </div>
               <span class="text-2xl font-black tracking-tighter text-pitch-black-50">
                 AutoLink
@@ -70,7 +71,7 @@ import { AuthService } from '../../../core/services/auth.service';
                   </div>
                   <div class="w-8 h-8 rounded-full bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500 group-hover:ring-2 group-hover:ring-baltic-blue-500 transition-all shadow-sm overflow-hidden">
                     @if (authService.currentUser$()?.fotoPerfil) {
-                      <img [src]="authService.currentUser$()?.fotoPerfil" alt="Profile" class="w-full h-full object-cover">
+                      <img [ngSrc]="authService.currentUser$()!.fotoPerfil!" width="32" height="32" alt="Profile" class="w-full h-full object-cover">
                     } @else {
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     }
@@ -132,7 +133,7 @@ import { AuthService } from '../../../core/services/auth.service';
               <a [routerLink]="getProfileRoute()" (click)="closeMobileMenu()" class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/5 transition-colors group flex-1">
                 <div class="w-10 h-10 rounded-full bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500 group-hover:ring-2 group-hover:ring-baltic-blue-500 transition-all overflow-hidden shadow-sm">
                   @if (authService.currentUser$()?.fotoPerfil) {
-                    <img [src]="authService.currentUser$()?.fotoPerfil" alt="Profile" class="w-full h-full object-cover">
+                    <img [ngSrc]="authService.currentUser$()!.fotoPerfil!" width="40" height="40" alt="Profile" class="w-full h-full object-cover">
                   } @else {
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   }

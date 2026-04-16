@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed, HostListener } from '@angular/core';
 import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Vehicle } from '../../../core/models/vehicle.model';
@@ -14,7 +14,7 @@ import { ContactoService } from '../../../core/services/contacto.service';
 @Component({
     selector: 'app-vehicle-details',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormatEnumPipe, FormsModule],
+    imports: [CommonModule, RouterLink, FormatEnumPipe, FormsModule, NgOptimizedImage],
     template: `
     <div class="max-w-6xl mx-auto space-y-12 animate-fade-in py-8 px-4 lg:px-0">
       <!-- Breadcrumb / Back -->
@@ -35,8 +35,10 @@ import { ContactoService } from '../../../core/services/contacto.service';
               (click)="openLightbox()">
               
               @if (vehicle()?.imagenes && vehicle()!.imagenes!.length > 0) {
-                <img [src]="vehicle()!.imagenes![selectedImageIndex()].url" 
-                  class="w-full h-full object-cover group-hover/main-img:scale-105 transition-transform duration-700 ease-out">
+                <img [ngSrc]="vehicle()!.imagenes![selectedImageIndex()].url" 
+                  fill
+                  priority
+                  class="object-cover group-hover/main-img:scale-105 transition-transform duration-700 ease-out">
                 
                 <!-- Overlay Gradient -->
                 <div class="absolute inset-0 bg-gradient-to-t from-pitch-black/40 via-transparent to-transparent opacity-0 group-hover/main-img:opacity-100 transition-opacity"></div>
@@ -86,7 +88,7 @@ import { ContactoService } from '../../../core/services/contacto.service';
                     class="flex-shrink-0 w-24 h-20 rounded-2xl overflow-hidden border-2 transition-all relative group"
                     [class.border-baltic-blue-500]="selectedImageIndex() === $index"
                     [class.border-white/10]="selectedImageIndex() !== $index">
-                    <img [src]="img.url" class="w-full h-full object-cover">
+                    <img [ngSrc]="img.url" fill class="object-cover">
                     <!-- Overlay if not selected -->
                     @if (selectedImageIndex() !== $index) {
                       <div class="absolute inset-0 bg-pitch-black/40 group-hover:bg-pitch-black/0 transition-colors"></div>
@@ -247,8 +249,9 @@ import { ContactoService } from '../../../core/services/contacto.service';
         <!-- Main Lightbox Image -->
         <div class="max-w-5xl w-full max-h-[85vh] flex flex-col items-center gap-6" (click)="$event.stopPropagation()">
           <img 
-            [src]="vehicle()!.imagenes![selectedImageIndex()].url" 
-            class="w-full h-full object-contain rounded-3xl shadow-2xl pointer-events-none select-none animate-zoom-in"
+            [ngSrc]="vehicle()!.imagenes![selectedImageIndex()].url" 
+            fill
+            class="object-contain rounded-3xl shadow-2xl pointer-events-none select-none animate-zoom-in"
             alt="Vehículo Ampliado">
           
           <!-- Counter -->
