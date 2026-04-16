@@ -1,6 +1,5 @@
 # AutoLink - Plataforma de Compra-Venta de Vehículos 🚗💨
 
-![AutoLink Logo](https://img.icons8.com/shrike/128/null/car.png)
 
 **AutoLink** es una aplicación web moderna diseñada para facilitar la compra y venta de vehículos. Este proyecto ha sido desarrollado como el **Trabajo de Fin de Grado (TFG)** para el ciclo de Desarrollo de Aplicaciones Web (DAW). La plataforma ofrece una experiencia intuitiva tanto para compradores como para vendedores, integrando una gestión avanzada de inventario, búsquedas filtradas y un sistema de administración robusto.
 
