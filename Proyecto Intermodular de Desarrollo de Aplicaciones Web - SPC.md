@@ -2,105 +2,44 @@
 
 ![][image1]
 
-# **Índice** {#índice}
+# **1. Índice** {#índice}
 
-[**Índice	2**](#índice)
 
-[**Estudio del problema y análisis del sistema	4**](#estudio-del-problema-y-análisis-del-sistema)
+[**1. Índice**](#índice)
 
-[Introducción	4](#introducción)
+[**2. Estudio del problema y análisis del sistema**](#estudio-del-problema-y-análisis-del-sistema)
+*   [Introducción](#introducción)
+*   [Justificación del proyecto](#justificación-del-proyecto)
+*   [Objetivos, funciones y rendimientos deseados](#objetivos,-funciones-y-rendimientos-deseados)
+*   [Ciclo de vida del proyecto](#ciclo-de-vida-del-proyecto)
+*   [Recursos](#recursos)
 
-[Justificación del proyecto	4](#justificación-del-proyecto)
+[**3. Ejecución del proyecto**](#ejecución-del-proyecto)
+*   [Requisitos y diagramas del sistema](#requisitos-y-diagramas-del-sistema)
+*   [Historias de usuario](#historias-de-usuario)
+*   [Especificaciones Técnicas y Arquitectura](#especificaciones-técnicas-y-arquitectura)
+*   [Logica de seguridad avanzada (JWT)](#logica-de-seguridad-avanzada-(jwt))
+*   [Arquitectura Frontend (Angular 21)](#arquitectura-frontend-(angular-21))
+*   [Documentación de la API (REST)](#documentación-de-la-api-(rest))
 
-[Objetivos, funciones y rendimientos deseados	5](#objetivos,-funciones-y-rendimientos-deseados)
+[**4. Documentación del sistema**](#documentación-del-sistema)
+*   [Manual de instalación, despliegue y configuración](#manual-de-instalación,-despliegue-y-configuración-de-la-aplicación.)
+*   [Manual de usuario](#manual-de-usuario)
+    *   [Guía del Comprador (Cliente)](#4.b.1.-guía-del-comprador-(cliente))
+    *   [Guía del Vendedor](#4.b.2.-guía-del-vendedor)
+    *   [Guía del Administrador](#4.b.3.-guía-del-administrador)
+*   [Enlace a la presentación](#enlace-a-la-presentación)
 
-[Ciclo de vida del proyecto	6](#ciclo-de-vida-del-proyecto)
+[**5. Conclusiones finales**](#conclusiones-finales)
+*   [Tiempo estimado y tiempo empleado](#tiempo-estimado-y-tiempo-empleado-para-el-proyecto-en-cada-una-de-sus-fases)
+*   [Grado de cumplimiento de los objetivos](#grado-de-cumplimiento-de-los-objetivos-fijados)
+*   [Propuesta de modificaciones futuras](#propuesta-de-modificaciones-o-ampliaciones-futuras-del-sistema-implementado.)
 
-[Recursos	7](#recursos)
+[**6. Bibliografía y Webgrafía**](#bibliografía-y-webgrafía)
 
-[Recursos humanos	7](#recursos-humanos)
+---
 
-[Recursos hardware	7](#recursos-hardware)
-
-[Recursos software	7](#recursos-software)
-
-[**Ejecución del proyecto	9**](#ejecución-del-proyecto)
-
-[Requisitos y diagramas del sistema	9](#requisitos-y-diagramas-del-sistema)
-
-[Requisitos Funcionales (RF)	9](#requisitos-funcionales-\(rf\))
-
-[Requisitos No Funcionales (RNF)	9](#requisitos-no-funcionales-\(rnf\))
-
-[Historias de usuario	10](#historias-de-usuario)
-
-[Diagrama de Clases	12](#diagrama-de-clases)
-
-[Diagrama de casos de uso	13](#diagrama-de-casos-de-uso)
-
-[Diagrama E/R	14](#diagrama-e/r)
-
-[Elaboración de la documentación técnica	15](#elaboración-de-la-documentación-técnica)
-
-[Especificaciones Técnicas y Arquitectura	15](#especificaciones-técnicas-y-arquitectura)
-
-[Stack Tecnológico	15](#stack-tecnológico)
-
-[Arquitectura del Sistema	15](#arquitectura-del-sistema)
-
-[Infraestructura y Configuración	15](#infraestructura-y-configuración)
-
-[Orquestación con docker	15](#orquestación-con-docker)
-
-[Configuración del backend	16](#configuración-del-backend)
-
-[Modelo de datos y Patrones de diseño	16](#modelo-de-datos-y-patrones-de-diseño)
-
-[Entidades y Persistencia	16](#entidades-y-persistencia)
-
-[Transformacion de Datos	16](#transformacion-de-datos)
-
-[Logica de seguridad avanzada (JWT)	17](#logica-de-seguridad-avanzada-\(jwt\))
-
-[Generacion de tokens	17](#generacion-de-tokens)
-
-[Filtro de intercepción	17](#filtro-de-intercepción)
-
-[Servicios de integración (Nube y Email)	18](#servicios-de-integración-\(nube-y-email\))
-
-[Gestión de Imágenes (ImgBB API)	18](#gestión-de-imágenes-\(imgbb-api\))
-
-[Notificaciones automáticas	19](#notificaciones-automáticas)
-
-[Arquitectura Frontend (Angular 21\)	19](#arquitectura-frontend-\(angular-21\))
-
-[Reactividad con Signals	19](#reactividad-con-signals)
-
-[Seguridad en cliente (Auth Interceptor)	19](#seguridad-en-cliente-\(auth-interceptor\))
-
-[Control de Errores Global	20](#control-de-errores-global)
-
-[Enlaces	20](#enlaces)
-
-[**Documentación del sistema	21**](#documentación-del-sistema)
-
-[Manual de instalación, despliegue y configuración de la aplicación.	21](#manual-de-instalación,-despliegue-y-configuración-de-la-aplicación.)
-
-[Manual de usuario	22](#manual-de-usuario)
-
-[Enlace a la presentación	23](#enlace-a-la-presentación)
-
-[**Conclusiones finales	23**](#conclusiones-finales)
-
-[Tiempo estimado y tiempo empleado para el proyecto en cada una de sus fases	23](#tiempo-estimado-y-tiempo-empleado-para-el-proyecto-en-cada-una-de-sus-fases)
-
-[Grado de cumplimiento de los objetivos fijados	24](#grado-de-cumplimiento-de-los-objetivos-fijados)
-
-[Propuesta de modificaciones o ampliaciones futuras del sistema implementado.	25](#propuesta-de-modificaciones-o-ampliaciones-futuras-del-sistema-implementado.)
-
-[**Bibliografía y Webgrafía	25**](#bibliografía-y-webgrafía)
-
-# **Estudio del problema y análisis del sistema** {#estudio-del-problema-y-análisis-del-sistema}
+# **2. Estudio del problema y análisis del sistema** {#estudio-del-problema-y-análisis-del-sistema}
 
 ## **Introducción** {#introducción}
 
@@ -197,7 +136,7 @@ El desarrollo se basa en un ecosistema de código abierto y herramientas de vang
 | **GitHub** | Control de versiones y repositorio | gratuito | 0,00 € |
 | **Total Software** |  |  | 145,00 € |
 
-# **Ejecución del proyecto** {#ejecución-del-proyecto}
+# **3. Ejecución del proyecto** {#ejecución-del-proyecto}
 
 ## **Requisitos y diagramas del sistema** {#requisitos-y-diagramas-del-sistema}
 
@@ -263,17 +202,56 @@ Definen las propiedades y restricciones del sistema:
 
 #### ***Stack Tecnológico*** {#stack-tecnológico}
 
-AutoLink se ha desarrollado utilizando tecnologías de vanguardia para garantizar un rendimiento óptimo y una experiencia de usuario fluida:
+AutoLink se ha desarrollado utilizando tecnologías de vanguardia para garantizar un rendimiento óptimo y una experiencia de usuario fluida. El ecosistema tecnológico se divide en tres capas principales:
 
-* **Backend**: Java 21 con Spring Boot 3.4.3.  
-* **Frontend**: Angular 21 y Tailwind CSS 4.0.  
-* **Persistencia**: MariaDB sobre Docker.  
-* **Seguridad**: Spring Security con JSON Web Tokens (JWT).  
-* **Infraestructura**: Docker & Docker Compose.
+**Frontend (Cliente)**
+*   **Framework**: Angular 21 (basado en componentes standalone).
+*   **Renderizado**: Server-Side Rendering (SSR) con `@angular/ssr`.
+*   **Estilos**: Tailwind CSS 4.0 para un diseño moderno y responsive.
+*   **Seguridad**: Interceptores HTTP para inyección de JWT y `jwt-decode`.
+*   **Lenguaje**: TypeScript 5.9.
+
+**Backend (API REST)**
+*   **Framework**: Spring Boot 3.4.3 sobre Java 21 LTS.
+*   **Seguridad**: Spring Security con JSON Web Tokens (JWT) stateless.
+*   **Librerías**: `com.auth0:java-jwt` para gestión de tokens, Lombok para reducción de código boilerplate.
+*   **Persistencia**: Spring Data JPA con drivers MariaDB específicos.
+*   **Servicios**: Spring Boot Starter Mail para notificaciones SMTP e integración con API ImgBB.
+
+**Infraestructura y Persistencia**
+*   **Base de Datos**: MariaDB (gestionada mediante contenedores Docker).
+*   **Administración**: phpMyAdmin (interfaz web para gestión de DB).
+*   **Orquestación**: Docker & Docker Compose para reproductibilidad del entorno.
 
 #### ***Arquitectura del Sistema*** {#arquitectura-del-sistema}
 
-El sistema sigue una arquitectura de **Microservicios desacoplados**. El backend funciona como una **API REST stateless**, lo que permite que el frontend sea totalmente independiente y pueda escalar o ser reemplazado sin afectar la lógica de negocio.
+El sistema sigue una arquitectura de **Microservicios desacoplados** dividida en tres niveles (Three-tier Architecture) que se comunican exclusivamente mediante el protocolo HTTP:
+
+1.  **Capa de Presentación (Frontend)**: Aplicación Angular que maneja la lógica de interfaz, enrutamiento y consumo de servicios asíncronos. Se comunica con el backend mediante una API REST protegida.
+2.  **Capa de Lógica de Negocio (Backend)**: Servicio Spring Boot que expone los endpoints de la plataforma. Es una aplicación *stateless*; no mantiene sesiones en el servidor, delegando la identidad al token enviado en cada cabecera.
+3.  **Capa de Datos (Persistencia)**: Instancia de MariaDB que almacena la información estructurada (Usuarios, Vehículos, Ventas, Marcas).
+
+**Flujo de Comunicación Típico:**
+`Navegador (Usuario) ↔ Angular Client ↔ API REST (Spring Boot) ↔ MariaDB / Cloud Services (ImgBB/Email)`
+
+#### ***Roles de Usuario y Permisos*** {#roles-de-usuario}
+
+El sistema implementa un control de acceso basado en roles (RBAC) definido en el enumerado `Rol` de la base de datos:
+
+*   **CLIENTE (Comprador)**: Perfil predeterminado al registrarse. Puede explorar el catálogo, ver detalles de vehículos, iniciar procesos de compra y gestionar sus compras propias en su panel personal (`/cliente/compras`).
+*   **VENDEDOR (Comisionista/Propietario)**: Posee todas las capacidades del cliente, además de la gestión total de su stock propio: subir vehículos, editar precios, cargar fotografías a la nube y confirmar o anular ventas iniciadas por compradores.
+*   **ADMINISTRADOR**: Rol de gestión total. Puede administrar todos los usuarios, cambiar roles, verificar vehículos de cualquier vendedor (activando el sello de confianza), gestionar el catálogo maestro de marcas y auditar todas las transacciones del sistema.
+
+#### ***Estructura de Rutas y Seguridad*** {#estructur-rutas}
+
+La seguridad se garantiza mediante guardias de ruta en Angular (`authGuard` y `roleGuard`) que protegen el acceso a los cuadros de mando específicos:
+
+-   `/` — Catálogo público de vehículos (sin autenticación).
+-   `/vehiculo/:id` — Detalle técnico del vehículo.
+-   `/login` y `/registrar` — Gestión de acceso.
+-   `/cliente/**` — Cuadro de mando de compradores (Protegido por `Rol.CLIENTE`).
+-   `/vendedor/**` — Gestión de inventario y ventas (Protegido por `Rol.VENDEDOR`).
+-   `/admin/**` — Gestión de plataforma, usuarios y marcas (Protegido por `Rol.ADMINISTRADOR`).
 
 ### **Infraestructura y Configuración** {#infraestructura-y-configuración}
 
@@ -376,6 +354,26 @@ Se implementa un manejador centralizado para capturar cualquier excepción y dev
 | :---- |
 | @RestControllerAdvice public class GlobalExceptionHandler {    @ExceptionHandler(VehiculoNotFoundException.class)    public ResponseEntity\<String\> handleNotFound(VehiculoNotFoundException ex) {        return ResponseEntity.status(HttpStatus.NOT\_FOUND).body(ex.getMessage());    }       @ExceptionHandler(MaxUploadSizeExceededException.class)    public ResponseEntity\<String\> handleMaxSize() {        return ResponseEntity.status(HttpStatus.PAYLOAD\_TOO\_LARGE).body("Imagen demasiado grande (Máx 5MB).");    } } |
 
+#### ***Referencia de la API REST (Principales Endpoints)*** {#api-reference}
+
+La comunicación entre el cliente Angular y el servidor Spring Boot se realiza mediante una interfaz RESTful. A continuación se detallan los endpoints más significativos del sistema:
+
+**1. Autenticación y Registro**
+*   `POST /auth/register`: Registra un nuevo usuario en la base de datos (por defecto con rol CLIENTE).
+*   `POST /auth/login`: Intercambia credenciales (email/password) por un par de tokens JWT (Access Token y Refresh Token).
+*   `POST /auth/refresh`: Genera un nuevo Access Token utilizando un Refresh Token válido.
+
+**2. Gestión de Vehículos (Público y Privado)**
+*   `GET /vehiculos/buscar-disponible`: Devuelve una lista paginada de vehículos disponibles para el catálogo público.
+*   `GET /vehiculos/buscar`: Endpoint de búsqueda avanzada con filtros (marca, modelo, precio máximo, combustible, etc.).
+*   `POST /vehiculos`: (Vendedor/Admin) Permite crear una nueva publicación de vehículo.
+*   `PUT /vehiculos/{id}/verificado`: (Solo Admin) Permite activar o desactivar el sello de verificación de un vehículo.
+
+**3. Transacciones y Ventas**
+*   `POST /ventas`: Inicia un proceso de compra vinculando a un cliente con un vehículo y un vendedor.
+*   `GET /ventas/vendedor/{id}`: Recupera el historial de ventas o solicitudes de compra recibidas por un vendedor específico.
+*   `PUT /ventas/{id}/completar`: Finaliza una transacción, marcando el vehículo como vendido y cerrando el proceso.
+
 ## **Enlaces** {#enlaces}
 
 Repositorios y Proyecto:
@@ -394,15 +392,172 @@ Herramientas para despliegue y pruebas:
 * MariaDB Server: [https://mariadb.org/download/](https://mariadb.org/download/)  
 * PhpMyAdmin (Docker Hub): [https://hub.docker.com/\_/phpmyadmin](https://hub.docker.com/_/phpmyadmin)
 
-# **Documentación del sistema** {#documentación-del-sistema}
+# **4. Documentación del sistema** {#documentación-del-sistema}
 
 ## **Manual de instalación, despliegue y configuración de la aplicación.** {#manual-de-instalación,-despliegue-y-configuración-de-la-aplicación.}
 
+Este apartado detalla el proceso para poner en marcha el ecosistema completo de AutoLink. La aplicación consta de tres componentes independientes: una base de datos MariaDB (gestionada con Docker), un backend Spring Boot y un frontend Angular.
+
+### **Requisitos previos**
+
+Antes de comenzar, es necesario tener instaladas las siguientes herramientas:
+
+| Herramienta | Versión mínima | Propósito |
+| :--- | :--- | :--- |
+| **Docker + Docker Compose** | Reciente | Ejecución de MariaDB y phpMyAdmin |
+| **Java (JDK)** | 21 | Compilación y ejecución del backend |
+| **Maven** | 3.9+ | Gestión de dependencias y construcción del API |
+| **Node.js** | 20+ | Entorno para Angular y SSR |
+| **npm** | 11+ | Gestor de paquetes del frontend |
+| **Angular CLI** | 21 | Servidor de desarrollo del frontend |
+
+Para instalar Angular CLI de forma global:
+```bash
+npm install -g @angular/cli@21
+```
+
+---
+
+### **Paso 1: Configuración de la Base de Datos (Docker)**
+
+El proyecto incluye un archivo `docker-compose.yml` en la raíz que despliega MariaDB en el puerto **3307** y phpMyAdmin en el **8080**.
+
+1.  **Levantar los servicios:**
+    ```bash
+    docker compose up -d
+    ```
+2.  **Verificar el estado:**
+    ```bash
+    docker compose ps
+    ```
+    Los contenedores `autolink-db` y `autolink-pma` deben figurar como `Up`. La interfaz de gestión estará disponible en `http://localhost:8080`.
+
+---
+
+### **Paso 2: Variables de Entorno y Secretos**
+
+El backend requiere configurar ciertas variables de entorno para su correcto funcionamiento (seguridad, base de datos y servicios externos).
+
+| Variable | Descripción |
+| :--- | :--- |
+| `DB_PASSWORD` | Contraseña del usuario `root` de MariaDB |
+| `JWT_SECRET` | Clave secreta para firmar los tokens (mín. 32 caracteres) |
+| `IMGBB_API_KEY` | API Key para el alojamiento de imágenes en ImgBB |
+| `MAIL_USERNAME` | Cuenta de correo para el envío de notificaciones |
+| `MAIL_PASSWORD` | Contraseña de aplicación del servicio SMTP |
+| `ADMIN_EMAIL` | Correo donde se recibirán las consultas de contacto |
+
+**Nota:** Estas variables pueden definirse en el sistema o mediante un archivo `application-secrets.properties` en `src/main/resources/` (excluido de Git por seguridad).
+
+---
+
+### **Paso 3: Ejecución del Backend (Spring Boot)**
+
+Desde el directorio `autolink-backend/`, ejecute el siguiente comando para iniciar el API en el puerto **8082**:
+
+```bash
+./mvnw spring-boot:run
+```
+
+En el primer inicio, Hibernate creará automáticamente todas las tablas necesarias en la base de datos `autolink` (estrategia `update`).
+
+---
+
+### **Paso 4: Ejecución del Frontend (Angular)**
+
+Desde el directorio `autolink-frontend/`, instale las dependencias e inicie el servidor de desarrollo:
+
+1.  **Instalar dependencias:**
+    ```bash
+    npm install
+    ```
+2.  **Iniciar servidor:**
+    ```bash
+    ng serve
+    ```
+
+La aplicación estará disponible en `http://localhost:4200` con soporte para Hot Reload y SSR (Server Side Rendering).
+
+---
+
+### **Resumen de Servicios Locales**
+
+| Servicio | URL |
+| :--- | :--- |
+| **Frontend (App)** | `http://localhost:4200` |
+| **REST API** | `http://localhost:8082` |
+| **phpMyAdmin** | `http://localhost:8080` |
+| **Base de Datos** | `localhost:3307` |
+
 ## **Manual de usuario** {#manual-de-usuario}
+
+Este manual describe las funcionalidades disponibles para cada uno de los roles del sistema: Comprador (Cliente), Vendedor y Administrador.
+
+### **4.b.1. Guía del Comprador (Cliente)**
+
+El Comprador es el usuario interesado en adquirir vehículos. Su flujo principal abarca desde la búsqueda en el catálogo hasta la finalización de la compra.
+
+#### **Navegación y Búsqueda en el Catálogo**
+Cualquier usuario (incluso sin registrar) puede acceder al catálogo público.
+1.  **Exploración:** La página principal muestra los vehículos más recientes marcados como disponibles.
+2.  **Filtros Avanzados:** El panel lateral permite filtrar por:
+    *   Marca y Modelo.
+    *   Tipo de Carrocería (Sedan, SUV, etc.).
+    *   Tipo de Combustible y Color.
+    *   Rango de Precio, Kilometraje y Potencia.
+3.  **Identinticativo de Verificado:** Los vehículos con el distintivo "Verificado" han sido revisados manualmente por el equipo de AutoLink, garantizando la veracidad de los datos.
+
+#### **Proceso de Compra**
+Para comprar, el usuario debe estar identificado con el rol `CLIENTE`.
+1.  **Selección:** Al entrar en la ficha de un vehículo (`/vehiculo/:id`), se muestran las especificaciones técnicas completas y la galería de fotos.
+2.  **Iniciar Compra:** El botón **"Comprar"** registra un pedido en estado `EN_PROGRESO`. El precio se congela en el momento de la solicitud.
+3.  **Seguimiento:** En el panel `/cliente/compras`, el usuario puede ver sus pedidos activos y su historial.
+4.  **Finalización:** Una vez que el vendedor confirma la entrega, el estado pasa a `REALIZADA` y el vehículo desaparece del catálogo.
+5.  **Anulación:** El comprador puede anular pedidos que aún estén `EN_PROGRESO` desde su dashboard.
+
+---
+
+### **4.b.2. Guía del Vendedor**
+
+El Vendedor gestiona su propio inventario y las solicitudes de compra recibidas.
+
+#### **Gestión de Stock**
+Desde el panel `/vendedor`, el usuario puede:
+1.  **Publicar Vehículo:** Rellenar el formulario con los detalles técnicos. Por seguridad, la publicación inicial nace como "No Verificada".
+2.  **Subir Fotografías:** Se permite un máximo de 20MB en total (límite de 5MB por archivo). Se recomienda subir imágenes claras del exterior e interior.
+3.  **Control de Visibilidad:** El vendedor puede activar o desactivar un vehículo (`disponible: true/false`) sin necesidad de borrarlo.
+4.  **Edición y Borrado:** Modificación de precios o kilómetros, y eliminación definitiva de anuncios.
+
+#### **Gestión de Ventas**
+En `/vendedor/ventas`, el vendedor visualiza quién ha solicitado comprar sus vehículos.
+1.  **Completar Venta:** Tras el intercambio físico del vehículo, el vendedor debe marcar la venta como `REALIZADA`.
+2.  **Anulación:** Si el comprador no contacta o el vendedor decide no proceder, puede marcarla como `ANULADA`.
+
+---
+
+### **4.b.3. Guía del Administrador**
+
+El Administrador supervisa la plataforma, gestiona la confianza y mantiene los datos maestros.
+
+#### **Gestión de Usuarios y Roles**
+Desde `/admin` (User Management), el administrador puede:
+1.  **Auditoría de Usuarios:** Ver la lista completa de registrados y su actividad.
+2.  **Cambio de Roles:** Promocionar a un `CLIENTE` a `VENDEDOR` tras validar sus credenciales comerciales.
+3.  **Bajas:** Eliminar cuentas o desactivarlas (`activo: false`).
+
+#### **Verificación de Vehículos**
+Esta es la tarea crítica para la confianza del sistema:
+1.  **Cola de Verificación:** En `/admin/verificaciones`, el administrador revisa los nuevos anuncios.
+2.  **Aprobación:** Si las fotos coinciden con la descripción y el precio es coherente, se activa el sello "Verificado".
+
+#### **Catálogo de Marcas**
+En `/admin/marcas`, se gestiona el glosario de marcas permitidas.
+1.  **Añadir Marcas:** Permite introducir nuevas marcas (ej: "Tesla", "Rivian") para que los vendedores puedan seleccionarlas.
+2.  **Estandarización:** Las marcas se guardan en mayúsculas y sin espacios (ej: `MERCEDES_BENZ`) para evitar duplicados y errores de búsqueda.
 
 ## **Enlace a la presentación** {#enlace-a-la-presentación}
 
-# **Conclusiones finales** {#conclusiones-finales}
+# **5. Conclusiones finales** {#conclusiones-finales}
 
 ## **Tiempo estimado y tiempo empleado para el proyecto en cada una de sus fases** {#tiempo-estimado-y-tiempo-empleado-para-el-proyecto-en-cada-una-de-sus-fases}
 
@@ -429,7 +584,7 @@ Como todo software, AutoLink es escalable. Se proponen las siguientes mejoras pa
 2. **Chat en tiempo real:** Implementación de WebSockets para la comunicación instantánea entre compradores y vendedores.  
 3. **App Móvil:** Desarrollar una versión usando Ionic o sistemas parecidos que consuman la misma API de Spring Boot.
 
-# **Bibliografía y Webgrafía** {#bibliografía-y-webgrafía}
+# **6. Bibliografía y Webgrafía** {#bibliografía-y-webgrafía}
 
 A continuación se detallan las fuentes consultadas para la realización del proyecto:
 
