@@ -48,12 +48,38 @@ public class VentaService {
 
 	@Transactional
 	public List<VentaDTO> findByVendedor(int idVendedor) {
+		// Verificación de seguridad
+		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
+		
+		// Buscar al vendedor para comparar el correo
+		Persona vendedor = personaRepository.findById(idVendedor)
+				.orElseThrow(() -> new com.autolink.services.exceptions.PersonaNotFoundException("Vendedor no encontrado"));
+
+		if (!isAdmin && !vendedor.getCorreo().equals(currentUserEmail)) {
+			throw new VentaExceptions("No tienes permiso para ver las ventas de este usuario");
+		}
+
 		List<Venta> ventas = this.ventaRepository.findByVendedor_Id(idVendedor);
 		return ventas.stream().map(ventaMapper::toDto).collect(Collectors.toList());
 	}
 
 	@Transactional
 	public List<VentaDTO> findByCliente(int idCliente) {
+		// Verificación de seguridad
+		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
+		
+		// Buscar al cliente para comparar el correo
+		Persona cliente = personaRepository.findById(idCliente)
+				.orElseThrow(() -> new com.autolink.services.exceptions.PersonaNotFoundException("Cliente no encontrado"));
+
+		if (!isAdmin && !cliente.getCorreo().equals(currentUserEmail)) {
+			throw new VentaExceptions("No tienes permiso para ver las ventas de este usuario");
+		}
+
 		List<Venta> compras = this.ventaRepository.findByCliente_Id(idCliente);
 		return compras.stream().map(ventaMapper::toDto).collect(Collectors.toList());
 	}
@@ -81,6 +107,15 @@ public class VentaService {
 		venta.setCliente(clienteActual);
 		venta.setVehiculo(vehiculoActual);
 
+		// Validaciones de negocio
+		if (vendedorActual.getId() == clienteActual.getId()) {
+			throw new VentaExceptions("No puedes comprar tu propio vehículo");
+		}
+
+		if (Boolean.FALSE.equals(vehiculoActual.getDisponible())) {
+			throw new VentaExceptions("El vehículo ya no está disponible para la venta");
+		}
+
 		if (venta.getFecha() == null) {
 			venta.setFecha(LocalDate.now());
 		}
@@ -104,6 +139,15 @@ public class VentaService {
 		Venta venta = this.ventaRepository.findById(idVenta)
 				.orElseThrow(() -> new VentaNotFoundException("No es posible encontrar la venta con ID: " + idVenta));
 
+		// Verificación de seguridad: Solo el comprador, el vendedor o un admin pueden anular
+		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
+		
+		if (!isAdmin && !venta.getVendedor().getCorreo().equals(currentUserEmail) && !venta.getCliente().getCorreo().equals(currentUserEmail)) {
+			throw new VentaExceptions("No tienes permiso para anular esta oferta");
+		}
+
 		venta.setEstadoVenta(EstadoVenta.ANULADA);
 
 		// Asegurar que el vehículo esté disponible (por si acaso estaba en otro estado)
@@ -124,6 +168,19 @@ public class VentaService {
 	public void completarVenta(int idVenta) {
 		Venta venta = this.ventaRepository.findById(idVenta)
 				.orElseThrow(() -> new VentaNotFoundException("Venta no encontrada"));
+
+		if (venta.getEstadoVenta() != EstadoVenta.EN_PROGRESO) {
+			throw new VentaExceptions("Solo se pueden completar ofertas que estén en progreso");
+		}
+
+		// Verificación de seguridad
+		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
+		
+		if (!isAdmin && !venta.getVendedor().getCorreo().equals(currentUserEmail) && !venta.getCliente().getCorreo().equals(currentUserEmail)) {
+			throw new VentaExceptions("No tienes permiso para completar esta oferta");
+		}
 
 		// 1. Marcar el vehículo como vendido
 		Vehiculo vehiculo = venta.getVehiculo();

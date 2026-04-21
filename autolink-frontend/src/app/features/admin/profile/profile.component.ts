@@ -67,9 +67,25 @@ import { User } from '../../../core/models/user.model';
             </div>
 
             <div class="space-y-1">
-              <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Ciudad Asignada</label>
-              <input type="text" formControlName="ciudadAsignada"
+              <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Teléfono</label>
+              <input type="number" formControlName="telefono"
                 class="w-full bg-white/10 border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/20">
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-[10px] font-bold uppercase tracking-wider text-baltic-blue-400 ml-1">Ciudad Asignada</label>
+              <div class="relative">
+                <select formControlName="ciudadAsignada"
+                  class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-2.5 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all appearance-none">
+                  <option value="" class="bg-dark-teal-900">Sin asignar</option>
+                  @for (city of cities(); track city) {
+                    <option [value]="city" class="bg-dark-teal-900">{{ city }}</option>
+                  }
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-baltic-blue-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+              </div>
             </div>
 
             <div class="space-y-1">
@@ -113,10 +129,12 @@ export class AdminProfileComponent implements OnInit {
 
   loading = signal(false);
   uploadingPhoto = signal(false);
+  cities = signal(['Madrid', 'Barcelona', 'Valencia', 'Sevilla', 'Zaragoza', 'Málaga', 'Murcia', 'Palma', 'Las Palmas', 'Bilbao']);
 
   profileForm = this.fb.group({
     nombre: ['', Validators.required],
     apellidos: ['', Validators.required],
+    telefono: [null as number | null, [Validators.pattern(/^[0-9]{9}$/)]],
     salarioAnual: [null as number | null],
     ciudadAsignada: [''],
     DNI: [{ value: '', disabled: true }],
@@ -129,6 +147,7 @@ export class AdminProfileComponent implements OnInit {
       this.profileForm.patchValue({
         nombre: user.nombre,
         apellidos: user.apellidos,
+        telefono: user.telefono || null,
         salarioAnual: user.salarioAnual || null,
         ciudadAsignada: user.ciudadAsignada || '',
         DNI: user.DNI,

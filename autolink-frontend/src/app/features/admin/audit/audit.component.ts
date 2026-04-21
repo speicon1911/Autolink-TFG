@@ -100,6 +100,8 @@ export class AdminAuditComponent implements OnInit {
     }
 
     totalVolume() {
-        return this.sales().reduce((acc, current) => acc + current.precio, 0);
+        return this.sales()
+            .filter(s => s.estadoVenta === 'REALIZADA')
+            .reduce((acc, current) => acc + current.precio, 0);
     }
 }

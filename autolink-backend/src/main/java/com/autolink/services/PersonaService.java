@@ -79,6 +79,10 @@ public class PersonaService implements UserDetailsService {
 	}
 
 	public PersonaDTO createPersona(Persona persona) {
+		if (persona.getDNI() != null && this.personaRepository.existsByDNI(persona.getDNI())) {
+			throw new PersonaExceptions("El DNI " + persona.getDNI() + " ya está registrado.");
+		}
+
 		Optional<Persona> existenteOpt = this.personaRepository.findByCorreo(persona.getCorreo());
 
 		if (existenteOpt.isPresent()) {
@@ -92,6 +96,12 @@ public class PersonaService implements UserDetailsService {
 					existente.setPassword(new BCryptPasswordEncoder().encode(persona.getPassword()));
 				}
 				existente.setRol(persona.getRol() != null ? persona.getRol() : Rol.CLIENTE);
+				
+				// Actualizamos también estos campos al reactivar
+				if (persona.getTelefono() != null) existente.setTelefono(persona.getTelefono());
+				if (persona.getSalarioAnual() != null) existente.setSalarioAnual(persona.getSalarioAnual());
+				if (persona.getDNI() != null) existente.setDNI(persona.getDNI());
+
 				existente.setActivo(true);
 				return personaMapper.toDto(this.personaRepository.save(existente));
 			}
@@ -125,12 +135,21 @@ public class PersonaService implements UserDetailsService {
 			personaBD.setNombre(persona.getNombre());
 		if (persona.getApellidos() != null && !persona.getApellidos().isBlank())
 			personaBD.setApellidos(persona.getApellidos());
+		
 		if (persona.getCorreo() != null && !persona.getCorreo().isBlank()) {
 			if (!persona.getCorreo().equalsIgnoreCase(personaBD.getCorreo())
-					&& personaRepository.findByCorreo(persona.getCorreo()).isPresent()) {
+					&& personaRepository.existsByCorreo(persona.getCorreo())) {
 				throw new PersonaExceptions("Ese correo ya está en uso por otro usuario");
 			}
 			personaBD.setCorreo(persona.getCorreo());
+		}
+
+		if (persona.getDNI() != null && !persona.getDNI().isBlank()) {
+			if (!persona.getDNI().equalsIgnoreCase(personaBD.getDNI())
+					&& personaRepository.existsByDNI(persona.getDNI())) {
+				throw new PersonaExceptions("Ese DNI ya está en uso por otro usuario");
+			}
+			personaBD.setDNI(persona.getDNI());
 		}
 
 		if (persona.getPassword() != null && !persona.getPassword().isBlank()) {
@@ -141,6 +160,8 @@ public class PersonaService implements UserDetailsService {
 			personaBD.setSalarioAnual(persona.getSalarioAnual());
 		if (persona.getTelefono() != null)
 			personaBD.setTelefono(persona.getTelefono());
+		if (persona.getCiudadAsignada() != null)
+			personaBD.setCiudadAsignada(persona.getCiudadAsignada());
 
 		if (persona.getActivo() != null) {
 			personaBD.setActivo(persona.getActivo());

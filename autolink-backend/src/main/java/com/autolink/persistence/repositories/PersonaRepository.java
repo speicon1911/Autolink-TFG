@@ -23,4 +23,6 @@ public interface PersonaRepository extends JpaRepository<Persona, Integer>{
 
 	// otros metodos
 	Optional<Persona> findByCorreo(String correo);
+	boolean existsByDNI(String DNI);
+	boolean existsByCorreo(String correo);
 }

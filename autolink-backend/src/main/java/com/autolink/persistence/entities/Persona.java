@@ -35,6 +35,7 @@ public class Persona {
     @Column(length = 50)
     private String apellidos;
 
+    @Column(unique = true)
     private String DNI;
 
     @Column(unique = true, nullable = false, length = 100)

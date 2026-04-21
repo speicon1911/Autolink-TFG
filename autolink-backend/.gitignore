@@ -36,3 +36,4 @@ build/
 *.env
 spc.env
 application-secrets.properties
+/.apt_generated_tests/
