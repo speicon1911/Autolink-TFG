@@ -41,10 +41,10 @@ public class SecurityConfig {
 	public DaoAuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
-		// Conectamos tu lógica de base de datos
+		// Conectamos la lógica de base de datos
 		authProvider.setUserDetailsService(personaService);
 
-		// Conectamos el encriptador que definiste abajo
+		// Conectamos el encriptador que se definio abajo
 		authProvider.setPasswordEncoder(passwordEncoder());
 
 		return authProvider;
