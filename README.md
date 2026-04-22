@@ -50,7 +50,10 @@ El proyecto sigue un enfoque de desacoplamiento total entre el cliente y el serv
 | **Base de Datos** | MariaDB |
 | **Contenedores** | Docker & Docker Compose |
 | **Seguridad** | Spring Security & JWT (JSON Web Tokens) |
+| **Accesibilidad** | WCAG 2.1 (Alto contraste, Semántica HTML) |
+| **SEO** | Metatadatos dinámicos, SSR ready |
 | **APIs Externas** | ImgBB (Imágenes), Gmail SMTP (Notificaciones) |
+| **Despliegue** | Docker Compose (Local & VPS Producción) |
 
 ---
 
@@ -78,6 +81,12 @@ Levanta la base de datos MariaDB y PhpMyAdmin usando Docker Compose:
 docker-compose up -d
 ```
 *La base de datos estará disponible en el puerto `3307`.*
+
+### 1.1 Despliegue en Producción (VPS)
+Para desplegar el entorno completo (Frontend, Backend y BD) en un servidor remoto:
+```bash
+docker-compose -f docker-compose.prod.yml up -d --build
+```
 
 ### 2. Backend (Spring Boot)
 1. Navega a la carpeta del backend: `cd autolink-backend`
@@ -111,6 +120,7 @@ La seguridad es un pilar fundamental en AutoLink:
 - **JWT:** Las comunicaciones entre Angular y Spring Boot están protegidas por tokens de sesión.
 - **Interceptores:** El frontend incluye un `AuthInterceptor` que adjunta automáticamente el token a cada petición.
 - **Roles:** Acceso granular basado en roles (`ROLE_USER`, `ROLE_SELLER`, `ROLE_ADMIN`).
+- **Despliegue Seguro:** En producción, las variables sensibles se gestionan mediante un archivo `.env` externo no versionado.
 
 ---
 

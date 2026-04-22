@@ -44,7 +44,7 @@
 
 [Especificaciones Técnicas y Arquitectura	15](#especificaciones-técnicas-y-arquitectura)
 
-[Stack Tecnológico	15](#stack-tecnológico)
+[Tecnologías Usadas	15](#tecnologías-usadas)
 
 [Arquitectura del Sistema	15](#arquitectura-del-sistema)
 
@@ -66,7 +66,7 @@
 
 [Lógica de seguridad avanzada (JWT)	18](#lógica-de-seguridad-avanzada-\(jwt\))
 
-[Generacion de tokens	18](#generacion-de-tokens)
+[Generación de tokens	18](#generación-de-tokens)
 
 [Filtro de intercepción	18](#filtro-de-intercepción)
 
@@ -134,7 +134,7 @@
 
 [Propuesta de modificaciones o ampliaciones futuras del sistema implementado.	32](#propuesta-de-modificaciones-o-ampliaciones-futuras-del-sistema-implementado.)
 
-[**Bibliografía y Webgrafía	32**](#bibliografía-y-webgrafía)
+[**Bibliografía y Webgrafía	33**](#bibliografía-y-webgrafía)
 
 # **Estudio del problema y análisis del sistema** {#estudio-del-problema-y-análisis-del-sistema}
 
@@ -195,7 +195,8 @@ La justificación del proyecto es la demanda constante de plataformas digitales 
    5. **Pruebas e Integración (Testing)**  
       1. Fase dedicada a verificar la comunicación entre ambos sistemas (CORS), asegurar que los roles de usuario tienen acceso restringido a sus rutas correspondientes y validar que el flujo de compra-venta se completa sin errores de integridad en la base de datos.  
    6. **Despliegue y Mantenimiento**  
-      1. El proyecto se encuentra en fase de preproducción, ejecutándose en un entorno local de desarrollo para validación final.
+      1. **Fase de Preproducción Local**: El proyecto se encuentra validado en un entorno local de desarrollo para pruebas unitarias e integrales.
+      2. **Fase de Producción**: Se ha implementado el despliegue en un servidor VPS remoto utilizando contenedores Docker para orquestar tanto el frontend como el backend y la base de datos, garantizando la disponibilidad y escalabilidad del sistema.
 
 ## **Recursos** {#recursos}
 
@@ -211,7 +212,7 @@ A continuación se detalla el hardware utilizado. Se ha hecho uso de equipos per
 
 | Recurso | Descripción | Cantidad | Precio Unitario | Coste Alumno |
 | :---: | :---: | :---: | :---: | :---: |
-| Equipo de Desarrollo | i5-11400F, 32GB RAM, 1480GB SSD (Equipo propio) | 1 | 950,00 € | 0,00 €\* |
+| Equipo de Desarrollo | i5-11400F, 32GB RAM, 1480 GB SSD (Equipo propio) | 1 | 950,00 € | 0,00 €\* |
 | Monitor Externo | 24" Full HD, IPS | 1 | 120,00 € | 0,00 €\* |
 | Periféricos | Teclado mecánico y ratón ergonómico | 1 | 80,00 € | 0,00 €\* |
 | Servidor VPS | Infraestructura proporcionada por el Instituto | 1 | 144,00 € | 0,00 € |
@@ -257,6 +258,8 @@ Definen las propiedades y restricciones del sistema:
 3. Rendimiento: El frontend debe ser una SPA (Single Page Application) para ofrecer una navegación fluida sin recargas de página.  
 4. Interfaz (UI/UX): El diseño debe ser responsive y adaptable a dispositivos móviles utilizando Tailwind CSS.  
 5. Persistencia: Los datos deben almacenarse en una base de datos relacional MariaDB garantizando la integridad referencial.
+6. Accesibilidad: El sistema debe cumplir con las pautas de accesibilidad WCAG 2.1 (Nivel AA) para garantizar la inclusión de usuarios con diversidad funcional.
+7. SEO: La plataforma debe estar optimizada para el posicionamiento en buscadores mediante el uso de etiquetas semánticas y metatadatos dinámicos.
 
 ### **Historias de usuario** {#historias-de-usuario}
 
@@ -297,7 +300,7 @@ Definen las propiedades y restricciones del sistema:
 
 ### **Especificaciones Técnicas y Arquitectura** {#especificaciones-técnicas-y-arquitectura}
 
-#### ***Stack Tecnológico*** {#stack-tecnológico}
+#### ***Tecnologías Usadas*** {#tecnologías-usadas}
 
 AutoLink se ha desarrollado utilizando tecnologías de vanguardia para garantizar un rendimiento óptimo y una experiencia de usuario fluida:
 
@@ -306,6 +309,8 @@ AutoLink se ha desarrollado utilizando tecnologías de vanguardia para garantiza
   * Renderizado: Server-Side Rendering (SSR) con @angular/ssr.   
   * Estilos: Tailwind CSS 4.0 para un diseño moderno y responsive.  
   * Seguridad: Interceptores HTTP para inyección de JWT y jwt-decode.   
+  * Accesibilidad: Cumplimiento de las normas **WCAG 2.1** mediante paletas de colores de alto contraste y etiquetas semánticas.
+  * SEO: Implementación de metatadatos dinámicos y estructura semántica optimizada para motores de búsqueda.
   * Lenguaje: TypeScript 5.9.  
 * Backend (API REST):   
   * Framework: Spring Boot 3.4.3 sobre Java 21 LTS.  
@@ -333,7 +338,7 @@ El sistema sigue una arquitectura de **Microservicios desacoplados**. El backend
 
 El sistema implementa un control de acceso basado en roles (RBAC) definido en el enumerado Rol de la base de datos:
 
-* **CLIENTE (Comprador):** Perfil predeterminado al registrarse. Puede explorar el catálogo, ver detalles de vehículos, iniciar procesos de compra y gestionar sus compras propias en su panel personal (/cliente/compras).  
+* **CLIENTE (Comprador):** Perfil predeterminado al registrarse. Puede explorar el catálogo, ver detalles de vehículos, iniciar procesos de compra y gestionar sus propias compras en su panel personal (/cliente/compras).  
 * **VENDEDOR (Comisionista/Propietario):** Posee todas las capacidades del cliente, además de la gestión total de su stock propio: subir vehículos, editar precios, cargar fotografías a la nube y confirmar o anular ventas iniciadas por compradores.  
 * **ADMINISTRADOR:** Rol de gestión total. Puede administrar todos los usuarios, cambiar roles, verificar vehículos de cualquier vendedor (activando el sello de confianza), gestionar el catálogo maestro de marcas y auditar todas las transacciones del sistema.
 
@@ -352,7 +357,7 @@ La seguridad se garantiza mediante guardias de ruta en Angular (authGuard y role
 
 #### ***Orquestación con docker*** {#orquestación-con-docker}
 
-Se utiliza Docker Compose para levantar el entorno de base de datos y administración de forma rápida y reproducible.
+Se utiliza Docker Compose para levantar el entorno de base de datos y administrarlo de forma rápida y reproducible.
 
 | docker-compose.yml |
 | :---- |
@@ -388,7 +393,7 @@ Para evitar la exposición directa de las entidades de base de datos en la API, 
 
 El sistema utiliza un ciclo de vida de tokens para mejorar la seguridad, delegando la validación a componentes especializados.
 
-#### ***Generacion de tokens*** {#generacion-de-tokens}
+#### ***Generación de tokens*** {#generación-de-tokens}
 
 | JwtUtils.java |
 | :---- |
@@ -399,6 +404,15 @@ El sistema utiliza un ciclo de vida de tokens para mejorar la seguridad, delegan
 **JwtFilter.java** Interviene en cada petición HTTP para extraer y validar el token Bearer.
 
 | protected void doFilterInternal(HttpServletRequest request, ...) {    String authHeader \= request.getHeader("Authorization");    if (authHeader \!= null && authHeader.startsWith("Bearer ")) {        String token \= authHeader.substring(7);        // Validación contra el Subject en la base de datos    } } |
+| :---- |
+
+#### ***Mejoras de Seguridad y Lógica de Negocio***
+
+Se han implementado capas adicionales de seguridad para proteger la integridad de los datos y la privacidad de los usuarios:
+
+* **Control de Acceso basado en Propiedad**: Se ha restringido la edición de vehículos para que únicamente el vendedor propietario del anuncio pueda realizar modificaciones o eliminaciones.
+* **Unicidad de Identidad**: El sistema garantiza la unicidad de registros críticos como el DNI y el Correo Electrónico mediante validaciones en la capa de persistencia.
+* **Integridad en Transacciones**: Refinamiento de la lógica de ventas para evitar que un vendedor pueda iniciar procesos de compra sobre sus propios vehículos, previniendo fraudes y errores en el sistema.
 | :---- |
 
 ![][image5]
@@ -417,7 +431,7 @@ Las imágenes no se guardan en el servidor local para ahorrar recursos, sino que
 
 #### ***Notificaciones automáticas*** {#notificaciones-automáticas}
 
-Se implementa un sistema para conectar compradores con vendedores vía email.
+Se implementó un sistema para conectar compradores con vendedores vía email.
 
 | EmailService.java |
 | :---- |
@@ -550,7 +564,74 @@ Desde el directorio autolink-frontend/, instale las dependencias e inicie el ser
 
 La aplicación estará disponible en http://localhost:4200 con soporte para Hot Reload y SSR (Server Side Rendering).
 
-### **Resumen de Servicios Locales** {#resumen-de-servicios-locales}
+#### ***Paso 5: Despliegue en Producción (VPS con Docker)*** {#paso-5:-despliegue-en-producción-(vps-con-docker)}
+
+Para entornos de producción, el sistema se orquesta íntegramente mediante **Docker Compose**, lo que garantiza que todas las dependencias y configuraciones sean idénticas al entorno de desarrollo pero optimizadas para el rendimiento.
+
+1. **Preparación:** Asegúrese de que el archivo `docker-compose.prod.yml` esté configurado con las URLs de producción.
+2. **Despliegue:** Ejecute el comando de construcción y levantamiento:  
+   | docker compose -f docker-compose.prod.yml up -d --build |  
+   | :---: |  
+3. **Persistencia:** Los volúmenes de Docker aseguran que los datos de MariaDB persistan incluso si los contenedores se reinician o actualizan.
+
+#### **Ejemplo de configuración (Infraestructura como Código)**
+
+A continuación se muestra una plantilla del orquestador y el archivo de secretos necesario para el despliegue:
+
+**docker-compose.prod.yml**
+```yaml
+services:
+  autolink-db:
+    image: mariadb:10.6
+    container_name: autolink-db-prod
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: autolink
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+
+  autolink-backend:
+    build: ./autolink-backend
+    container_name: autolink-api-prod
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://autolink-db:3306/autolink
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "8082:8082"
+    depends_on:
+      - autolink-db
+
+  autolink-frontend:
+    build: ./autolink-frontend
+    container_name: autolink-web-prod
+    ports:
+      - "80:80"
+    depends_on:
+      - autolink-backend
+
+volumes:
+  db_data:
+```
+
+**.env (Plantilla de Secretos)**
+```bash
+# Base de Datos
+DB_PASSWORD=cambiame_por_password_seguro
+
+# Seguridad y APIs
+JWT_SECRET=tu_clave_secreta_para_firmar_tokens
+IMGBB_API_KEY=tu_clave_de_imgbb_para_imagenes
+
+# Notificaciones (SMTP)
+MAIL_USERNAME=usuario_notificaciones@gmail.com
+MAIL_PASSWORD=clave_aplicacion_gmail
+ADMIN_EMAIL=destinatario_consultas@autolink.com
+```
+
+### **Resumen de Entornos y Servicios** {#resumen-de-entornos-y-servicios}
 
 | Servicio | URL |
 | :---: | :---: |
@@ -581,6 +662,13 @@ Cualquier usuario (incluso sin registrar) puede acceder al catálogo público.
    4. Rango de Precio, Kilometraje y Potencia.   
 3. **Identificativo de Verificado:** Los vehículos con el distintivo “Verificado” han sido revisados manualmente por el equipo de AutoLink, garantizando la veracidad de los datos.
 
+#### ***Accesibilidad y Preferencias Visuales***
+
+AutoLink ha sido diseñado bajo los estándares **WCAG 2.1**, permitiendo una navegación cómoda para todos los usuarios.
+
+1. **Modo Oscuro/Claro:** La interfaz detecta automáticamente las preferencias del sistema operativo, pero también permite el cambio manual desde la barra de navegación para mejorar el contraste en entornos de poca luz.
+2. **Navegación Semántica:** El uso de etiquetas HTML5 correctas facilita el uso de lectores de pantalla.
+
 ![][image8]
 
 #### 
@@ -588,6 +676,8 @@ Cualquier usuario (incluso sin registrar) puede acceder al catálogo público.
 #### ***Proceso de Compra***
 
 Para comprar, el usuario debe estar identificado con el rol CLIENTE. 
+
+**Nota de seguridad:** Por integridad comercial, el sistema impide que un vendedor adquiera sus propios vehículos publicados.
 
 1. **Selección:** Al entrar en la ficha de un vehículo (/vehiculo/:id), se muestran las especificaciones técnicas completas y la galería de fotos. 
 
@@ -617,12 +707,12 @@ Desde el panel /vendedor, el usuario puede:
 ![][image12]  
 ![][image13]
 
-2. **Subir Fotografías:** Se permite un máximo de 20MB en total (límite de 5MB por archivo). Se recomienda subir imágenes claras del exterior e interior.  
+2. **Subir Fotografías:** Se permite un máximo de 20 MB en total (límite de 5 MB por archivo). Se recomienda subir imágenes claras del exterior e interior.  
 3. **Control de Visibilidad:** El vendedor puede activar o desactivar un vehículo (disponible: true/false) sin necesidad de borrarlo. 
 
 ![][image14]
 
-4. **Edición y Borrado:** Modificación de precios o kilómetros, y eliminación definitiva de anuncios.
+4. **Edición y Borrado:** Modificación de precios o kilómetros, y eliminación definitiva de anuncios. El sistema valida mediante JWT que solo el propietario original tenga permisos de modificación.
 
 ![][image15]  
 Gestión de Ventas  
@@ -674,7 +764,7 @@ En /admin/marcas, se gestiona el glosario de marcas permitidas.
 
 ## **Tiempo estimado y tiempo empleado para el proyecto en cada una de sus fases** {#tiempo-estimado-y-tiempo-empleado-para-el-proyecto-en-cada-una-de-sus-fases}
 
-Proyecto desarrollado entre el 21 de noviembre de 2025 y el 14 de abril de 2026\.
+Proyecto desarrollado entre el 21 de noviembre de 2025 y el 16 de abril de 2026\.
 
 | Fase | Tiempo Estado | Tiempo Empleado | Desviación |
 | :---: | :---: | :---: | :---: |
@@ -693,9 +783,32 @@ Se ha alcanzado un 100% de cumplimiento. El sistema permite gestionar el ciclo d
 
 Como todo software, AutoLink es escalable. Se proponen las siguientes mejoras para futuras versiones:
 
-1. **Pasarela de pagos:** Integración de servicios como PayPal para realizar la reserva de un vehículo y tener prioridad sobre los demás.  
-2. **Chat en tiempo real:** Implementación de WebSockets para la comunicación instantánea entre compradores y vendedores.  
-3. **App Móvil:** Desarrollar una versión usando Ionic o sistemas parecidos que consuman la misma API de Spring Boot.
+1. **Funcionalidades de Usuario (UX/UI)**  
+   1. **Chat en tiempo real:** Implementación de WebSockets para la comunicación instantánea entre compradores y vendedores.  
+   2. **Comparador de Vehículos:** Permitir que los usuarios seleccionen 2 o 3 vehículos y vean sus especificaciones técnicas (potencia, km, precio) en una tabla comparativa.  
+   3. **Gestión de Favoritos:** Añadir una "Lista de deseos" o favoritos para que los clientes puedan guardar vehículos que les interesan y recibir avisos si bajan de precio.  
+   4. **Filtrado por Localización (Ciudad):** Ampliación de la ficha del vehículo para incluir la ubicación y permitir a los usuarios filtrar las búsquedas por cercanía geográfica.  
+   5. **Contraseña:** Implementación de recuperación de contraseña en caso de pérdida u olvido.  
+2. **Funcionalidades de Negocio**  
+   1. **Pasarela de pagos:** Integración de servicios como PayPal para realizar la reserva de un vehículo y tener prioridad sobre los demás.  
+   2. **Calculadora de Financiación:** Un simulador donde el usuario introduzca los años y la entrada, y la app calcule la cuota mensual basada en un tipo de interés configurable.  
+   3. **Valoración y Reseñas:** Sistema de reputación donde los compradores puedan puntuar al vendedor tras completar una venta, mejorando la confianza en la plataforma.  
+   4. **Formalización Documental de la Venta:** Implementación de un sistema de generación de documentos contractuales y facturas para completar el proceso legal de la venta, yendo más allá de la simple reserva  
+3. **Aspectos Técnicos (Arquitectura/Seguridad)**  
+   1. **Notificaciones en Tiempo Real:** Implementar WebSockets para que el vendedor reciba una notificación visual inmediata en cuanto un cliente haga una oferta, sin necesidad de refrescar la página.  
+   2. **Optimización de Imágenes Avanzada:** Implementar un servicio de procesado de imágenes en el backend para generar miniaturas (thumbnails) y formatos más ligeros (como WebP), mejorando la velocidad de carga.  
+   3. **Integración con APIs Externas:** Conectar con servicios de verificación de matrículas o de valoración oficial de vehículos para autocompletar la ficha técnica solo con introducir la matrícula.  
+   4. **Ampliación de Entidad Vehículo:** Inclusión de campos técnicos adicionales para una gestión profesional del stock:
+      1. **Matrícula**: Identificación unívoca del vehículo y nexo con APIs gubernamentales.
+      2. **Número de Bastidor (VIN)**: Para el seguimiento de históricos de mantenimiento y accidentes.
+      3. **Fecha de Matriculación**: Permite calcular con exactitud la antigüedad y el valor de mercado.
+      4. **Vencimiento de ITV**: Sistema de alertas para recordar al propietario la próxima inspección técnica.
+      5. **Etiqueta Medioambiental**: Clasificación obligatoria para el acceso a Zonas de Bajas Emisiones (ZBE).
+   5. **Autenticación en Dos Factores (2FA) Avanzada:** Implementación de un sistema de autenticación multifactor basado en estándares como TOTP (Time-based One-Time Password), compatible con aplicaciones como Google Authenticator o Microsoft Authenticator.  
+   6. **Evolución Multiplataforma (App Móvil):** Desarrollo de una aplicación móvil nativa o híbrida (usando tecnologías como Ionic) que consuma la API REST actual, permitiendo el acceso al sistema desde cualquier dispositivo móvil.   
+4. **Administración y Analítica**  
+   1. Dashboard de Analítica: Panel con gráficos (usando Chart.js o similar) que muestre a los administradores las marcas más vendidas, los ingresos por mes y las ciudades con más actividad.  
+   2. Exportación de Datos: Opción para descargar informes de ventas y stock en formatos Excel o PDF.
 
 # **Bibliografía y Webgrafía** {#bibliografía-y-webgrafía}
 
