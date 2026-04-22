@@ -63,8 +63,12 @@ import { NgOptimizedImage } from '@angular/common';
               @if (isAdmin()) {
                 <a routerLink="/admin" routerLinkActive="text-action-primary" class="hover:text-action-hover transition-colors font-medium">Panel Admin</a>
               }
-              <div class="h-6 w-px bg-white/5"></div>
+            }
 
+            <div class="h-6 w-px bg-white/5"></div>
+
+            <!-- Theme & Accessibility (Always Visible) -->
+            <div class="flex items-center gap-1">
               <!-- Day/Night Toggle -->
               <button (click)="toggleDayNight()" 
                 class="p-2 hover:bg-white/5 rounded-full text-content-secondary hover:text-action-primary transition-all cursor-pointer"
@@ -109,7 +113,11 @@ import { NgOptimizedImage } from '@angular/common';
                   </div>
                 }
               </div>
+            </div>
 
+            <div class="h-6 w-px bg-white/5"></div>
+
+            @if (authService.isAuthenticated()) {
               <div class="flex items-center gap-1">
                 <a [routerLink]="getProfileRoute()" class="flex items-center gap-3 px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
                   <div class="flex flex-col items-end">
@@ -128,11 +136,11 @@ import { NgOptimizedImage } from '@angular/common';
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 </button>
               </div>
-            }
-    
-            @if (!authService.isAuthenticated()) {
-              <a routerLink="/login" class="hover:text-action-primary transition-colors font-medium">Login</a>
-              <a routerLink="/registrar" class="bg-action-primary hover:bg-action-hover text-surface-base px-5 py-2 rounded-full font-bold transition-all shadow-lg shadow-action-primary/20 active:scale-95">Registrarse</a>
+            } @else {
+              <div class="flex items-center gap-4">
+                <a routerLink="/login" class="hover:text-action-primary transition-colors font-medium">Login</a>
+                <a routerLink="/registrar" class="bg-action-primary hover:bg-action-hover text-surface-base px-5 py-2 rounded-full font-bold transition-all shadow-lg shadow-action-primary/20 active:scale-95">Registrarse</a>
+              </div>
             }
           </div>
 
