@@ -12,19 +12,19 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
   template: `
     <div class="space-y-6 animate-fade-in">
       <header>
-        <h1 class="text-3xl font-black text-pitch-black-50">Verificación de Vehículos</h1>
-        <p class="text-baltic-blue-400">Revisa y certifica el estado de los vehículos en stock</p>
+        <h1 class="text-3xl font-black text-content-primary">Verificación de Vehículos</h1>
+        <p class="text-action-primary">Revisa y certifica el estado de los vehículos en stock</p>
       </header>
     
       @if (loading()) {
         <div class="flex justify-center py-20">
-          <div class="w-12 h-12 border-4 border-baltic-blue-500/20 border-t-baltic-blue-500 rounded-full animate-spin"></div>
+          <div class="w-12 h-12 border-4 border-action-primary/20 border-t-action-primary rounded-full animate-spin"></div>
         </div>
       }
     
       @if (!loading() && pendingVehicles().length === 0) {
-        <div class="text-center py-20 bg-white/5 backdrop-blur-sm rounded-3xl border border-dashed border-dark-teal-800">
-          <p class="text-baltic-blue-300/60">No hay vehículos pendientes de verificación.</p>
+        <div class="text-center py-20 bg-surface-card/50 backdrop-blur-sm rounded-3xl border border-dashed border-white/10">
+          <p class="text-content-muted">No hay vehículos pendientes de verificación.</p>
         </div>
       }
     
@@ -32,22 +32,22 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
         <div class="grid gap-4">
           @for (v of pendingVehicles(); track v.idVehiculo) {
             <div
-              class="bg-white/5 backdrop-blur-md border-[3px] border-pitch-black-950 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-baltic-blue-500 transition-all shadow-xl">
+              class="bg-surface-card backdrop-blur-md border border-white/5 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-action-primary/30 transition-all shadow-xl">
               <div class="flex items-center gap-5">
-                <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-dark-teal-500">
+                <div class="w-16 h-16 bg-surface-base rounded-2xl flex items-center justify-center text-action-primary">
                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
                 </div>
                 <div class="space-y-1">
-                  <h3 class="text-pitch-black-50 font-bold text-lg">{{ v.modelo }}</h3>
-                  <p class="text-baltic-blue-300/60 text-sm">Vendedor: <span class="text-pitch-black-50/80 font-bold tracking-tight uppercase">{{ v.vendedor?.nombre }}</span></p>
-                  <p class="text-[10px] text-baltic-blue-400 font-bold uppercase tracking-widest">ID: #{{ v.idVehiculo }} | {{ v.kilometraje }} Km | {{ v.potencia }} CV</p>
+                  <h3 class="text-content-primary font-bold text-lg">{{ v.modelo }}</h3>
+                  <p class="text-content-secondary text-sm">Vendedor: <span class="text-content-primary font-bold uppercase">{{ v.vendedor?.nombre }}</span></p>
+                  <p class="text-[10px] text-content-muted font-bold uppercase tracking-widest">ID: #{{ v.idVehiculo }} | {{ v.kilometraje }} Km | {{ v.potencia }} CV</p>
                 </div>
               </div>
               <div class="flex items-center gap-3">
-                <button (click)="verify(v.idVehiculo, false)" class="px-5 py-2.5 rounded-xl border border-rose-500/50 text-rose-600 font-bold hover:bg-rose-50 transition-all active:scale-95">
+                <button (click)="verify(v.idVehiculo, false)" class="px-5 py-2.5 rounded-xl border border-feedback-error/30 text-feedback-error font-bold hover:bg-feedback-error/5 transition-all active:scale-95">
                   Rechazar
                 </button>
-                <button (click)="verify(v.idVehiculo, true)" class="px-5 py-2.5 rounded-xl bg-baltic-blue-500 text-white font-bold hover:bg-baltic-blue-600 shadow-lg shadow-baltic-blue-500/20 transition-all active:scale-95 flex items-center gap-2">
+                <button (click)="verify(v.idVehiculo, true)" class="px-5 py-2.5 rounded-xl bg-feedback-success text-surface-base font-bold hover:opacity-90 shadow-lg shadow-feedback-success/20 transition-all active:scale-95 flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   Verificar
                 </button>
@@ -55,7 +55,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
             </div>
           }
         </div>
-
+ 
         <div class="pt-6 border-t border-white/5">
           <app-pagination
             [totalItems]="totalItems()"

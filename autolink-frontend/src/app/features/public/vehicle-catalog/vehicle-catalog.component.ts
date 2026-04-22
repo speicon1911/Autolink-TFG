@@ -15,30 +15,30 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
   template: `
     <div class="animate-fade-in px-4 lg:px-0">
       <header class="text-center space-y-4 mb-12">
-        <h1 class="text-4xl md:text-5xl font-black tracking-tight text-pitch-black-50">
-          Encuentra tu próximo <span class="text-baltic-blue-500">vehículo</span>
+        <h1 class="text-4xl md:text-5xl font-black tracking-tight text-content-primary">
+          Encuentra tu próximo <span class="text-action-primary">vehículo</span>
         </h1>
-        <p class="text-dark-teal-400 max-w-2xl mx-auto text-lg leading-relaxed">
+        <p class="text-content-secondary max-w-2xl mx-auto text-lg leading-relaxed">
           Explora nuestro catálogo exclusivo de vehículos verificados y listos para la carretera.
           Filtra por modelo, potencia, kilometraje y más.
         </p>
       </header>
-
+ 
       <div class="flex flex-col lg:flex-row gap-8 relative">
         <!-- Desktop Sidebar (Sticky) -->
         <aside class="hidden lg:block w-80 shrink-0">
           <div class="sticky top-28 space-y-6">
-            <div class="bg-white/5 backdrop-blur-xl border border-baltic-blue-500/20 p-6 rounded-3xl shadow-2xl relative overflow-hidden">
-              <div class="absolute top-0 left-0 w-1 h-full bg-baltic-blue-500"></div>
-              <h2 class="text-baltic-blue-400 font-black uppercase tracking-widest text-sm mb-6 flex items-center gap-2">
+            <div class="bg-surface-card backdrop-blur-xl border border-white/10 p-6 rounded-3xl shadow-2xl relative overflow-hidden">
+              <div class="absolute top-0 left-0 w-1 h-full bg-action-primary"></div>
+              <h2 class="text-action-primary font-black uppercase tracking-widest text-sm mb-6 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
                 Filtros de Búsqueda
               </h2>
               
               <ng-container *ngTemplateOutlet="filtersList"></ng-container>
-
+ 
               <div class="mt-8 pt-6 border-t border-white/5">
-                <button (click)="resetFiltros()" class="w-full text-baltic-blue-400 hover:text-dark-amaranth-400 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-colors py-2">
+                <button (click)="resetFiltros()" class="w-full text-action-primary hover:opacity-80 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-colors py-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                   Limpiar Filtros
                 </button>
@@ -46,50 +46,50 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
             </div>
           </div>
         </aside>
-
+ 
         <!-- Mobile Filter Button (Fixed at top of list) -->
-        <div class="lg:hidden sticky top-[4.5rem] z-30 bg-dark-teal-950/80 backdrop-blur-md py-4 mb-4 border-b border-white/5">
+        <div class="lg:hidden sticky top-[4.5rem] z-30 bg-surface-base/80 backdrop-blur-md py-4 mb-4 border-b border-white/5">
           <button (click)="toggleMobileFilters()" 
-            class="w-full bg-baltic-blue-500 text-white font-black py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-[0.98] transition-all">
+            class="w-full bg-action-primary text-surface-base font-black py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-[0.98] transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
             Filtros
             @if (tieneFiltrosActivos) {
-              <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+              <span class="w-2 h-2 bg-surface-base rounded-full animate-pulse"></span>
             }
           </button>
         </div>
-
+ 
         <!-- Catalog Content -->
         <div class="flex-1 space-y-8">
           <!-- Results Grid -->
           @if (loading()) {
             <div class="flex flex-col items-center justify-center py-32 space-y-4">
-              <div class="w-16 h-16 border-4 border-baltic-blue-500/20 border-t-baltic-blue-500 rounded-full animate-spin"></div>
-              <p class="text-baltic-blue-400 font-bold animate-pulse">Buscando los mejores vehículos...</p>
+              <div class="w-16 h-16 border-4 border-action-primary/20 border-t-action-primary rounded-full animate-spin"></div>
+              <p class="text-action-primary font-bold animate-pulse">Buscando los mejores vehículos...</p>
             </div>
           }
-
+ 
           @if (!loading() && vehiculos().length === 0) {
-            <div class="text-center py-20 space-y-4 bg-white/5 backdrop-blur-sm rounded-3xl border border-dashed border-dark-teal-800">
-              <div class="w-20 h-20 bg-dark-teal-900/40 rounded-full flex items-center justify-center mx-auto mb-4 text-dark-teal-400">
+            <div class="text-center py-20 space-y-4 bg-surface-card/50 backdrop-blur-sm rounded-3xl border border-dashed border-white/10">
+              <div class="w-20 h-20 bg-action-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-action-primary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
               </div>
               @if (tieneFiltrosActivos) {
-                <p class="text-pitch-black-50 text-xl font-medium opacity-80">No se encontraron vehículos que coincidan con tus filtros.</p>
-                <button (click)="resetFiltros()" class="text-baltic-blue-500 font-bold hover:underline">Limpiar todos los filtros</button>
+                <p class="text-content-primary text-xl font-medium opacity-80">No se encontraron vehículos que coincidan con tus filtros.</p>
+                <button (click)="resetFiltros()" class="text-action-primary font-bold hover:underline">Limpiar todos los filtros</button>
               } @else {
-                <p class="text-pitch-black-50 text-xl font-medium opacity-80">No hay vehículos disponibles en este momento.</p>
-                <p class="text-baltic-blue-400 text-sm">Vuelve a consultar más tarde para ver nuevas incorporaciones.</p>
+                <p class="text-content-primary text-xl font-medium opacity-80">No hay vehículos disponibles en este momento.</p>
+                <p class="text-content-secondary text-sm">Vuelve a consultar más tarde para ver nuevas incorporaciones.</p>
               }
             </div>
           }
-
+ 
           @if (!loading() && vehiculos().length > 0) {
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               @for (v of vehiculos(); track v.idVehiculo) {
                 <div
-                  class="group bg-white/5 backdrop-blur-md border-[3px] border-pitch-black-950 rounded-3xl overflow-hidden hover:border-baltic-blue-500 transition-all duration-500 transform hover:-translate-y-2 shadow-2xl">
-                  <div class="aspect-[16/10] bg-dark-teal-900/50 relative overflow-hidden">
+                  class="group bg-surface-card backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden hover:border-action-primary transition-all duration-500 transform hover:-translate-y-2 shadow-2xl">
+                  <div class="aspect-[16/10] bg-surface-base relative overflow-hidden">
                     @if (v.imagenes && v.imagenes.length > 0) {
                       <img [ngSrc]="v.imagenes[0].url" 
                         fill
@@ -97,13 +97,13 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                         class="object-cover group-hover:scale-110 transition-transform duration-700" 
                         alt="Vehículo">
                     } @else {
-                      <div class="absolute inset-0 flex items-center justify-center text-dark-teal-700 opacity-40 group-hover:scale-110 transition-transform duration-700">
+                      <div class="absolute inset-0 flex items-center justify-center text-content-muted/40 group-hover:scale-110 transition-transform duration-700">
                         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
                       </div>
                     }
                     
                     @if (v.verificado) {
-                      <div class="absolute top-5 right-5 bg-baltic-blue-500 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-2xl flex items-center gap-1.5 z-10 transition-transform duration-300 group-hover:scale-105">
+                      <div class="absolute top-5 right-5 bg-status-success text-surface-base text-[10px] font-black px-3 py-1.5 rounded-full shadow-2xl flex items-center gap-1.5 z-10 transition-transform duration-300 group-hover:scale-105">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                         VERIFICADO
                       </div>
@@ -112,30 +112,30 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                   <div class="p-5 space-y-4">
                     <div class="space-y-1">
                       <div class="flex justify-between items-start gap-4">
-                        <h3 class="text-lg font-black text-pitch-black-50 group-hover:text-baltic-blue-400 transition-colors leading-tight">
+                        <h2 class="text-lg font-black text-content-primary group-hover:text-action-primary transition-colors leading-tight">
                           @if (v.marca) {
-                            <span class="text-baltic-blue-400 text-[10px] block mb-1 uppercase tracking-widest">{{ v.marca.nombre | formatEnum }}</span>
+                            <span class="text-action-primary text-[10px] block mb-1 uppercase tracking-widest">{{ v.marca.nombre | formatEnum }}</span>
                           }
                           {{ v.modelo }}
-                        </h3>
-                        <span class="text-xl font-black text-baltic-blue-500 whitespace-nowrap">{{ v.precio | currency:'EUR':'symbol':'1.0-0' }}</span>
+                        </h2>
+                        <span class="text-xl font-black text-action-primary whitespace-nowrap">{{ v.precio | currency:'EUR':'symbol':'1.0-0' }}</span>
                       </div>
-                      <p class="text-baltic-blue-300/60 text-[10px] font-bold tracking-tight uppercase">
+                      <p class="text-content-secondary text-[10px] font-bold tracking-tight uppercase">
                         {{ v.tipoVehiculo | formatEnum }} · {{ v.color }}
                       </p>
                     </div>
                     <div class="grid grid-cols-2 gap-3 border-y border-white/5 py-3">
                       @if (v.potencia) {
-                        <div class="flex items-center gap-2 text-pitch-black-50/70 text-[10px] font-bold uppercase tracking-widest">
-                          <div class="w-6 h-6 rounded bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500">
+                        <div class="flex items-center gap-2 text-content-secondary text-[10px] font-bold uppercase tracking-widest">
+                          <div class="w-6 h-6 rounded bg-action-primary/10 flex items-center justify-center text-action-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>
                           </div>
                           {{ v.potencia }} CV
                         </div>
                       }
                       @if (v.kilometraje !== undefined) {
-                        <div class="flex items-center gap-2 text-pitch-black-50/70 text-[10px] font-bold uppercase tracking-widest">
-                          <div class="w-6 h-6 rounded bg-baltic-blue-500/10 flex items-center justify-center text-baltic-blue-500">
+                        <div class="flex items-center gap-2 text-content-secondary text-[10px] font-bold uppercase tracking-widest">
+                          <div class="w-6 h-6 rounded bg-action-primary/10 flex items-center justify-center text-action-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>
                           </div>
                           {{ v.kilometraje }} Km
@@ -143,7 +143,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                       }
                     </div>
                     <button (click)="verDetalles(v)"
-                      class="btn-primary w-full text-white font-black py-3 rounded-xl transition-all shadow-xl shadow-baltic-blue-600/20 active:scale-[0.98] flex items-center justify-center gap-3 group/btn text-[10px] uppercase tracking-widest">
+                      class="btn-primary w-full font-black py-3 rounded-xl transition-all shadow-xl shadow-action-primary/20 active:scale-[0.98] flex items-center justify-center gap-3 group/btn text-[10px] uppercase tracking-widest">
                       Ver Detalles
                       <svg class="group-hover/btn:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                     </button>
@@ -164,117 +164,118 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
         </div>
       </div>
     </div>
-
+ 
     <!-- Mobile Drawer -->
     @if (showMobileFilters()) {
       <div class="fixed inset-0 z-[60] lg:hidden">
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-dark-teal-950/80 backdrop-blur-md animate-fade-in" (click)="toggleMobileFilters()"></div>
+        <div class="absolute inset-0 bg-surface-base/80 backdrop-blur-md animate-fade-in" (click)="toggleMobileFilters()"></div>
         
         <!-- Drawer Panel -->
-        <div class="absolute left-0 top-0 h-full w-[85%] max-w-sm bg-dark-teal-950 border-r border-baltic-blue-500/30 p-6 flex flex-col shadow-2xl animate-slide-in">
+        <div class="absolute left-0 top-0 h-full w-[85%] max-w-sm bg-surface-card border-r border-white/10 p-6 flex flex-col shadow-2xl animate-slide-in">
           <div class="flex justify-between items-center mb-8">
-            <h2 class="text-xl font-black text-pitch-black-50">Filtros</h2>
-            <button (click)="toggleMobileFilters()" class="text-baltic-blue-400 p-2">
+            <h2 class="text-xl font-black text-content-primary">Filtros</h2>
+            <button (click)="toggleMobileFilters()" class="text-action-primary p-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
-
+ 
           <div class="flex-1 overflow-y-auto pr-2 space-y-6 custom-scrollbar">
             <ng-container *ngTemplateOutlet="filtersList"></ng-container>
           </div>
-
+ 
           <div class="mt-auto pt-6 border-t border-white/10 space-y-4">
             <button (click)="aplicarFiltros()"
-              class="w-full bg-baltic-blue-500 text-white font-black py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3">
+              class="w-full bg-action-primary text-surface-base font-black py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3">
               Ver Resultados
-              <span class="bg-white/20 px-2 py-0.5 rounded-lg text-xs">{{ totalItems() }}</span>
+              <span class="bg-surface-base/20 px-2 py-0.5 rounded-lg text-xs">{{ totalItems() }}</span>
             </button>
-            <button (click)="resetFiltros()" class="w-full text-baltic-blue-400 text-xs font-black uppercase tracking-widest py-2">
+            <button (click)="resetFiltros()" class="w-full text-action-primary text-xs font-black uppercase tracking-widest py-2">
               Limpiar Todo
             </button>
           </div>
         </div>
       </div>
     }
-
+ 
+    <!-- Shared Filters Template -->
     <!-- Shared Filters Template -->
     <ng-template #filtersList>
       <div class="space-y-6">
         <div class="space-y-1">
-          <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Marca</label>
-          <select [(ngModel)]="filtros.marca" (change)="onFiltrosChange()"
-            class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all cursor-pointer">
-            <option value="" class="bg-dark-teal-900">Todas las marcas</option>
+          <label for="marca-select" class="text-[10px] font-black uppercase tracking-widest text-action-primary ml-1">Marca</label>
+          <select id="marca-select" [(ngModel)]="filtros.marca" (change)="onFiltrosChange()"
+            class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer">
+            <option value="" class="bg-surface-card">Todas las marcas</option>
             @for (m of marcas(); track m) {
-              <option [value]="m?.nombre" class="bg-dark-teal-900">{{ m?.nombre | formatEnum }}</option>
+              <option [value]="m?.nombre" class="bg-surface-card">{{ m?.nombre | formatEnum }}</option>
             }
           </select>
         </div>
-
+ 
         <div class="space-y-1">
-          <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Modelo</label>
-          <input type="text" [(ngModel)]="filtros.modelo" (input)="onFiltrosChange()"
+          <label for="modelo-input" class="text-[10px] font-black uppercase tracking-widest text-action-primary ml-1">Modelo</label>
+          <input id="modelo-input" type="text" [(ngModel)]="filtros.modelo" (input)="onFiltrosChange()"
             placeholder="Ej: Golf"
-            class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
+            class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted">
         </div>
-
+ 
         <div class="space-y-1">
-          <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Tipo</label>
-          <select [(ngModel)]="filtros.tipo" (change)="onFiltrosChange()"
-            class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all cursor-pointer">
-            <option value="" class="bg-dark-teal-900">Cualquier tipo</option>
+          <label for="tipo-select" class="text-[10px] font-black uppercase tracking-widest text-action-primary ml-1">Tipo</label>
+          <select id="tipo-select" [(ngModel)]="filtros.tipo" (change)="onFiltrosChange()"
+            class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer">
+            <option value="" class="bg-surface-card">Cualquier tipo</option>
             @for (t of tipos; track t) {
-              <option [value]="t" class="bg-dark-teal-900">{{ t | formatEnum }}</option>
+              <option [value]="t" class="bg-surface-card">{{ t | formatEnum }}</option>
             }
           </select>
         </div>
-
+ 
         <div class="space-y-1">
-          <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Combustible</label>
-          <select [(ngModel)]="filtros.combustible" (change)="onFiltrosChange()"
-            class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all cursor-pointer">
-            <option value="" class="bg-dark-teal-900">Cualquier combustible</option>
+          <label for="combustible-select" class="text-[10px] font-black uppercase tracking-widest text-action-primary ml-1">Combustible</label>
+          <select id="combustible-select" [(ngModel)]="filtros.combustible" (change)="onFiltrosChange()"
+            class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer">
+            <option value="" class="bg-surface-card">Cualquier combustible</option>
             @for (c of combustibles; track c) {
-              <option [value]="c" class="bg-dark-teal-900">{{ c | formatEnum }}</option>
+              <option [value]="c" class="bg-surface-card">{{ c | formatEnum }}</option>
             }
           </select>
         </div>
-
+ 
         <div class="space-y-1">
-          <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Precio Máx (€)</label>
-          <input type="number" [(ngModel)]="filtros.maxPrecio" (input)="onFiltrosChange()"
+          <label for="precio-input" class="text-[10px] font-black uppercase tracking-widest text-action-primary ml-1">Precio Máx (€)</label>
+          <input id="precio-input" type="number" [(ngModel)]="filtros.maxPrecio" (input)="onFiltrosChange()"
             placeholder="Ej: 30000" min="0"
-            class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30">
+            class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted">
         </div>
-
+ 
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-1">
-            <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Año Mín</label>
-            <input type="number" [(ngModel)]="filtros.anioFabricacion" (input)="onFiltrosChange()"
+            <label for="anio-input" class="text-[10px] font-black uppercase tracking-widest text-action-primary ml-1">Año Mín</label>
+            <input id="anio-input" type="number" [(ngModel)]="filtros.anioFabricacion" (input)="onFiltrosChange()"
               placeholder="2020" min="1900"
-              class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30 text-sm">
+              class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted text-sm">
           </div>
           <div class="space-y-1">
-            <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Km Máx</label>
-            <input type="number" [(ngModel)]="filtros.maxKm" (input)="onFiltrosChange()"
+            <label for="km-input" class="text-[10px] font-black uppercase tracking-widest text-action-primary ml-1">Km Máx</label>
+            <input id="km-input" type="number" [(ngModel)]="filtros.maxKm" (input)="onFiltrosChange()"
               placeholder="150k" min="0"
-              class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30 text-sm">
+              class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted text-sm">
           </div>
         </div>
-
+ 
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-1">
-            <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Potencia Mín</label>
-            <input type="number" [(ngModel)]="filtros.minPotencia" (input)="onFiltrosChange()"
+            <label for="potencia-input" class="text-[10px] font-black uppercase tracking-widest text-action-primary ml-1">Potencia Mín</label>
+            <input id="potencia-input" type="number" [(ngModel)]="filtros.minPotencia" (input)="onFiltrosChange()"
               placeholder="120 CV" min="0"
-              class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30 text-sm">
+              class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted text-sm">
           </div>
           <div class="space-y-1">
-            <label class="text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 ml-1">Plazas</label>
-            <input type="number" [(ngModel)]="filtros.plazas" (input)="onFiltrosChange()"
+            <label for="plazas-input" class="text-[10px] font-black uppercase tracking-widest text-action-primary ml-1">Plazas</label>
+            <input id="plazas-input" type="number" [(ngModel)]="filtros.plazas" (input)="onFiltrosChange()"
               placeholder="5" min="1"
-              class="w-full bg-white/10 border border-dark-teal-800 rounded-xl px-4 py-3 text-pitch-black-50 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all placeholder:text-pitch-black-50/30 text-sm">
+              class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted text-sm">
           </div>
         </div>
       </div>

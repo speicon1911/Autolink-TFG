@@ -7,28 +7,28 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
     imports: [],
     template: `
     @if (isOpen) {
-      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden transform transition-all animate-scale-in">
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface-base/80 backdrop-blur-sm animate-fade-in">
+        <div class="bg-surface-card border border-white/10 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden transform transition-all animate-scale-in">
           <div class="p-6">
             <div class="flex items-center gap-4 mb-4">
-              <div class="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500">
+              <div class="w-12 h-12 rounded-2xl bg-feedback-warning/10 flex items-center justify-center text-feedback-warning">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 9 0 4"/><path d="m12 17 .01 0"/><circle cx="12" cy="12" r="10"/></svg>
               </div>
               <div>
-                <h3 class="text-xl font-black text-white">{{ title }}</h3>
-                <p class="text-slate-400 text-sm">{{ message }}</p>
+                <h3 class="text-xl font-black text-content-primary">{{ title }}</h3>
+                <p class="text-content-secondary text-sm">{{ message }}</p>
               </div>
             </div>
             <div class="flex gap-3 mt-8">
               <button
                 (click)="onCancel()"
-                class="flex-1 px-6 py-3 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-700 transition-all border border-slate-700"
+                class="flex-1 px-6 py-3 rounded-xl bg-surface-overlay text-content-primary font-bold hover:bg-white/5 transition-all border border-white/5"
                 >
                 Cancelar
               </button>
               <button
                 (click)="onConfirm()"
-                class="flex-1 px-6 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20"
+                class="flex-1 px-6 py-3 rounded-xl bg-action-primary text-surface-base font-bold hover:bg-action-hover transition-all shadow-lg shadow-action-primary/20"
                 >
                 Confirmar
               </button>

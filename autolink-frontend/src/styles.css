@@ -1,60 +1,147 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import "tailwindcss";
 
 @theme {
-  --color-dark-amaranth-50: #faebed;
-  --color-dark-amaranth-100: #f4d7db;
-  --color-dark-amaranth-200: #e9afb8;
-  --color-dark-amaranth-300: #de8794;
-  --color-dark-amaranth-400: #d35f70;
-  --color-dark-amaranth-500: #c8374d;
-  --color-dark-amaranth-600: #a02c3d;
-  --color-dark-amaranth-700: #78212e;
-  --color-dark-amaranth-800: #50161f;
-  --color-dark-amaranth-900: #280b0f;
-  --color-dark-amaranth-950: #1c080b;
+  /* Semantic Color Mapping */
+  --color-surface-base: var(--bg-base);
+  --color-surface-card: var(--bg-card);
+  --color-surface-overlay: var(--bg-overlay);
 
-  --color-pitch-black-50: #f8f7ed;
-  --color-pitch-black-100: #f0efdb;
-  --color-pitch-black-200: #e2dfb6;
-  --color-pitch-black-300: #d3cf92;
-  --color-pitch-black-400: #c5bf6d;
-  --color-pitch-black-500: #b6af49;
-  --color-pitch-black-600: #928c3a;
-  --color-pitch-black-700: #6d692c;
-  --color-pitch-black-800: #49461d;
-  --color-pitch-black-900: #24230f;
-  --color-pitch-black-950: #1a190a;
+  --color-content-primary: var(--text-primary);
+  --color-content-secondary: var(--text-secondary);
+  --color-content-muted: var(--text-muted);
 
-  --color-baltic-blue-50: #e8f5fc;
-  --color-baltic-blue-100: #d2ebf9;
-  --color-baltic-blue-200: #a5d6f3;
-  --color-baltic-blue-300: #78c2ed;
-  --color-baltic-blue-400: #4aaee8;
-  --color-baltic-blue-500: #1d9ae2;
-  --color-baltic-blue-600: #177bb5;
-  --color-baltic-blue-700: #125c87;
-  --color-baltic-blue-800: #0c3d5a;
-  --color-baltic-blue-900: #061f2d;
-  --color-baltic-blue-950: #041620;
+  --color-action-primary: var(--action-primary);
+  --color-action-hover: var(--action-hover);
+  --color-action-secondary: var(--action-secondary);
+  --color-action-focus: var(--action-focus);
 
-  --color-dark-teal-50: #ecf6f8;
-  --color-dark-teal-100: #daecf1;
-  --color-dark-teal-200: #b5d9e3;
-  --color-dark-teal-300: #8fc6d6;
-  --color-dark-teal-400: #6ab4c8;
-  --color-dark-teal-500: #45a1ba;
-  --color-dark-teal-600: #378195;
-  --color-dark-teal-700: #296070;
-  --color-dark-teal-800: #1c404a;
-  --color-dark-teal-900: #0e2025;
-  --color-dark-teal-950: #0a171a;
+  --color-feedback-success: var(--status-success);
+  --color-feedback-error: var(--status-error);
+  --color-feedback-warning: var(--status-warning);
+  --color-feedback-info: var(--status-info);
+}
+
+:root {
+  /* --- NORMAL THEME (Dusty Denim Base) --- */
+  --bg-base: #0c1118;
+  --bg-card: #111922;
+  --bg-overlay: #233143;
+  --text-primary: #eef2f6;
+  --text-secondary: #bccadc;
+  --text-muted: #7896ba;
+  --action-primary: #05fae1;
+  --action-hover: #04c8b4;
+  --action-secondary: #344a65;
+  --action-focus: #69fced;
+  --status-success: #05fae1;
+  --status-error: #d92632;
+  --status-warning: #d5692a;
+  --status-info: #528dad;
+}
+
+[data-theme="light"] {
+  /* --- LIGHT THEME (High Contrast & Professional) --- */
+  --bg-base: #f8fafc;      /* Slate 50 */
+  --bg-card: #ffffff;      /* Pure white */
+  --bg-overlay: #f1f5f9;   /* Slate 100 */
+  --text-primary: #0f172a; /* Slate 900 */
+  --text-secondary: #334155; /* Slate 700 */
+  --text-muted: #475569;   /* Slate 600 - Darker for legibility */
+  --action-primary: #0369a1; /* Sky 700 - Perfect contrast > 5.5:1 */
+  --action-hover: #075985;
+  --action-secondary: #e2e8f0;
+  --action-focus: #0ea5e9;
+  --status-success: #065f46; /* Emerald 800 */
+  --status-error: #991b1b;   /* Red 800 */
+  --status-warning: #92400e; /* Amber 800 */
+  --status-info: #0369a1;
+}
+
+[data-theme="protanopia"] {
+  /* --- PROTANOPIA THEME (High Contrast Adjustment) --- */
+  --bg-base: #0a0a0f;
+  --bg-card: #12121a;
+  --bg-overlay: #242435;
+  --text-primary: #ffffff;
+  --text-secondary: #d1d1e0;
+  --text-muted: #9999bc;
+  --action-primary: #8585ff; /* Much brighter blue for contrast */
+  --action-hover: #a3a3ff;
+  --action-secondary: #3d3d5c;
+  --action-focus: #c2c2ff;
+  --status-success: #8585ff;
+  --status-error: #ffffb3;
+  --status-warning: #ffffcc;
+  --status-info: #9494ff;
+}
+
+[data-theme="deuteranopia"] {
+  /* --- DEUTERANOPIA THEME (High Contrast Sage) --- */
+  --bg-base: #0c0e0a;
+  --bg-card: #141a10;
+  --bg-overlay: #232c1b;
+  --text-primary: #ffffff;
+  --text-secondary: #dce1d5;
+  --text-muted: #aab29a;
+  --action-primary: #98b06e; /* Much brighter sage green */
+  --action-hover: #b0c985;
+  --action-secondary: #3d4a2d;
+  --action-focus: #c5d6aa;
+  --status-success: #98b06e;
+  --status-error: #d9b38c;
+  --status-warning: #d9c58c;
+  --status-info: #aab891;
+}
+
+[data-theme="tritanopia"] {
+  /* --- TRITANOPIA THEME (Grey Olive / Onyx / Taupe) --- */
+  --bg-base: #111313;
+  --bg-card: #181b1b;
+  --bg-overlay: #303635;
+  --text-primary: #f2f3f3;
+  --text-secondary: #c9cfce;
+  --text-muted: #949e9d;
+  --action-primary: #6f908d;
+  --action-hover: #597371;
+  --action-secondary: #495050;
+  --action-focus: #a9bcbb;
+  --status-success: #6f908d;
+  --status-error: #8c7374;
+  --status-warning: #8f7070;
+  --status-info: #798686;
+}
+
+[data-theme="achromatopsia"] {
+  /* --- ACHROMATOPSIA THEME (Grayscale) --- */
+  --bg-base: #141414;
+  --bg-card: #202020;
+  --bg-overlay: #303030;
+  --text-primary: #EEEEEE;
+  --text-secondary: #ADADAD;
+  --text-muted: #888888;
+  --action-primary: #ADADAD;
+  --action-hover: #BCBCBC;
+  --action-secondary: #404040;
+  --action-focus: #FFFFFF;
+  --status-success: #ADADAD;
+  --status-error: #7B7B7B;
+  --status-warning: #707070;
+  --status-info: #888888;
 }
 
 @layer base {
   body {
-    @apply bg-dark-teal-950 text-pitch-black-50;
+    @apply bg-surface-base text-content-primary transition-colors duration-300;
+  }
+
+  /* Force visibility for native selects and options */
+  select {
+    @apply bg-surface-base text-content-primary;
+  }
+
+  option {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
   }
 
   /* Custom Scrollbar */
@@ -64,37 +151,42 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-dark-teal-950;
+    @apply bg-surface-base;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-baltic-blue-600/30 rounded-full border-2 border-dark-teal-950 transition-all;
+    @apply bg-action-primary/30 rounded-full border-2 border-surface-base transition-all;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-baltic-blue-500/50;
+    @apply bg-action-primary/50;
   }
 
   /* Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: theme('colors.baltic-blue-600 / 30%') theme('colors.dark-teal-950');
+    scrollbar-color: theme('colors.action-primary / 30%') theme('colors.surface-base');
   }
 }
 
 @layer components {
-
-  /* Combined button styles to avoid @apply error */
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 bg-baltic-blue-500 text-white hover:bg-dark-amaranth-600;
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-bold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 bg-action-primary !text-surface-base hover:bg-action-hover;
   }
 
-  /* Accent elements using baltic blue instead of tropical teal */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold transition-all duration-300 border-2 border-action-primary/30 text-action-primary hover:bg-action-primary/10 active:scale-95;
+  }
+
   .accent-border {
-    @apply border-2 border-baltic-blue-500/30;
+    @apply border-2 border-action-primary/30;
   }
 
   .accent-text {
-    @apply text-baltic-blue-400 hover:text-baltic-blue-300;
+    @apply text-action-primary hover:text-action-hover;
+  }
+
+  .card-premium {
+    @apply bg-surface-card border border-white/5 rounded-xl shadow-xl overflow-hidden transition-all duration-300 hover:border-action-primary/20;
   }
 }
