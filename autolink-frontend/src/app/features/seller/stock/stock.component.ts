@@ -19,11 +19,11 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
     <div class="space-y-6 animate-fade-in">
       <header class="flex justify-between items-center">
         <div>
-          <h1 class="text-3xl font-black text-pitch-black-50">Mi Stock</h1>
-          <p class="text-baltic-blue-400">Gestiona tus vehículos publicados</p>
+          <h1 class="text-3xl font-black text-content-primary">Mi Stock</h1>
+          <p class="text-content-secondary">Gestiona tus vehículos publicados</p>
         </div>
         <button (click)="onOpenForm()"
-          class="btn-primary text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-baltic-blue-600/20 transition-all active:scale-95 flex items-center gap-2">
+          class="btn-primary text-surface-base font-bold px-6 py-3 rounded-xl shadow-lg shadow-action-primary/20 transition-all active:scale-95 flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Publicar Vehículo
         </button>
@@ -31,47 +31,47 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
     
       <!-- Sales Modal -->
       @if (showSalesModal()) {
-        <div class="fixed inset-0 bg-pitch-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100] animate-fade-in">
-          <div class="bg-dark-teal-950 border border-white/10 rounded-3xl w-full max-w-4xl shadow-2xl relative overflow-hidden">
+        <div class="fixed inset-0 bg-surface-base/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100] animate-fade-in">
+          <div class="bg-surface-card border border-white/10 rounded-3xl w-full max-w-4xl shadow-2xl relative overflow-hidden">
             <header class="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
               <div>
-                <h2 class="text-2xl font-black text-pitch-black-50">Solicitudes para {{ selectedVehicle()?.modelo }}</h2>
-                <p class="text-baltic-blue-400 text-sm">Gestiona las ofertas recibidas para este vehículo</p>
+                <h2 class="text-2xl font-black text-content-primary">Solicitudes para {{ selectedVehicle()?.modelo }}</h2>
+                <p class="text-content-secondary text-sm">Gestiona las ofertas recibidas para este vehículo</p>
               </div>
-              <button (click)="onCloseSalesModal()" class="p-2 hover:bg-white/5 rounded-full text-baltic-blue-400 transition-colors">
+              <button (click)="onCloseSalesModal()" class="p-2 hover:bg-white/5 rounded-full text-content-muted transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </header>
 
             <div class="p-6 max-h-[60vh] overflow-y-auto">
               @if (vehicleSales().length === 0) {
-                <div class="text-center py-10 text-baltic-blue-300/60">
+                <div class="text-center py-10 text-content-muted">
                   No hay solicitudes para este vehículo todavía.
                 </div>
               } @else {
                 <div class="overflow-x-auto">
                   <table class="w-full text-left">
                     <thead>
-                      <tr class="text-[10px] uppercase tracking-widest text-baltic-blue-400 border-b border-white/5">
+                      <tr class="text-[10px] uppercase tracking-widest text-content-muted border-b border-white/5">
                         <th class="pb-4 font-bold">Cliente</th>
                         <th class="pb-4 font-bold">Fecha</th>
                         <th class="pb-4 font-bold">Estado</th>
-                        <th class="pb-4 font-bold">Acciones</th>
+                        <th class="pb-4 font-bold text-right">Acciones</th>
                       </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5">
                       @for (s of vehicleSales(); track s.idVenta) {
                         <tr class="group hover:bg-white/5 transition-colors">
                           <td class="py-4">
-                            <span class="text-pitch-black-50 font-bold block">{{ s.cliente.nombre }} {{ s.cliente.apellidos }}</span>
-                            <span class="text-xs text-baltic-blue-400">{{ s.cliente.correo }}</span>
+                            <span class="text-content-primary font-bold block">{{ s.cliente.nombre }} {{ s.cliente.apellidos }}</span>
+                            <span class="text-xs text-content-muted">{{ s.cliente.correo }}</span>
                           </td>
-                          <td class="py-4 text-sm text-pitch-black-50">{{ s.fecha }}</td>
+                          <td class="py-4 text-sm text-content-primary">{{ s.fecha }}</td>
                           <td class="py-4">
                             <div class="flex flex-col gap-1">
                               @if (editingPriceId() === s.idVenta) {
                                 <div class="flex items-center gap-2">
-                                  <input type="number" [(ngModel)]="tempPrice" class="w-20 bg-pitch-black/20 border border-baltic-blue-500 rounded p-1 text-white text-xs outline-none">
+                                  <input type="number" [(ngModel)]="tempPrice" class="w-20 bg-surface-base border border-action-primary rounded p-1 text-content-primary text-xs outline-none">
                                   <button (click)="savePrice(s)" [disabled]="isProcessing()" class="text-emerald-500 hover:text-emerald-400 disabled:opacity-50">
                                     @if (isProcessing()) {
                                       <div class="w-4 h-4 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
@@ -84,8 +84,8 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                                   </button>
                                 </div>
                               } @else {
-                                <span class="text-baltic-blue-500 font-bold flex items-center gap-1"
-                                  [ngClass]="{'cursor-pointer hover:text-baltic-blue-400': s.estadoVenta === 'EN_PROGRESO' && s.rolUltimoModificador !== 'VENDEDOR'}"
+                                <span class="text-action-primary font-bold flex items-center gap-1"
+                                  [ngClass]="{'cursor-pointer hover:opacity-80': s.estadoVenta === 'EN_PROGRESO' && s.rolUltimoModificador !== 'VENDEDOR'}"
                                   (click)="s.estadoVenta === 'EN_PROGRESO' && s.rolUltimoModificador !== 'VENDEDOR' && startEditPrice(s)">
                                   {{ s.precio | currency:'EUR':'symbol':'1.0-0' }}
                                   @if (s.estadoVenta === 'EN_PROGRESO' && s.rolUltimoModificador !== 'VENDEDOR') {
@@ -95,7 +95,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                               }
                               <span class="px-2 py-0.5 w-fit rounded-md text-[8px] font-black uppercase tracking-tighter"
                                 [ngClass]="{
-                                  'bg-baltic-blue-500/20 text-baltic-blue-400': s.estadoVenta === 'EN_PROGRESO',
+                                  'bg-action-primary/20 text-action-primary': s.estadoVenta === 'EN_PROGRESO',
                                   'bg-emerald-500/20 text-emerald-500': s.estadoVenta === 'REALIZADA',
                                   'bg-rose-500/20 text-rose-500': s.estadoVenta === 'ANULADA'
                                 }">
@@ -103,21 +103,21 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                               </span>
                             </div>
                           </td>
-                          <td class="py-4">
+                          <td class="py-4 text-right">
                             @if (s.estadoVenta === 'EN_PROGRESO') {
                               @if (s.rolUltimoModificador !== 'VENDEDOR') {
-                                <div class="flex items-center gap-2">
-                                  <button (click)="onCompleteSale(s)" class="px-2 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded text-[10px] font-bold transition-all">
+                                <div class="flex items-center justify-end gap-2">
+                                  <button (click)="onCompleteSale(s)" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-surface-base rounded-lg text-[10px] font-bold transition-all shadow-lg shadow-emerald-500/10">
                                     Aceptar
                                   </button>
-                                  <button (click)="onAnularSale(s)" class="px-2 py-1 bg-white/10 hover:bg-rose-500/20 hover:text-rose-500 text-baltic-blue-400 rounded text-[10px] font-bold transition-all border border-white/5">
+                                  <button (click)="onAnularSale(s)" class="px-3 py-1.5 bg-surface-base hover:bg-rose-500/20 hover:text-rose-500 text-content-muted rounded-lg text-[10px] font-bold transition-all border border-white/5">
                                     Anular
                                   </button>
                                 </div>
                               } @else {
-                                <div class="flex items-center gap-2">
-                                  <span class="text-amber-500 text-[10px] font-bold px-2 py-1 rounded bg-amber-500/10 border border-amber-500/20">Esperando</span>
-                                  <button (click)="onAnularSale(s)" class="px-2 py-1 bg-white/10 hover:bg-rose-500/20 hover:text-rose-500 text-baltic-blue-400 rounded text-[10px] font-bold transition-all border border-white/5">
+                                <div class="flex items-center justify-end gap-2">
+                                  <span class="text-amber-500 text-[10px] font-bold px-2 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20">Esperando</span>
+                                  <button (click)="onAnularSale(s)" class="px-3 py-1.5 bg-surface-base hover:bg-rose-500/20 hover:text-rose-500 text-content-muted rounded-lg text-[10px] font-bold transition-all border border-white/5">
                                     Anular
                                   </button>
                                 </div>
@@ -125,11 +125,6 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                             }
                           </td>
                         </tr>
-                        @if (s.precio) {
-                          <tr class="text-[10px] text-baltic-blue-400 bg-white/5">
-                            <td colspan="4" class="px-4 py-1 italic">Oferta: {{ s.precio | currency:'EUR' }}</td>
-                          </tr>
-                        }
                       }
                     </tbody>
                   </table>
@@ -153,13 +148,13 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
     
       @if (loading()) {
         <div class="flex justify-center py-20">
-          <div class="w-12 h-12 border-4 border-baltic-blue-500/20 border-t-baltic-blue-500 rounded-full animate-spin"></div>
+          <div class="w-12 h-12 border-4 border-action-primary/20 border-t-action-primary rounded-full animate-spin"></div>
         </div>
       }
     
       @if (!loading() && vehicles().length === 0) {
-        <div class="text-center py-20 bg-white/5 backdrop-blur-sm rounded-3xl border border-dashed border-dark-teal-800">
-          <p class="text-baltic-blue-300/60">No tienes vehículos publicados actualmente.</p>
+        <div class="text-center py-20 bg-surface-card backdrop-blur-sm rounded-3xl border border-dashed border-white/10">
+          <p class="text-content-muted">No tienes vehículos publicados actualmente.</p>
         </div>
       }
     
@@ -167,38 +162,38 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
         <div class="grid gap-4">
           @for (v of vehicles(); track v.idVehiculo) {
             <div
-              class="bg-white/5 backdrop-blur-md border-[3px] border-pitch-black-950 rounded-2xl p-5 flex items-center justify-between gap-6 hover:border-baltic-blue-500 transition-all shadow-xl">
+              class="bg-surface-card backdrop-blur-md border border-white/5 rounded-2xl p-5 flex items-center justify-between gap-6 hover:border-action-primary/50 transition-all shadow-xl group">
               <div class="flex items-center gap-4">
-                <div class="w-16 h-12 bg-white/60 rounded-lg flex items-center justify-center text-dark-teal-300">
+                <div class="w-16 h-12 bg-surface-base rounded-xl flex items-center justify-center text-action-primary border border-white/5">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
                 </div>
                 <div>
-                  <h3 class="text-pitch-black-50 font-bold">{{ v.modelo }}</h3>
+                  <h3 class="text-content-primary font-bold">{{ v.modelo }}</h3>
                   <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold px-2 py-0.5 rounded-full"
-                      [ngClass]="v.disponible ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-white/10 text-baltic-blue-400/60 border border-white/5'">
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                      [ngClass]="v.disponible ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-surface-base text-content-muted border border-white/5'">
                       {{ v.disponible ? 'Disponible' : 'Vendido' }}
                     </span>
                     @if (v.verificado) {
-                      <span class="text-[10px] text-baltic-blue-500 font-black uppercase tracking-widest">Verificado</span>
+                      <span class="text-[10px] text-action-primary font-black uppercase tracking-widest">Verificado</span>
                     }
                   </div>
                 </div>
               </div>
               <div class="flex items-center gap-8">
                 <div class="text-right">
-                  <p class="text-[10px] text-baltic-blue-400 font-bold uppercase tracking-widest">Precio</p>
-                  <p class="text-xl font-black text-pitch-black-50">{{ v.precio | currency:'EUR' }}</p>
+                  <p class="text-[10px] text-content-muted font-bold uppercase tracking-widest">Precio</p>
+                  <p class="text-xl font-black text-content-primary">{{ v.precio | currency:'EUR' }}</p>
                 </div>
                 <div class="flex items-center gap-2">
-                  <button (click)="onViewSales(v)" class="p-2 hover:bg-baltic-blue-500/10 rounded-lg text-baltic-blue-400 transition-colors flex items-center gap-1 text-xs font-bold" title="Ver Ofertas">
+                  <button (click)="onViewSales(v)" class="p-2 hover:bg-action-primary/10 rounded-lg text-content-muted hover:text-action-primary transition-all flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider" title="Ver Ofertas">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                     Ofertas
                   </button>
-                  <button (click)="onEdit(v)" class="p-2 hover:bg-white/60 rounded-lg text-dark-teal-400 hover:text-baltic-blue-600 transition-colors">
+                  <button (click)="onEdit(v)" class="p-2 hover:bg-surface-base rounded-lg text-content-muted hover:text-action-primary transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                   </button>
-                  <button (click)="onDelete(v.idVehiculo)" class="p-2 hover:bg-rose-50 rounded-lg text-dark-teal-400 hover:text-rose-600 transition-colors">
+                  <button (click)="onDelete(v.idVehiculo)" class="p-2 hover:bg-rose-500/10 rounded-lg text-content-muted hover:text-rose-500 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                   </button>
                 </div>

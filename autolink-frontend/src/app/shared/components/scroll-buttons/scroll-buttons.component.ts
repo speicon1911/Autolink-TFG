@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
       <button 
         *ngIf="showTop()"
         (click)="scrollToTop()"
-        class="p-3 bg-baltic-blue-500/20 hover:bg-baltic-blue-500 backdrop-blur-md border border-baltic-blue-500/30 rounded-2xl text-baltic-blue-400 hover:text-white transition-all shadow-xl hover:-translate-y-1 active:scale-90 group"
+        class="p-4 bg-surface-card hover:bg-action-primary backdrop-blur-xl border border-white/10 rounded-2xl text-action-primary hover:text-surface-base transition-all shadow-2xl hover:-translate-y-1 active:scale-90 group ring-1 ring-white/5"
         title="Subir al inicio"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="group-hover:animate-bounce-short">
@@ -23,7 +23,7 @@ import { CommonModule } from '@angular/common';
       <button 
         *ngIf="showBottom()"
         (click)="scrollToBottom()"
-        class="p-3 bg-baltic-blue-500/20 hover:bg-baltic-blue-500 backdrop-blur-md border border-baltic-blue-500/30 rounded-2xl text-baltic-blue-400 hover:text-white transition-all shadow-xl hover:translate-y-1 active:scale-90 group"
+        class="p-4 bg-surface-card hover:bg-action-primary backdrop-blur-xl border border-white/10 rounded-2xl text-action-primary hover:text-surface-base transition-all shadow-2xl hover:translate-y-1 active:scale-90 group ring-1 ring-white/5"
         title="Bajar al final"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="group-hover:animate-bounce-short-down">

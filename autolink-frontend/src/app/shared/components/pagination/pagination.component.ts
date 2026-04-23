@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, computed, input, model, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -12,8 +12,8 @@ import { FormsModule } from '@angular/forms';
       <!-- Info + Jump to page -->
       <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 text-center sm:text-left">
         <p class="text-xs sm:text-sm text-content-secondary whitespace-nowrap">
-          Mostrando <span class="font-bold text-content-primary">{{ startIndex + 1 }}</span>–<span class="font-bold text-content-primary">{{ endIndex }}</span>
-          de <span class="font-bold text-content-primary">{{ totalItems }}</span>
+          Mostrando <span class="font-bold text-content-primary">{{ startIndex() + 1 }}</span>–<span class="font-bold text-content-primary">{{ endIndex() }}</span>
+          de <span class="font-bold text-content-primary">{{ totalItems() }}</span>
         </p>
  
         <!-- Jump to page input -->
@@ -24,8 +24,8 @@ import { FormsModule } from '@angular/forms';
             [(ngModel)]="jumpPage"
             (keydown.enter)="goToPage()"
             [min]="1"
-            [max]="totalPages"
-            placeholder="{{ currentPage }}"
+            [max]="totalPages()"
+            placeholder="{{ currentPage() }}"
             class="w-12 sm:w-14 bg-white/5 border border-white/10 text-content-primary text-[10px] sm:text-xs rounded-lg px-2 py-1.5 text-center focus:ring-2 focus:ring-action-primary outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           <button
@@ -43,7 +43,7 @@ import { FormsModule } from '@angular/forms';
         <!-- First page -->
         <button
           (click)="onPageChange(1)"
-          [disabled]="currentPage === 1"
+          [disabled]="currentPage() === 1"
           title="Primera página"
           class="relative inline-flex items-center p-1.5 sm:px-2 sm:py-2 rounded-lg sm:rounded-l-lg sm:rounded-none border border-white/5 bg-white/5 text-sm text-content-secondary hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
@@ -54,8 +54,8 @@ import { FormsModule } from '@angular/forms';
  
         <!-- Previous page -->
         <button
-          (click)="onPageChange(currentPage - 1)"
-          [disabled]="currentPage === 1"
+          (click)="onPageChange(currentPage() - 1)"
+          [disabled]="currentPage() === 1"
           title="Página anterior"
           class="relative inline-flex items-center p-1.5 sm:px-2 sm:py-2 rounded-lg sm:rounded-none border border-white/5 bg-white/5 text-sm text-content-secondary hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
@@ -65,10 +65,10 @@ import { FormsModule } from '@angular/forms';
         </button>
  
         <!-- Page numbers -->
-        @for (page of pages; track page) {
+        @for (page of pages(); track page) {
           <button
             (click)="onPageChange(page)"
-            [class]="currentPage === page
+            [class]="currentPage() === page
               ? 'relative inline-flex items-center px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-none border border-action-primary bg-action-primary text-xs sm:text-sm font-bold text-surface-base transition-colors'
               : 'relative inline-flex items-center px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-none border border-white/5 bg-white/5 text-xs sm:text-sm font-medium text-content-secondary hover:bg-white/10 transition-colors'"
           >
@@ -78,8 +78,8 @@ import { FormsModule } from '@angular/forms';
  
         <!-- Next page -->
         <button
-          (click)="onPageChange(currentPage + 1)"
-          [disabled]="currentPage === totalPages"
+          (click)="onPageChange(currentPage() + 1)"
+          [disabled]="currentPage() === totalPages()"
           title="Página siguiente"
           class="relative inline-flex items-center p-1.5 sm:px-2 sm:py-2 rounded-lg sm:rounded-none border border-white/5 bg-white/5 text-sm text-content-secondary hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
@@ -90,8 +90,8 @@ import { FormsModule } from '@angular/forms';
  
         <!-- Last page -->
         <button
-          (click)="onPageChange(totalPages)"
-          [disabled]="currentPage === totalPages"
+          (click)="onPageChange(totalPages())"
+          [disabled]="currentPage() === totalPages()"
           title="Última página"
           class="relative inline-flex items-center p-1.5 sm:px-2 sm:py-2 rounded-lg sm:rounded-r-lg sm:rounded-none border border-white/5 bg-white/5 text-sm text-content-secondary hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
@@ -103,73 +103,56 @@ import { FormsModule } from '@angular/forms';
     </div>
   `
 })
-export class PaginationComponent implements OnChanges {
-  @Input() totalItems: number = 0;
-  @Input() itemsPerPage: number = 10;
-  @Input() currentPage: number = 1;
-
+export class PaginationComponent {
+  totalItems = input(0);
+  itemsPerPage = input(10);
+  currentPage = model(1);
   @Output() pageChange = new EventEmitter<number>();
 
-  totalPages: number = 1;
-  pages: number[] = [];
-  startIndex: number = 0;
-  endIndex: number = 0;
-  jumpPage: number | null = null;
+  totalPages = computed(() => Math.ceil(this.totalItems() / this.itemsPerPage()) || 1);
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['totalItems'] || changes['itemsPerPage'] || changes['currentPage']) {
-      this.calculatePagination();
-    }
-  }
+  startIndex = computed(() => (this.currentPage() - 1) * this.itemsPerPage());
+  endIndex = computed(() => Math.min(this.startIndex() + this.itemsPerPage(), this.totalItems()));
 
-  private calculatePagination() {
-    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage) || 1;
-
-    if (this.currentPage > this.totalPages) {
-      this.currentPage = this.totalPages;
-      this.pageChange.emit(this.currentPage);
-    }
-
-    this.startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    this.endIndex = Math.min(this.startIndex + this.itemsPerPage, this.totalItems);
-    this.generatePages();
-  }
-
-  private generatePages() {
+  pages = computed(() => {
+    const total = this.totalPages();
+    const current = this.currentPage();
     const maxPagesToShow = 5;
+    
     let startPage: number, endPage: number;
 
-    if (this.totalPages <= maxPagesToShow) {
+    if (total <= maxPagesToShow) {
       startPage = 1;
-      endPage = this.totalPages;
+      endPage = total;
     } else {
       const half = Math.floor(maxPagesToShow / 2);
-      if (this.currentPage <= half) {
+      if (current <= half) {
         startPage = 1;
         endPage = maxPagesToShow;
-      } else if (this.currentPage + half >= this.totalPages) {
-        startPage = this.totalPages - maxPagesToShow + 1;
-        endPage = this.totalPages;
+      } else if (current + half >= total) {
+        startPage = total - maxPagesToShow + 1;
+        endPage = total;
       } else {
-        startPage = this.currentPage - half;
-        endPage = this.currentPage + half;
+        startPage = current - half;
+        endPage = current + half;
       }
     }
 
-    this.pages = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
-  }
+    return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+  });
+
+  jumpPage: number | null = null;
 
   onPageChange(page: number) {
-    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
-      this.currentPage = page;
-      this.pageChange.emit(this.currentPage);
-      this.calculatePagination();
+    if (page >= 1 && page <= this.totalPages() && page !== this.currentPage()) {
+      this.currentPage.set(page);
+      this.pageChange.emit(page);
     }
   }
 
   goToPage() {
     if (this.jumpPage !== null && !isNaN(this.jumpPage)) {
-      const target = Math.max(1, Math.min(this.totalPages, Math.floor(this.jumpPage)));
+      const target = Math.max(1, Math.min(this.totalPages(), Math.floor(this.jumpPage)));
       this.onPageChange(target);
     }
     this.jumpPage = null;

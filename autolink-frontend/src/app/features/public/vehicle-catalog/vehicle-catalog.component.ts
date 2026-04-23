@@ -278,6 +278,36 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
               class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted text-sm">
           </div>
         </div>
+
+        <!-- Solo Verificados toggle -->
+        <div class="pt-2">
+          <button
+            id="verificado-toggle"
+            type="button"
+            (click)="toggleVerificado()"
+            [class]="filtros.verificado
+              ? 'w-full flex items-center justify-between gap-3 px-4 py-3 bg-action-primary/10 border border-action-primary rounded-xl transition-all'
+              : 'w-full flex items-center justify-between gap-3 px-4 py-3 bg-surface-base border border-white/5 rounded-xl transition-all hover:border-action-primary/40'"
+          >
+            <div class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                [class]="filtros.verificado ? 'text-action-primary' : 'text-content-muted'">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+              <span [class]="filtros.verificado ? 'text-xs font-black text-action-primary uppercase tracking-widest' : 'text-xs font-bold text-content-secondary uppercase tracking-widest'">Solo Verificados</span>
+            </div>
+            <!-- Pill toggle -->
+            <div [class]="filtros.verificado
+              ? 'w-10 h-5 bg-action-primary rounded-full relative transition-all'
+              : 'w-10 h-5 bg-white/10 rounded-full relative transition-all'">
+              <div [class]="filtros.verificado
+                ? 'absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-all shadow-md'
+                : 'absolute left-0.5 top-0.5 w-4 h-4 bg-white/40 rounded-full transition-all shadow-md'">
+              </div>
+            </div>
+          </button>
+        </div>
       </div>
     </ng-template>
   `,
@@ -318,6 +348,7 @@ export class VehicleCatalogComponent implements OnInit {
     minPotencia: null as number | null,
     plazas: null as number | null,
     disponible: true,
+    verificado: null as boolean | null,
     anioFabricacion: null as number | null
   };
 
@@ -374,6 +405,12 @@ export class VehicleCatalogComponent implements OnInit {
     });
   }
 
+  toggleVerificado() {
+    this.filtros.verificado = this.filtros.verificado ? null : true;
+    this.currentPage.set(0);
+    this.fetchVehiculos();
+  }
+
   onFiltrosChange() {
     // Solo buscamos automáticamente si no estamos en formato móvil (drawer abierto)
     // Opcionalmente, podemos detectar el ancho de pantalla, pero aquí usaremos el estado del drawer.
@@ -410,6 +447,7 @@ export class VehicleCatalogComponent implements OnInit {
       minPotencia: null,
       plazas: null,
       disponible: true,
+      verificado: null,
       anioFabricacion: null
     };
     this.currentPage.set(0);

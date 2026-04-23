@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VentaService } from '../../../core/services/venta.service';
@@ -7,53 +7,69 @@ import { NotificationService } from '../../../core/services/notification.service
 import { Sale } from '../../../core/models/sale.model';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+
 @Component({
     selector: 'app-client-purchases',
     standalone: true,
-    imports: [CommonModule, FormsModule, ConfirmModalComponent],
+    imports: [CommonModule, FormsModule, ConfirmModalComponent, PaginationComponent],
     template: `
     <div class="space-y-6 animate-fade-in">
       <header>
-        <h1 class="text-3xl font-black text-pitch-black-50">Mis Compras</h1>
-        <p class="text-baltic-blue-400">Historial de vehículos adquiridos</p>
+        <h1 class="text-3xl font-black text-content-primary">Mis Compras</h1>
+        <p class="text-content-secondary">Historial de vehículos adquiridos</p>
       </header>
     
       @if (loading()) {
         <div class="flex justify-center py-20">
-          <div class="w-12 h-12 border-4 border-baltic-blue-500/20 border-t-baltic-blue-500 rounded-full animate-spin"></div>
-        </div>
-      }
-    
-      @if (!loading() && purchases().length === 0) {
-        <div class="text-center py-20 bg-white/5 backdrop-blur-sm rounded-3xl border border-dashed border-dark-teal-800">
-          <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto text-baltic-blue-400 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          </div>
-          <p class="text-baltic-blue-300/60 text-lg">Aún no has realizado ninguna compra.</p>
+          <div class="w-12 h-12 border-4 border-action-primary/20 border-t-action-primary rounded-full animate-spin"></div>
         </div>
       }
     
       @if (!loading() && purchases().length > 0) {
+        <!-- Status Filter -->
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <button (click)="setStatus('TODAS')" 
+            [class]="selectedStatus() === 'TODAS' ? 'px-4 py-1.5 bg-action-primary text-surface-base rounded-xl font-black text-xs transition-all' : 'px-4 py-1.5 bg-surface-card text-content-secondary hover:text-action-primary rounded-xl font-bold text-xs transition-all border border-white/5'">TODAS</button>
+          <button (click)="setStatus('REALIZADA')" 
+            [class]="selectedStatus() === 'REALIZADA' ? 'px-4 py-1.5 bg-emerald-500 text-surface-base rounded-xl font-black text-xs transition-all' : 'px-4 py-1.5 bg-surface-card text-content-secondary hover:text-emerald-500 rounded-xl font-bold text-xs transition-all border border-white/5'">COMPRADAS</button>
+          <button (click)="setStatus('EN_PROGRESO')" 
+            [class]="selectedStatus() === 'EN_PROGRESO' ? 'px-4 py-1.5 bg-amber-500 text-surface-base rounded-xl font-black text-xs transition-all' : 'px-4 py-1.5 bg-surface-card text-content-secondary hover:text-amber-500 rounded-xl font-bold text-xs transition-all border border-white/5'">PENDIENTES</button>
+          <button (click)="setStatus('ANULADA')" 
+            [class]="selectedStatus() === 'ANULADA' ? 'px-4 py-1.5 bg-rose-500 text-surface-base rounded-xl font-black text-xs transition-all' : 'px-4 py-1.5 bg-surface-card text-content-secondary hover:text-rose-500 rounded-xl font-bold text-xs transition-all border border-white/5'">ANULADAS</button>
+        </div>
+      }
+
+      @if (!loading() && purchases().length === 0) {
+        <div class="text-center py-20 bg-surface-card backdrop-blur-sm rounded-3xl border border-dashed border-white/10">
+          <div class="w-16 h-16 bg-surface-base rounded-2xl flex items-center justify-center mx-auto text-action-primary mb-4 border border-white/5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
+          <p class="text-content-muted text-lg">Aún no has realizado ninguna compra.</p>
+        </div>
+      }
+    
+      @if (!loading() && pagedPurchases().length > 0) {
         <div class="grid gap-4">
-          @for (p of purchases(); track p) {
+          @for (p of pagedPurchases(); track p.idVenta) {
             <div
-              class="bg-white/5 backdrop-blur-md border-[3px] border-pitch-black-950 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-baltic-blue-500 transition-colors shadow-xl">
+              class="bg-surface-card backdrop-blur-md border border-white/5 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-action-primary/50 transition-all shadow-xl group">
               <div class="flex items-center gap-5">
-                <div class="w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center text-baltic-blue-400">
+                <div class="w-14 h-14 bg-surface-base rounded-xl flex items-center justify-center text-action-primary border border-white/5">
                   <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
                 </div>
                 <div class="space-y-1">
-                  <h3 class="text-pitch-black-50 font-bold text-lg">
+                  <h3 class="text-content-primary font-bold text-lg">
                     {{ p.vehiculo.marca?.nombre }} {{ p.vehiculo.modelo }}
                   </h3>
-                  <p class="text-baltic-blue-400 text-sm italic">{{ p.fecha | date:'longDate':'':'es' }}</p>
+                  <p class="text-content-secondary text-sm italic">{{ p.fecha | date:'longDate':'':'es' }}</p>
                 </div>
               </div>
               <div class="flex flex-col md:items-end gap-1">
-                <span class="text-baltic-blue-400 text-[10px] font-bold uppercase tracking-wider">Monto Total</span>
+                <span class="text-content-muted text-[10px] font-bold uppercase tracking-wider">Monto Total</span>
                 @if (editingId() === p.idVenta) {
                   <div class="flex items-center gap-2 mt-1">
-                    <input type="number" [(ngModel)]="newPrice" class="w-24 bg-white/10 border border-baltic-blue-500 rounded p-1 text-white text-right outline-none">
+                    <input type="number" [(ngModel)]="newPrice" class="w-24 bg-surface-base border border-action-primary rounded p-1 text-content-primary text-right outline-none">
                     <button (click)="savePrice(p)" [disabled]="isProcessing()" class="text-emerald-500 hover:text-emerald-400 tooltip disabled:opacity-50" title="Guardar Precio">
                       @if (isProcessing()) {
                         <div class="w-5 h-5 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
@@ -66,7 +82,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                     </button>
                   </div>
                 } @else {
-                  <span class="text-2xl font-black text-baltic-blue-500">{{ p.precio | currency:'EUR' }}</span>
+                  <span class="text-2xl font-black text-action-primary">{{ p.precio | currency:'EUR' }}</span>
                 }
               </div>
               <div class="flex items-center gap-3">
@@ -75,7 +91,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                     <button (click)="completeSale(p)" class="p-2 hover:bg-emerald-500/10 rounded-lg text-emerald-600 hover:text-emerald-500 transition-all tooltip" title="Aceptar y Formalizar Compra">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                     </button>
-                    <button (click)="startEdit(p)" class="p-2 hover:bg-baltic-blue-500/10 rounded-lg text-baltic-blue-400 hover:text-baltic-blue-300 transition-all tooltip" title="Editar Oferta (Negociar)">
+                    <button (click)="startEdit(p)" class="p-2 hover:bg-action-primary/10 rounded-lg text-content-muted hover:text-action-primary transition-all tooltip" title="Editar Oferta (Negociar)">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                     </button>
                     <button (click)="cancelSale(p)" class="p-2 hover:bg-rose-500/10 rounded-lg text-rose-600 hover:text-rose-500 transition-all tooltip" title="Anular Petición">
@@ -99,6 +115,15 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
               </div>
             </div>
           }
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-white/5">
+          <app-pagination
+            [totalItems]="totalFilteredItems()"
+            [itemsPerPage]="itemsPerPage"
+            [currentPage]="currentPage() + 1"
+            (pageChange)="onPageChange($event)">
+          </app-pagination>
         </div>
       }
     </div>
@@ -129,6 +154,24 @@ export class ClientPurchasesComponent implements OnInit {
     editingId = signal<number | null>(null);
     newPrice: number = 0;
 
+    // Pagination + Filters
+    currentPage = signal(0);
+    itemsPerPage = 10;
+    selectedStatus = signal<string>('TODAS');
+
+    filteredPurchases = computed(() => {
+        const status = this.selectedStatus();
+        const all = this.purchases();
+        return status === 'TODAS' ? all : all.filter(p => p.estadoVenta === status);
+    });
+
+    totalFilteredItems = computed(() => this.filteredPurchases().length);
+
+    pagedPurchases = computed(() => {
+        const start = this.currentPage() * this.itemsPerPage;
+        return this.filteredPurchases().slice(start, start + this.itemsPerPage);
+    });
+
     // MODAL DE CONFIRMACIÓN
     modalConfig = signal<{
         isOpen: boolean;
@@ -154,12 +197,23 @@ export class ClientPurchasesComponent implements OnInit {
             this.loading.set(true);
             this.ventaService.getPurchasesByCliente(user.id).subscribe({
                 next: (data) => {
-                    this.purchases.set(data.sort((a, b) => b.idVenta - a.idVenta));
+                    const sorted = data.sort((a, b) => b.idVenta - a.idVenta);
+                    this.purchases.set(sorted);
                     this.loading.set(false);
                 },
                 error: () => this.loading.set(false)
             });
         }
+    }
+
+    onPageChange(page: number) {
+        this.currentPage.set(page - 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    setStatus(status: string) {
+        this.selectedStatus.set(status);
+        this.currentPage.set(0);
     }
 
     startEdit(sale: Sale) {
