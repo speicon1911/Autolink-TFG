@@ -103,8 +103,18 @@ public class GlobalExceptionHandler {
 	            .body("El archivo es demasiado grande. El límite máximo permitido es de 5MB por foto.");
 	}
 	
-	public ResponseEntity<String> handleIOException(IOException ex){
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar el archivo o al conectar con el servidor de imágenes: " + ex.getMessage());
+	@ExceptionHandler(IOException.class)
+	public ResponseEntity<String> handleIOException(IOException ex) {
+		ex.printStackTrace(); // Log the error for the developer
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body("Error al procesar el archivo o al conectar con el servidor de imágenes: " + ex.getMessage());
+	}
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<String> handleGenericException(Exception ex) {
+		ex.printStackTrace(); // Log the error for the developer
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body("Ha ocurrido un error inesperado: " + ex.getMessage());
 	}
 	
 }

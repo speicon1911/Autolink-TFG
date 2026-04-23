@@ -33,7 +33,15 @@ public class ImgBBService {
 		// se envia la peticion POST
 		Map<String, Object> response = restTemplate.postForObject(url, body, Map.class);
 		
+		if (response == null || !response.containsKey("data")) {
+			throw new IOException("La respuesta de ImgBB fue nula o inválida.");
+		}
+		
 		Map<String, Object> data = (Map<String, Object>) response.get("data");
+		if (data == null || !data.containsKey("url")) {
+			throw new IOException("No se encontró la URL de la imagen en la respuesta de ImgBB.");
+		}
+		
 		return (String) data.get("url");
 	}
 

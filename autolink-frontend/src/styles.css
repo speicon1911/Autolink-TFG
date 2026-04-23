@@ -19,6 +19,35 @@
   --color-feedback-error: var(--status-error);
   --color-feedback-warning: var(--status-warning);
   --color-feedback-info: var(--status-info);
+
+  /* Compatibility Colors for legacy components */
+  --color-baltic-blue-50: #f1f7fb;
+  --color-baltic-blue-100: #e2eff6;
+  --color-baltic-blue-200: #bce0ed;
+  --color-baltic-blue-300: #81c8e1;
+  --color-baltic-blue-400: #3da8d0;
+  --color-baltic-blue-500: #1d9ae2;
+  --color-baltic-blue-600: #1377bd;
+  --color-baltic-blue-700: #11609a;
+  --color-baltic-blue-800: #12517f;
+  --color-baltic-blue-900: #14446a;
+
+  --color-pitch-black: #0c1118;
+  --color-pitch-black-50: #eef2f6;
+  --color-pitch-black-950: #05070a;
+
+  --color-dark-teal-300: #a7d3d6;
+  --color-dark-teal-400: #70abaf;
+  --color-dark-teal-700: #3a5c5f;
+  --color-dark-teal-800: #314d50;
+  --color-dark-teal-950: #111922;
+
+  --color-status-success: var(--status-success);
+  --color-status-error: var(--status-error);
+  --color-status-warning: var(--status-warning);
+  --color-status-info: var(--status-info);
+  
+  --color-vehicle-teal: var(--vehicle-teal);
 }
 
 :root {
@@ -37,24 +66,28 @@
   --status-error: #d92632;
   --status-warning: #d5692a;
   --status-info: #528dad;
+  
+  --vehicle-teal: #70abaf; /* Default greenish teal for dark mode */
 }
 
 [data-theme="light"] {
-  /* --- LIGHT THEME (High Contrast & Professional) --- */
-  --bg-base: #f8fafc;      /* Slate 50 */
+  /* --- LIGHT THEME (Clean Blue & Professional) --- */
+  --bg-base: #fdfdfe;      /* Very clean white-blue */
   --bg-card: #ffffff;      /* Pure white */
-  --bg-overlay: #f1f5f9;   /* Slate 100 */
-  --text-primary: #0f172a; /* Slate 900 */
-  --text-secondary: #334155; /* Slate 700 */
-  --text-muted: #475569;   /* Slate 600 - Darker for legibility */
-  --action-primary: #0369a1; /* Sky 700 - Perfect contrast > 5.5:1 */
-  --action-hover: #075985;
-  --action-secondary: #e2e8f0;
-  --action-focus: #0ea5e9;
-  --status-success: #065f46; /* Emerald 800 */
-  --status-error: #991b1b;   /* Red 800 */
-  --status-warning: #92400e; /* Amber 800 */
-  --status-info: #0369a1;
+  --bg-overlay: #f0f4f8;   /* Light blue-grey overlay */
+  --text-primary: #102a43; /* Deep navy instead of slate */
+  --text-secondary: #334e68; /* Mid navy */
+  --text-muted: #627d98;   /* Grey-blue muted */
+  --action-primary: #127fbf; /* Professional Blue */
+  --action-hover: #0967d2;
+  --action-secondary: #d9e2ec;
+  --action-focus: #1d9ae2;
+  --status-success: #27ab83; /* Cleaner emerald, less dark */
+  --status-error: #e12d39;
+  --status-warning: #f0b429;
+  --status-info: #1d9ae2;
+  
+  --vehicle-teal: #127fbf; /* Change the greenish teal to professional blue in light mode */
 }
 
 [data-theme="protanopia"] {
