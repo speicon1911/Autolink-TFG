@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -95,14 +96,14 @@ public class VehiculoService {
 	}
 
 	public void deleteVehiculo(int idVehiculo) {
-		Vehiculo vehiculo = this.vehiculoRepository.findById(idVehiculo)
-				.orElseThrow(() -> new VehiculoNotFoundException("No es posible encontrar un vehiculo con el ID: " + idVehiculo));
+		Vehiculo vehiculo = this.vehiculoRepository.findById(idVehiculo).orElseThrow(
+				() -> new VehiculoNotFoundException("No es posible encontrar un vehiculo con el ID: " + idVehiculo));
 
 		// Verificación de seguridad
-		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+		String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+		boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
 				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
-		
+
 		if (!isAdmin && !vehiculo.getVendedor().getCorreo().equals(currentUserEmail)) {
 			throw new VehiculoExceptions("No tienes permiso para eliminar este vehículo");
 		}
@@ -115,10 +116,10 @@ public class VehiculoService {
 				.orElseThrow(() -> new VehiculoNotFoundException("Vehículo no encontrado"));
 
 		// Verificación de seguridad
-		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+		String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+		boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
 				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
-		
+
 		if (!isAdmin && !vehiculoBD.getVendedor().getCorreo().equals(currentUserEmail)) {
 			throw new VehiculoExceptions("No tienes permiso para modificar este vehículo");
 		}
@@ -158,10 +159,10 @@ public class VehiculoService {
 				() -> new VehiculoNotFoundException("No es posible encontrar el vehiculo con ID: " + idVehiculo));
 
 		// Verificación de seguridad
-		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+		String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+		boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
 				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
-		
+
 		if (!isAdmin && !vehiculoBD.getVendedor().getCorreo().equals(currentUserEmail)) {
 			throw new VehiculoExceptions("No tienes permiso para cambiar la disponibilidad de este vehículo");
 		}
@@ -225,12 +226,12 @@ public class VehiculoService {
 		// buscar vehiculo por el id
 		Vehiculo vehiculo = vehiculoRepository.findById(idVehiculo)
 				.orElseThrow(() -> new VehiculoNotFoundException("Vehiculo no se encuentra."));
-		
+
 		// Verificación de seguridad
-		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+		String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+		boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
 				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
-		
+
 		if (!isAdmin && !vehiculo.getVendedor().getCorreo().equals(currentUserEmail)) {
 			throw new VehiculoExceptions("No tienes permiso para subir fotos a este vehículo");
 		}
@@ -246,10 +247,11 @@ public class VehiculoService {
 				throw new VehiculoExceptions("El archivo " + archivo.getOriginalFilename()
 						+ " no es una imagen válida (solo JPG, PNG, WEBP).");
 			}
-			
+
 			// validar tamaño
-			if(archivo.getSize() > 5 * 1024 * 1024) {
-				throw new VehiculoExceptions("La imagen " + archivo.getOriginalFilename() + " es demasiado grande (máx 5MB).");
+			if (archivo.getSize() > 5 * 1024 * 1024) {
+				throw new VehiculoExceptions(
+						"La imagen " + archivo.getOriginalFilename() + " es demasiado grande (máx 5MB).");
 			}
 			String urlPublica = imgBBService.subirAImgBB(archivo);
 
@@ -275,10 +277,10 @@ public class VehiculoService {
 		}
 		this.imagenVehiculoRepository.deleteById(idFoto);
 	}
-	
+
 	// correo
 	public Vehiculo findByIdEntity(int id) {
-	    return vehiculoRepository.findById(id)
-	        .orElseThrow(() -> new VehiculoNotFoundException("Vehículo no encontrado"));
+		return vehiculoRepository.findById(id)
+				.orElseThrow(() -> new VehiculoNotFoundException("Vehículo no encontrado"));
 	}
 }

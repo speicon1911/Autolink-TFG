@@ -54,10 +54,14 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
                 @if (editingId() === p.idVenta) {
                   <div class="flex items-center gap-2 mt-1">
                     <input type="number" [(ngModel)]="newPrice" class="w-24 bg-white/10 border border-baltic-blue-500 rounded p-1 text-white text-right outline-none">
-                    <button (click)="savePrice(p)" class="text-emerald-500 hover:text-emerald-400 tooltip" title="Guardar Precio">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <button (click)="savePrice(p)" [disabled]="isProcessing()" class="text-emerald-500 hover:text-emerald-400 tooltip disabled:opacity-50" title="Guardar Precio">
+                      @if (isProcessing()) {
+                        <div class="w-5 h-5 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+                      } @else {
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      }
                     </button>
-                    <button (click)="editingId.set(null)" class="text-rose-500 hover:text-rose-400 tooltip" title="Cancelar Edición">
+                    <button (click)="editingId.set(null)" [disabled]="isProcessing()" class="text-rose-500 hover:text-rose-400 tooltip disabled:opacity-50" title="Cancelar Edición">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                   </div>
@@ -104,6 +108,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
       [isOpen]="modalConfig().isOpen"
       [title]="modalConfig().title"
       [message]="modalConfig().message"
+      [loading]="isProcessing()"
       (confirmed)="handleModalConfirm()"
       (cancelled)="handleModalCancel()"
     ></app-confirm-modal>
@@ -120,6 +125,7 @@ export class ClientPurchasesComponent implements OnInit {
 
     purchases = signal<Sale[]>([]);
     loading = signal(true);
+    isProcessing = signal(false);
     editingId = signal<number | null>(null);
     newPrice: number = 0;
 
@@ -167,13 +173,18 @@ export class ClientPurchasesComponent implements OnInit {
             return;
         }
 
+        this.isProcessing.set(true);
         this.ventaService.updatePrecioVenta(sale.idVenta, this.newPrice, 'CLIENTE').subscribe({
             next: () => {
                 this.ns.success('Oferta enviada correctamente');
+                this.isProcessing.set(false);
                 this.editingId.set(null);
                 this.loadPurchases();
             },
-            error: () => this.ns.error('Error al enviar la oferta')
+            error: () => {
+                this.ns.error('Error al enviar la oferta');
+                this.isProcessing.set(false);
+            }
         });
     }
 
@@ -203,27 +214,33 @@ export class ClientPurchasesComponent implements OnInit {
 
         if (config.action === 'completePurchase') {
             const sale = config.data as Sale;
+            this.isProcessing.set(true);
             this.ventaService.completarVenta(sale.idVenta).subscribe({
                 next: () => {
                     this.ns.success('¡Felicidades! Compra completada con éxito');
+                    this.isProcessing.set(false);
                     this.loadPurchases();
                     this.closeConfirmModal();
                 },
                 error: () => {
                     this.ns.error('Error al completar la compra');
+                    this.isProcessing.set(false);
                     this.closeConfirmModal();
                 }
             });
         } else if (config.action === 'cancelPurchase') {
             const sale = config.data as Sale;
+            this.isProcessing.set(true);
             this.ventaService.anularVenta(sale.idVenta).subscribe({
                 next: () => {
                     this.ns.success('Petición anulada correctamente');
+                    this.isProcessing.set(false);
                     this.loadPurchases();
                     this.closeConfirmModal();
                 },
                 error: () => {
                     this.ns.error('Error al anular la petición');
+                    this.isProcessing.set(false);
                     this.closeConfirmModal();
                 }
             });

@@ -152,20 +152,34 @@ export class SellerProfileComponent implements OnInit {
   onFileSelected(event: any) {
     const file = event.target.files[0];
     const user = this.authService.currentUser$();
-    if (file && user) {
-      this.uploadingPhoto.set(true);
-      this.personaService.actualizarFotoPerfil(user.id, file).subscribe({
-        next: (updatedUser) => {
-          this.authService.updateUser(updatedUser);
-          this.ns.success('Foto de perfil actualizada');
-          this.uploadingPhoto.set(false);
-        },
-        error: (err) => {
-          this.uploadingPhoto.set(false);
-          this.ns.error(err?.error?.message || 'Error al subir la foto');
-        }
-      });
+    
+    if (!file || !user) return;
+
+    // Validación de tipo
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      this.ns.error('El archivo no es una imagen válida (solo JPG, PNG, WEBP).');
+      return;
     }
+
+    // Validación de tamaño (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      this.ns.error('La imagen supera el límite de 5MB.');
+      return;
+    }
+
+    this.uploadingPhoto.set(true);
+    this.personaService.actualizarFotoPerfil(user.id, file).subscribe({
+      next: (updatedUser) => {
+        this.authService.updateUser(updatedUser);
+        this.ns.success('Foto de perfil actualizada');
+        this.uploadingPhoto.set(false);
+      },
+      error: (err) => {
+        this.uploadingPhoto.set(false);
+        this.ns.error(err?.error?.message || 'Error al subir la foto');
+      }
+    });
   }
 
   onSubmit() {

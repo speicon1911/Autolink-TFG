@@ -41,10 +41,12 @@ public class PersonaService implements UserDetailsService {
 
 	@Autowired
 	private ImgBBService imgBBService;
-	
+
 	@Autowired
 	private EmailService emailService;
-	
+
+	// tipos permitidos de imagenes
+	private static final List<String> TIPOS_PERMITIDOS = List.of("image/jpeg", "image/png", "image/webp");
 
 	// --- SEGURIDAD (Spring Security) ---
 
@@ -96,11 +98,14 @@ public class PersonaService implements UserDetailsService {
 					existente.setPassword(new BCryptPasswordEncoder().encode(persona.getPassword()));
 				}
 				existente.setRol(persona.getRol() != null ? persona.getRol() : Rol.CLIENTE);
-				
+
 				// Actualizamos también estos campos al reactivar
-				if (persona.getTelefono() != null) existente.setTelefono(persona.getTelefono());
-				if (persona.getSalarioAnual() != null) existente.setSalarioAnual(persona.getSalarioAnual());
-				if (persona.getDNI() != null) existente.setDNI(persona.getDNI());
+				if (persona.getTelefono() != null)
+					existente.setTelefono(persona.getTelefono());
+				if (persona.getSalarioAnual() != null)
+					existente.setSalarioAnual(persona.getSalarioAnual());
+				if (persona.getDNI() != null)
+					existente.setDNI(persona.getDNI());
 
 				existente.setActivo(true);
 				return personaMapper.toDto(this.personaRepository.save(existente));
@@ -135,7 +140,7 @@ public class PersonaService implements UserDetailsService {
 			personaBD.setNombre(persona.getNombre());
 		if (persona.getApellidos() != null && !persona.getApellidos().isBlank())
 			personaBD.setApellidos(persona.getApellidos());
-		
+
 		if (persona.getCorreo() != null && !persona.getCorreo().isBlank()) {
 			if (!persona.getCorreo().equalsIgnoreCase(personaBD.getCorreo())
 					&& personaRepository.existsByCorreo(persona.getCorreo())) {
@@ -171,16 +176,16 @@ public class PersonaService implements UserDetailsService {
 	}
 
 	public PersonaDTO updateTipoUsuario(Rol nuevo, int idPersona) {
-	    Persona personaBD = this.personaRepository.findById(idPersona).orElseThrow(
-	            () -> new PersonaNotFoundException("No es posible encontrar a la persona con ID: " + idPersona));
-	    
-	    // 1. Cambiamos el rol y guardamos
-	    personaBD.setRol(nuevo);
-	    Persona personaGuardada = this.personaRepository.save(personaBD);
-	    // 2. Enviamos la notificación
-	    emailService.notificarCambioRol(personaGuardada.getCorreo(), nuevo.name());
-	    // 3. Devolvemos el DTO
-	    return personaMapper.toDto(personaGuardada);
+		Persona personaBD = this.personaRepository.findById(idPersona).orElseThrow(
+				() -> new PersonaNotFoundException("No es posible encontrar a la persona con ID: " + idPersona));
+
+		// 1. Cambiamos el rol y guardamos
+		personaBD.setRol(nuevo);
+		Persona personaGuardada = this.personaRepository.save(personaBD);
+		// 2. Enviamos la notificación
+		emailService.notificarCambioRol(personaGuardada.getCorreo(), nuevo.name());
+		// 3. Devolvemos el DTO
+		return personaMapper.toDto(personaGuardada);
 	}
 
 	public List<PersonaDTO> findByTipoVendedor() {
@@ -222,6 +227,17 @@ public class PersonaService implements UserDetailsService {
 		Persona persona = personaRepository.findById(idPersona)
 				.orElseThrow(() -> new PersonaNotFoundException("Usuario no encontrado"));
 
+		// validar tipo
+		String contentType = archivo.getContentType();
+		if (contentType == null || !TIPOS_PERMITIDOS.contains(contentType)) {
+			throw new PersonaExceptions("El archivo no es una imagen válida (solo JPG, PNG, WEBP).");
+		}
+
+		// validar tamaño (5MB)
+		if (archivo.getSize() > 5 * 1024 * 1024) {
+			throw new PersonaExceptions("La imagen es demasiado grande (máx 5MB).");
+		}
+
 		String urlFoto = imgBBService.subirAImgBB(archivo);
 
 		persona.setFotoPerfil(urlFoto);
@@ -229,11 +245,11 @@ public class PersonaService implements UserDetailsService {
 
 		return personaMapper.toDto(persona);
 	}
-	
+
 	// correo
 	public Persona findByCorreoEntity(String correo) {
-	    return personaRepository.findByCorreo(correo)
-	        .orElseThrow(() -> new PersonaNotFoundException("Usuario no encontrado"));
+		return personaRepository.findByCorreo(correo)
+				.orElseThrow(() -> new PersonaNotFoundException("Usuario no encontrado"));
 	}
 
 	// paginados

@@ -127,6 +127,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
       [isOpen]="modalConfig().isOpen"
       [title]="modalConfig().title"
       [message]="modalConfig().message"
+      [loading]="isProcessing()"
       (confirmed)="handleModalConfirm()"
       (cancelled)="handleModalCancel()"
     ></app-confirm-modal>
@@ -144,6 +145,7 @@ export class SellerSalesComponent implements OnInit {
 
   sales = signal<Sale[]>([]);
   loading = signal(true);
+  isProcessing = signal(false);
   totalSales = signal<number>(0);
   editingId = signal<number | null>(null);
   newPrice: number = 0;
@@ -202,13 +204,18 @@ export class SellerSalesComponent implements OnInit {
       return;
     }
 
+    this.isProcessing.set(true);
     this.ventaService.updatePrecioVenta(sale.idVenta, this.newPrice, 'VENDEDOR').subscribe({
       next: () => {
         this.ns.success('Contraoferta enviada correctamente');
+        this.isProcessing.set(false);
         this.editingId.set(null);
         this.loadSales();
       },
-      error: () => this.ns.error('Error al enviar la contraoferta')
+      error: () => {
+        this.ns.error('Error al enviar la contraoferta');
+        this.isProcessing.set(false);
+      }
     });
   }
 
@@ -238,27 +245,33 @@ export class SellerSalesComponent implements OnInit {
 
     if (config.action === 'completeSale') {
       const sale = config.data as Sale;
+      this.isProcessing.set(true);
       this.ventaService.completarVenta(sale.idVenta).subscribe({
         next: () => {
           this.ns.success('Venta finalizada con éxito');
+          this.isProcessing.set(false);
           this.loadSales();
           this.closeConfirmModal();
         },
         error: () => {
           this.ns.error('Error al finalizar la venta');
+          this.isProcessing.set(false);
           this.closeConfirmModal();
         }
       });
     } else if (config.action === 'cancelSale') {
       const sale = config.data as Sale;
+      this.isProcessing.set(true);
       this.ventaService.anularVenta(sale.idVenta).subscribe({
         next: () => {
           this.ns.success('Operación anulada correctamente');
+          this.isProcessing.set(false);
           this.loadSales();
           this.closeConfirmModal();
         },
         error: () => {
           this.ns.error('Error al anular la operación');
+          this.isProcessing.set(false);
           this.closeConfirmModal();
         }
       });

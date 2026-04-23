@@ -156,6 +156,7 @@ import { PaginatedResponse } from '../../../core/models/pagination.model';
       [isOpen]="modalConfig().isOpen"
       [title]="modalConfig().title"
       [message]="modalConfig().message"
+      [loading]="isProcessing()"
       (confirmed)="handleModalConfirm()"
       (cancelled)="handleModalCancel()"
     ></app-confirm-modal>
@@ -171,6 +172,7 @@ export class AdminUsersComponent implements OnInit {
 
   users = signal<User[]>([]);          // Solo los usuarios de la página actual
   loading = signal(true);
+  isProcessing = signal(false);
   roles = Object.values(Rol);
 
   // ESTADO DE PAGINACIÓN Y FILTRO
@@ -270,12 +272,17 @@ export class AdminUsersComponent implements OnInit {
   }
 
   reactivarUsuario(user: User) {
+    this.isProcessing.set(true);
     this.personaService.updatePerfil(user.id, { activo: true }).subscribe({
       next: () => {
         this.ns.success(`Usuario ${user.nombre} reactivado`);
+        this.isProcessing.set(true); // Wait for cargarUsuarios
         this.cargarUsuarios();
       },
-      error: () => this.ns.error('Error al reactivar usuario')
+      error: () => {
+        this.ns.error('Error al reactivar usuario');
+        this.isProcessing.set(false);
+      }
     });
   }
 
@@ -284,27 +291,33 @@ export class AdminUsersComponent implements OnInit {
     if (!config.data) return;
 
     if (config.action === 'updateRol' && config.data.newRol) {
+      this.isProcessing.set(true);
       this.personaService.updateRol(config.data.user.id, config.data.newRol).subscribe({
         next: () => {
           this.ns.success(`Rol de ${config.data?.user.nombre} actualizado a ${config.data?.newRol}`);
+          this.isProcessing.set(false);
           this.cargarUsuarios();
           this.closeModal();
         },
         error: () => {
           this.ns.error('Error al actualizar el rol');
+          this.isProcessing.set(false);
           this.cargarUsuarios(); // Reset selection
           this.closeModal();
         }
       });
     } else if (config.action === 'deleteUser') {
+      this.isProcessing.set(true);
       this.personaService.deletePersona(config.data.user.id).subscribe({
         next: () => {
           this.ns.success('Usuario desactivado correctamente');
+          this.isProcessing.set(false);
           this.cargarUsuarios();
           this.closeModal();
         },
         error: () => {
           this.ns.error('Error al desactivar el usuario');
+          this.isProcessing.set(false);
           this.closeModal();
         }
       });

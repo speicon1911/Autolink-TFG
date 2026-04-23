@@ -76,7 +76,10 @@ import { NotificationService } from '../../../core/services/notification.service
               <button 
                 type="submit"
                 [disabled]="contactForm.invalid || isSubmitting"
-                class="w-full bg-baltic-blue-500 hover:bg-dark-amaranth-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black py-4 rounded-xl transition-all shadow-lg shadow-baltic-blue-500/20 active:scale-95 uppercase tracking-widest">
+                class="w-full bg-baltic-blue-500 hover:bg-dark-amaranth-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black py-4 rounded-xl transition-all shadow-lg shadow-baltic-blue-500/20 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2">
+                @if (isSubmitting) {
+                  <div class="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                }
                 {{ isSubmitting ? 'Enviando...' : 'Enviar Mensaje' }}
               </button>
 

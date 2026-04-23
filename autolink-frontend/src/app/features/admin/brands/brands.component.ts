@@ -14,33 +14,33 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
   template: `
     <div class="space-y-6 animate-fade-in relative z-0">
       <header>
-        <h1 class="text-3xl font-black text-content-primary">Gestión de Marcas</h1>
-        <p class="text-action-primary">Administra las marcas de vehículos disponibles en el sistema</p>
+        <h1 class="text-3xl font-black text-pitch-black-50">Gestión de Marcas</h1>
+        <p class="text-baltic-blue-400">Administra las marcas de vehículos disponibles en el sistema</p>
       </header>
  
       <div class="grid grid-cols-1 md:grid-cols-[1fr_350px] gap-8">
         <!-- Lista de Marcas -->
-        <div class="bg-surface-card border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+        <div class="bg-white/5 backdrop-blur-xl border border-baltic-blue-500/20 rounded-3xl overflow-hidden shadow-2xl">
           @if (loading()) {
             <div class="flex justify-center py-20">
-              <div class="w-12 h-12 border-4 border-action-primary/20 border-t-action-primary rounded-full animate-spin"></div>
+              <div class="w-12 h-12 border-4 border-baltic-blue-500/20 border-t-baltic-blue-500 rounded-full animate-spin"></div>
             </div>
           } @else {
             <table class="w-full text-left">
               <thead class="bg-white/5 border-b border-white/5">
                 <tr>
-                  <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-action-primary">ID</th>
-                  <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-action-primary">Nombre de la Marca</th>
-                  <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-action-primary text-right">Acciones</th>
+                  <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-baltic-blue-400">ID</th>
+                  <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-baltic-blue-400">Nombre de la Marca</th>
+                  <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-baltic-blue-400 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-white/5">
                 @for (m of brands(); track m.idMarca) {
                   <tr class="hover:bg-white/5 transition-colors group">
-                    <td class="px-6 py-4 font-mono text-xs text-content-muted">#{{ m.idMarca }}</td>
-                    <td class="px-6 py-4 text-content-primary font-bold uppercase tracking-tight">{{ m.nombre }}</td>
+                    <td class="px-6 py-4 font-mono text-xs text-baltic-blue-300/60">#{{ m.idMarca }}</td>
+                    <td class="px-6 py-4 text-pitch-black-50 font-bold uppercase tracking-tight">{{ m.nombre }}</td>
                     <td class="px-6 py-4 text-right">
-                      <button (click)="requestDeleteBrand(m)" class="p-2 hover:bg-feedback-error/10 rounded-lg text-content-muted hover:text-feedback-error transition-all">
+                      <button (click)="requestDeleteBrand(m)" class="p-2 hover:bg-rose-500/10 rounded-lg text-baltic-blue-400 hover:text-rose-500 transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                       </button>
                     </td>
@@ -65,26 +65,26 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
  
         <!-- Formulario de Añadir -->
         <div class="space-y-6">
-          <div class="bg-surface-card p-8 rounded-3xl border border-white/10 shadow-xl">
-            <h3 class="text-content-primary font-black uppercase tracking-widest text-xs mb-6">Añadir Nueva Marca</h3>
+          <div class="bg-white/5 backdrop-blur-md p-8 rounded-3xl border border-baltic-blue-500/20 shadow-xl">
+            <h3 class="text-pitch-black-50 font-black uppercase tracking-widest text-xs mb-6">Añadir Nueva Marca</h3>
             <form (submit)="createBrand($event)" class="space-y-4">
-              <div>
-                <label class="block text-[10px] font-black text-action-primary uppercase tracking-widest mb-2 ml-1">Nombre</label>
+              <div class="space-y-2">
+                <label class="block text-[10px] font-black text-baltic-blue-400 uppercase tracking-widest mb-2 ml-1">Nombre</label>
                 <input 
                   type="text" 
                   [(ngModel)]="newBrandName" 
                   name="brandName"
                   placeholder="Ej. Ferrari, Tesla..."
-                  class="w-full bg-surface-base border border-white/5 text-content-primary rounded-2xl p-4 focus:ring-2 focus:ring-action-primary outline-none transition-all font-bold placeholder:text-content-muted"
+                  class="w-full bg-white/10 border border-dark-teal-800 text-pitch-black-50 rounded-2xl p-4 focus:ring-2 focus:ring-baltic-blue-500 outline-none transition-all font-bold placeholder:text-pitch-black-50/20"
                 >
               </div>
               <button 
                 type="submit"
                 [disabled]="!newBrandName().trim() || saving()"
-                class="w-full btn-primary font-black py-4 rounded-2xl transition-all shadow-xl shadow-action-primary/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                class="w-full btn-primary font-black py-4 rounded-2xl transition-all shadow-xl shadow-baltic-blue-500/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
               >
                 @if (saving()) {
-                  <div class="w-5 h-5 border-2 border-surface-base/20 border-t-surface-base rounded-full animate-spin"></div>
+                  <div class="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
                 } @else {
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                   Añadir Marca
@@ -93,12 +93,12 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
             </form>
           </div>
  
-          <div class="bg-action-primary/5 border border-action-primary/20 p-6 rounded-3xl">
-            <p class="text-[10px] text-action-primary font-bold uppercase tracking-widest mb-2 group flex items-center gap-2">
+          <div class="bg-baltic-blue-500/5 border border-baltic-blue-500/20 p-6 rounded-3xl">
+            <p class="text-[10px] text-baltic-blue-400 font-bold uppercase tracking-widest mb-2 group flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
               Información
             </p>
-            <p class="text-xs text-content-secondary leading-relaxed">
+            <p class="text-xs text-baltic-blue-300/60 leading-relaxed">
               Las marcas añadidas aquí aparecerán inmediatamente disponibles en los filtros de búsqueda y en los formularios de publicación de vehículos de los vendedores.
             </p>
           </div>

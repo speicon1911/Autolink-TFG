@@ -9,13 +9,12 @@ import { Vehicle } from '../../../core/models/vehicle.model';
 import { Sale } from '../../../core/models/sale.model';
 import { NotificationService } from '../../../core/services/notification.service';
 import { VehicleFormComponent } from './vehicle-form.component';
-import { SaleFormComponent } from './sale-form.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-seller-stock',
   standalone: true,
-  imports: [CommonModule, VehicleFormComponent, SaleFormComponent, PaginationComponent, FormsModule, ConfirmModalComponent],
+  imports: [CommonModule, VehicleFormComponent, PaginationComponent, FormsModule, ConfirmModalComponent],
   template: `
     <div class="space-y-6 animate-fade-in">
       <header class="flex justify-between items-center">
@@ -73,10 +72,14 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                               @if (editingPriceId() === s.idVenta) {
                                 <div class="flex items-center gap-2">
                                   <input type="number" [(ngModel)]="tempPrice" class="w-20 bg-pitch-black/20 border border-baltic-blue-500 rounded p-1 text-white text-xs outline-none">
-                                  <button (click)="savePrice(s)" class="text-emerald-500 hover:text-emerald-400">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                  <button (click)="savePrice(s)" [disabled]="isProcessing()" class="text-emerald-500 hover:text-emerald-400 disabled:opacity-50">
+                                    @if (isProcessing()) {
+                                      <div class="w-4 h-4 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+                                    } @else {
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    }
                                   </button>
-                                  <button (click)="editingPriceId.set(null)" class="text-rose-500 hover:text-rose-400">
+                                  <button (click)="editingPriceId.set(null)" [disabled]="isProcessing()" class="text-rose-500 hover:text-rose-400 disabled:opacity-50">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                   </button>
                                 </div>
@@ -147,14 +150,6 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
         </app-vehicle-form>
       }
     
-      <!-- Sale Form Modal -->
-      @if (sellingVehicle()) {
-        <app-sale-form
-          [vehicleToSell]="sellingVehicle()!"
-          (close)="onCloseSale()"
-          (sold)="onVehicleSold()">
-        </app-sale-form>
-      }
     
       @if (loading()) {
         <div class="flex justify-center py-20">
@@ -200,12 +195,6 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                     Ofertas
                   </button>
-                  @if (v.disponible) {
-                    <button (click)="onOpenSale(v)" class="p-2 hover:bg-emerald-50 rounded-lg text-emerald-600 transition-colors flex items-center gap-1 text-xs font-bold" title="Vender">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                      Vender
-                    </button>
-                  }
                   <button (click)="onEdit(v)" class="p-2 hover:bg-white/60 rounded-lg text-dark-teal-400 hover:text-baltic-blue-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                   </button>
@@ -234,6 +223,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
       [isOpen]="modalConfig().isOpen"
       [title]="modalConfig().title"
       [message]="modalConfig().message"
+      [loading]="isProcessing()"
       (confirmed)="handleModalConfirm()"
       (cancelled)="handleModalCancel()"
     ></app-confirm-modal>
@@ -251,9 +241,9 @@ export class SellerStockComponent implements OnInit {
 
   vehicles = signal<Vehicle[]>([]);
   loading = signal(true);
+  isProcessing = signal(false);
   showForm = signal(false);
   editingVehicle = signal<Vehicle | null>(null);
-  sellingVehicle = signal<Vehicle | null>(null);
 
   // GESTIÓN DE OFERTAS
   showSalesModal = signal(false);
@@ -333,18 +323,6 @@ export class SellerStockComponent implements OnInit {
     this.showForm.set(true);
   }
 
-  onOpenSale(v: Vehicle) {
-    this.sellingVehicle.set(v);
-  }
-
-  onCloseSale() {
-    this.sellingVehicle.set(null);
-  }
-
-  onVehicleSold() {
-    this.sellingVehicle.set(null);
-    this.cargarStock();
-  }
 
   onViewSales(v: Vehicle) {
     if (!v.idVehiculo) return;
@@ -385,14 +363,17 @@ export class SellerStockComponent implements OnInit {
       this.ns.error('El precio debe ser mayor a 0');
       return;
     }
+    this.isProcessing.set(true);
     this.ventaService.updatePrecioVenta(sale.idVenta, this.tempPrice, 'VENDEDOR').subscribe({
       next: () => {
         this.ns.success('Contraoferta enviada con éxito');
+        this.isProcessing.set(false);
         this.editingPriceId.set(null);
         if (this.selectedVehicle()?.idVehiculo) {
           this.loadVehicleSales(this.selectedVehicle()!.idVehiculo);
         }
-      }
+      },
+      error: () => this.isProcessing.set(false)
     });
   }
 
@@ -435,23 +416,28 @@ export class SellerStockComponent implements OnInit {
       });
     } else if (config.action === 'completeSale') {
       const sale = config.data as Sale;
+      this.isProcessing.set(true);
       this.ventaService.completarVenta(sale.idVenta).subscribe({
         next: () => {
           this.ns.success('¡Venta realizada con éxito!');
+          this.isProcessing.set(false);
           this.onCloseSalesModal();
           this.cargarStock();
           this.closeConfirmModal();
         },
         error: () => {
           this.ns.error('Error al completar la venta');
+          this.isProcessing.set(false);
           this.closeConfirmModal();
         }
       });
     } else if (config.action === 'anularSale') {
       const sale = config.data as Sale;
+      this.isProcessing.set(true);
       this.ventaService.anularVenta(sale.idVenta).subscribe({
         next: () => {
           this.ns.success('Solicitud anulada');
+          this.isProcessing.set(false);
           if (sale.vehiculo.idVehiculo) {
             this.loadVehicleSales(sale.vehiculo.idVehiculo);
           }
@@ -459,6 +445,7 @@ export class SellerStockComponent implements OnInit {
         },
         error: () => {
           this.ns.error('Error al anular la solicitud');
+          this.isProcessing.set(false);
           this.closeConfirmModal();
         }
       });

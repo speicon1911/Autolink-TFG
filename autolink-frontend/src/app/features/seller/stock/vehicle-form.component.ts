@@ -368,7 +368,23 @@ export class VehicleFormComponent implements OnInit {
       return;
     }
 
-    const filesToUpload = Array.from(files).slice(0, disponibles);
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+
+    const validFiles: File[] = [];
+    Array.from(files).forEach(file => {
+      if (!allowedTypes.includes(file.type)) {
+        this.ns.error(`El archivo ${file.name} no es una imagen válida (solo JPG, PNG, WEBP).`);
+        return;
+      }
+      if (file.size > maxSizeBytes) {
+        this.ns.error(`La imagen ${file.name} supera el límite de 5MB.`);
+        return;
+      }
+      validFiles.push(file);
+    });
+
+    const filesToUpload = validFiles.slice(0, disponibles);
     
     filesToUpload.forEach(file => {
       this.selectedFiles.update(current => [...current, file]);
@@ -380,7 +396,7 @@ export class VehicleFormComponent implements OnInit {
       reader.readAsDataURL(file);
     });
 
-    if (files.length > disponibles) {
+    if (validFiles.length > disponibles) {
       this.ns.warning(`Solo se han añadido las primeras ${disponibles} imágenes para no exceder el límite de 5.`);
     }
   }
