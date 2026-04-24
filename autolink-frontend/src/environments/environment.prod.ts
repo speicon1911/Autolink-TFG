@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  // Usamos window.location.hostname para adaptarnos a cualquier IP/dominio dinámicamente
-  apiUrl: `http://${window.location.hostname}:8080`
+  // Para el navegador usamos la IP dinámica. Para SSR en Docker, usamos el nombre del contenedor interno.
+  apiUrl: typeof window !== 'undefined' ? `http://${window.location.hostname}:8080` : 'http://backend:8082'
 };
