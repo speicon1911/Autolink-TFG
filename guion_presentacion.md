@@ -1,95 +1,93 @@
-# Guion para la Exposición del Proyecto Autolink
+# Guion para la Exposición del Proyecto Autolink (TFG)
 
-Este documento está diseñado como una guía de apoyo para tu presentación. En cada diapositiva encontrarás un resumen de los puntos clave y una sección de **"Qué explicar"**, que es una propuesta de lo que puedes decir en voz alta.
-
----
-
-## Diapositiva 1: Introducción y Justificación del Proyecto
-*   **Contenido visual:** Título "Autolink", tu nombre, y un resumen del objetivo en viñetas.
-*   **Qué explicar:** 
-    > "Buenos días. Os presento Autolink, una plataforma digital diseñada para conectar a compradores y vendedores de vehículos. La motivación detrás de este proyecto nace de la necesidad de ofrecer un entorno de compraventa de coches cómodo, rápido y, sobre todo, seguro. El objetivo no es procesar el pago monetario del coche, sino facilitar el escaparate, la reserva y el contacto comercial, todo ello bajo la supervisión de un administrador que previene los fraudes."
+Este documento está adaptado **estrictamente a la rúbrica oficial** de evaluación, garantizando un mínimo de 15 diapositivas que cubren todas las competencias de 1º y 2º de DAW (Bases de datos, Programación, Frontend, Backend, Sistemas y Despliegue). La exposición está calculada para durar entre 10 y 15 minutos.
 
 ---
 
-## Diapositiva 2: Tecnologías y Arquitectura del Sistema
-*   **Contenido visual:** Logos de las tecnologías (Angular, Spring Boot, Java, MariaDB, Docker) y un pequeño esquema de los 3 bloques (Frontend, Backend, Base de Datos).
+## Diapositiva 1: Portada e Introducción
+*   **Contenido visual:** Título "Autolink", tu nombre, curso académico 2025-26 y una captura bonita de la portada de la web.
 *   **Qué explicar:** 
-    > "Para llevar a cabo este proyecto, he implementado una arquitectura de Microservicios desacoplados. 
-    > * Como **Backend** he utilizado Java 21 con el framework Spring Boot 3, creando una API REST robusta.
-    > * En el **Frontend**, he desarrollado una Single Page Application (SPA) con Angular 21, utilizando 'Signals' para lograr una interfaz moderna, rápida y reactiva.
-    > * La persistencia de datos está montada sobre **MariaDB**, y todo el ecosistema está contenedorizado y orquestado mediante **Docker**, lo que permite un despliegue rápido y seguro en cualquier servidor o VPS."
+    > "Buenos días al tribunal. Mi nombre es [Tu Nombre] y vengo a presentaros 'Autolink', mi Proyecto Intermodular. Se trata de una plataforma web diseñada para revolucionar y dotar de seguridad la compraventa de vehículos entre particulares y profesionales."
 
----
-
-## Diapositiva 3: Historias de Usuario Principales
-*   **Contenido visual:** Tres columnas o bloques (Comprador, Vendedor, Administrador).
+## Diapositiva 2: Justificación y Objetivos
+*   **Contenido visual:** Puntos clave (Problema vs Solución).
 *   **Qué explicar:** 
-    > "Toda esta tecnología se ha puesto al servicio de 3 perfiles de usuario distintos:
-    > *   **El Cliente o Comprador**, cuya necesidad principal es poder filtrar un catálogo inmenso para encontrar su coche ideal y llevar un registro de sus intenciones de compra.
-    > *   **El Vendedor**, que necesita un panel de control intuitivo para gestionar su stock y revisar qué clientes están interesados en sus vehículos.
-    > *   **El Administrador**, que es el auditor de la plataforma. Su trabajo es verificar que los anuncios publicados sean legítimos, otorgándoles un sello de confianza."
+    > "La necesidad de este proyecto surge al detectar la falta de seguridad y el exceso de fraude en portales de clasificados tradicionales. El objetivo principal ha sido crear un entorno seguro, donde las reservas y el contacto se realicen entre usuarios registrados de forma privada, contando con la figura de un administrador encargado de dar un 'sello de legitimidad' a los vehículos verificados para evitar engaños."
 
----
-
-## Diapositiva 4: Diagrama de Casos de Uso
-*   **Contenido visual:** El diagrama de Casos de Uso.
+## Diapositiva 3: Metodología y Ciclo de Vida
+*   **Contenido visual:** Fases de desarrollo (Análisis, Diseño, Desarrollo, Pruebas, Despliegue).
 *   **Qué explicar:** 
-    > "En este diagrama reflejamos el control de acceso según el rol. Las acciones básicas como ver el catálogo público no requieren registro. Sin embargo, al iniciar sesión, las capacidades cambian: el Cliente inicia una reserva; el Vendedor recibe esa solicitud en su panel y decide aceptarla o anularla; y el Administrador se centra en casos de uso de moderación, como verificar la veracidad de los vehículos anunciados."
+    > "En cuanto a la metodología, en lugar de utilizar herramientas externas complejas, he seguido un desarrollo iterativo y autónomo marcado por el propio ritmo de los módulos del curso. Comencé sentando las bases con el diseño relacional de la base de datos, para luego programar el backend, conectarle el frontend reactivo y finalizar con el despliegue del sistema."
 
----
-
-## Diapositiva 5: Diagrama de Clases
-*   **Contenido visual:** El diagrama de Clases del backend.
+## Diapositiva 4: Análisis del Sistema (Casos de Uso)
+*   **Contenido visual:** Tu Diagrama de Casos de Uso (mostrando la herencia de roles).
 *   **Qué explicar:** 
-    > "Pasando a la estructura interna del Backend, nuestro diseño orientado a objetos tiene como núcleo la clase `Persona`, que engloba los datos de acceso y de la cual se derivan los permisos. 
-    > Un vendedor gestiona una lista de objetos `Vehiculo`, y cada vehículo delega sus fotos en la clase `ImagenVehiculo`. Por último, la clase `Venta` es fundamental: actúa como el contrato o reserva, vinculando al `Cliente` (el comprador), con un `Vehiculo` y su `Vendedor`."
+    > "A nivel de ingeniería de software, el sistema se basa en un Control de Acceso Basado en Roles (RBAC). El usuario Invitado tiene acceso al catálogo. El Comprador puede, además, iniciar reservas y contactar. El Vendedor gestiona su propio inventario de coches (CRUD); y el Administrador obtiene permisos especiales exclusivamente para revisar la información de los vehículos anunciados y verificarlos."
 
----
-
-## Diapositiva 6: Modelo Entidad-Relación (E/R)
-*   **Contenido visual:** Diagrama E/R de la Base de Datos.
+## Diapositiva 5: Stack Tecnológico
+*   **Contenido visual:** Logos de Angular 21, Spring Boot 3, MariaDB, Tailwind CSS y Docker.
 *   **Qué explicar:** 
-    > "A nivel de base de datos relacional, el diseño asegura la integridad referencial. Es decir, evitamos a toda costa que existan 'datos huérfanos'. 
-    > Apoyándonos en claves foráneas estrictas, garantizamos que un vehículo no pueda existir si no está asociado a un ID de vendedor real y a una Marca predefinida del catálogo. La tabla de ventas registra el histórico relacionando a nivel de base de datos el ID del comprador con el ID del coche."
+    > "En cuanto a tecnología, he optado por una arquitectura de microservicios. En el Frontend utilizo Angular 21 y Tailwind CSS para el diseño. El Backend es una API REST robusta construida con Java 21 y Spring Boot 3. Los datos persisten en MariaDB y todo el ecosistema está orquestado con Docker."
 
----
-
-## Diapositiva 7: Retos del Código - Autenticación JWT y Stateless
-*   **Contenido visual:** Esquema o fragmento de código sobre JWT y el AuthInterceptor.
+## Diapositiva 6: Diseño de Base de Datos (Modelo E/R)
+*   **Contenido visual:** Diagrama Entidad-Relación.
 *   **Qué explicar:** 
-    > "Uno de los mayores retos fue implementar un sistema de seguridad avanzado. En lugar de usar sesiones tradicionales, implementé una **arquitectura Stateless (sin estado) usando JWT (JSON Web Tokens)**.
-    > Cuando el usuario hace login, Spring Boot valida sus credenciales y genera un Token firmado algorítmicamente que contiene el ID y su Rol. El servidor no guarda ninguna sesión. 
-    > A partir de ahí, en Angular programé un **Interceptor** que atrapa cada petición saliente y le pega el Token en la cabecera automáticamente. Al llegar al servidor, un **Filtro de Intercepción** verifica la firma del token. Si es correcto, da acceso; si no, lo deniega. Esto hace que la API sea increíblemente rápida y segura."
+    > "Aplicando los conocimientos de Bases de Datos, diseñé un modelo relacional normalizado. Destaca la tabla transaccional de 'Ventas', que actúa como entidad asociativa conectando al Vendedor, al Cliente y al Vehículo. Además, he garantizado la integridad de datos definiendo claves únicas (UK) estrictas para campos como el DNI o el correo."
 
----
-
-## Diapositiva 8: Retos del Código - Prevención de Fraudes y Nube (ImgBB)
-*   **Contenido visual:** Código o esquema conceptual de validación de propiedad y guardado de imágenes.
+## Diapositiva 7: Arquitectura del Software (Diagrama de Clases)
+*   **Contenido visual:** Diagrama de Clases.
 *   **Qué explicar:** 
-    > "Otro gran reto fue evitar fraudes, como que alguien modificara un coche que no es suyo manipulando la URL. La solución fue aplicar **Lógica de Propiedad** cruzando datos: antes de permitir editar un anuncio, el servidor extrae el ID directamente del token seguro del usuario, y comprueba que ese ID coincide exactamente con el dueño del vehículo en la base de datos.
-    > Además, para evitar que el disco de mi servidor se llenara con fotos de coches, integré la API de **ImgBB**. Cuando un vendedor sube una foto, mi servidor backend la convierte a Base64 y la manda a la nube mediante una llamada REST. Mi base de datos solo guarda el enlace de la foto (URL), optimizando radicalmente el rendimiento de la aplicación."
+    > "Aquí observamos el Modelo de Dominio de la aplicación. Para estructurar este modelo he utilizado JPA e Hibernate. Aunque este diagrama representa las entidades reales de la base de datos, internamente mi aplicación utiliza el patrón DTO (Data Transfer Object). Esto impide que datos sensibles como las contraseñas viajen a la capa de presentación."
 
----
-
-## Diapositiva 9: Conclusiones
-*   **Contenido visual:** Resumen breve (100% completado, 500 horas, etc.)
+## Diapositiva 8: Desarrollo Backend (Lógica de Negocio)
+*   **Contenido visual:** Ejemplo breve de código de un Servicio en Java o estructura de carpetas REST.
 *   **Qué explicar:** 
-    > "En conclusión, tras aproximadamente 500 horas de desarrollo, el proyecto ha cumplido sus objetivos al 100%. He logrado construir una plataforma robusta, que usa tecnologías de vanguardia (como Signals en Angular) y patrones de diseño reales (Microservicios, DTOs). Todo el sistema está desplegado de forma profesional utilizando Docker. 
+    > "El desarrollo en el entorno servidor ha sido uno de los pilares del proyecto. He programado la lógica para asegurar que solo los dueños legítimos puedan editar o eliminar sus propios coches. Toda la comunicación entre el servidor y el cliente se realiza mediante Endpoints RESTful con manejo centralizado de excepciones."
+
+## Diapositiva 9: Implementación de Seguridad y Autenticación
+*   **Contenido visual:** Diagrama de flujo de JWT o el código del Filtro de Spring.
+*   **Qué explicar:** 
+    > "La seguridad de acceso funciona bajo una arquitectura 'Stateless' pura. Cuando un usuario hace login, se genera un JSON Web Token (JWT). El servidor no almacena sesiones en memoria; en cada petición, un Filtro de Spring intercepta la cabecera, verifica el token y extrae el rol en tiempo real, bloqueando cualquier acceso no autorizado."
+
+## Diapositiva 10: Desarrollo Frontend e Interfaces Web
+*   **Contenido visual:** Captura de la web mostrando el diseño de componentes.
+*   **Qué explicar:** 
+    > "Para el entorno cliente, el diseño de la interfaz ha sido Mobile-First. En lugar de escribir CSS tradicional, he utilizado el framework Tailwind CSS. Este enfoque basado en clases de utilidad me ha permitido diseñar de forma muy rápida una interfaz completamente responsiva, que además reacciona de forma inmediata a la interacción del usuario gracias al sistema Signals de Angular."
+
+## Diapositiva 11: Consumo de APIs y Almacenamiento en Nube
+*   **Contenido visual:** Logotipo de ImgBB y flujo de subida de imágenes.
+*   **Qué explicar:** 
+    > "Para optimizar el rendimiento del servidor y no saturar el disco con fotos de vehículos, integré la API externa de ImgBB. Al subir un vehículo, el Backend codifica la imagen, realiza una petición REST a la nube, y guarda en MariaDB únicamente la URL generada. Esto agiliza enormemente los tiempos de respuesta de la base de datos."
+
+## Diapositiva 12: Entornos de Despliegue (Docker)
+*   **Contenido visual:** Captura de tu archivo `docker-compose.yml`.
+*   **Qué explicar:** 
+    > "Cubriendo las competencias de despliegue, he contenedorizado toda la aplicación. A través de Docker Compose, he configurado contenedores independientes para la Base de Datos, el Backend en Java y el Frontend, vinculándolos en una red interna privada para que puedan comunicarse entre sí."
+
+## Diapositiva 13: Sistemas Informáticos y Servidor VPS
+*   **Contenido visual:** Captura de pantalla de la terminal de Ubuntu / entorno real web.
+*   **Qué explicar:** 
+    > "Para la puesta en producción, he alojado este sistema en un servidor VPS con Ubuntu. La ventaja de haber usado Docker es que no tuve que realizar complejas configuraciones de red o apertura de puertos directamente en el sistema operativo; únicamente tuve que mapear los puertos en mi archivo Docker Compose, logrando un despliegue rápido y seguro hacia el exterior."
+
+## Diapositiva 14: Conclusiones y Tiempos
+*   **Contenido visual:** Resumen de las ~500 horas invertidas y grado de cumplimiento.
+*   **Qué explicar:** 
+    > "Llegando a la recta final, estimo que el proyecto ha requerido una dedicación de aproximadamente unas 500 horas a lo largo del curso. A pesar de los retos técnicos, el grado de cumplimiento de los objetivos fijados inicialmente ha sido total, logrando un sistema funcional de principio a fin."
+
+## Diapositiva 15: Propuestas de Futuro y Despedida
+*   **Contenido visual:** Lista de mejoras (Chat, Pagos, Favoritos).
+*   **Qué explicar:** 
+    > "De cara al futuro, la estructura del proyecto está preparada para escalar. Entre las ampliaciones que tengo documentadas destaco la adición de un chat en tiempo real, un sistema de Favoritos para el usuario y la integración de una pasarela de pagos. 
     > 
-    > Con esto termina la parte teórica y de arquitectura del proyecto."
+    > Muchas gracias por vuestra atención. Con esto doy paso a la demostración práctica y quedo a vuestra disposición para el turno de preguntas."
 
 ---
 
-## ENLACE: Transición a la Demostración Práctica (Aplicación)
-*(Esta sección es para ti, para saber cómo pivotar de las diapositivas a enseñar la web real).*
-
-*   **Paso 1: Cerrar la presentación.**
-    > "A continuación, para que podáis ver cómo todos estos diagramas, seguridad y tecnologías funcionan en tiempo real, voy a pasar a realizar una demostración práctica de Autolink."
-*   **Paso 2: Cambiar de pantalla.** Sal de PowerPoint/PDF y abre el navegador donde tengas Autolink funcionando (asegúrate de tenerlo abierto y cargado de antemano).
-*   **Paso 3: Guion de la Demostración (Qué enseñar y en qué orden):**
-    1.  **Vista Pública:** Muestra la página principal (catálogo) sin estar logueado. Enseña los filtros de búsqueda y los vehículos con el sello de "Verificado". Menciona el diseño Responsive y la fluidez.
-    2.  **Rol Vendedor:** Haz login con una cuenta de vendedor. Ve a su panel de control, enseña cómo crear un nuevo anuncio subiendo una imagen, y muestra cómo el anuncio aparece como "No verificado" por seguridad.
-    3.  **Rol Administrador:** Haz login (o usa otro navegador en incógnito) con el admin. Ve al panel de verificación de vehículos. Muestra cómo apruebas el vehículo que acaba de subir el vendedor.
-    4.  **Rol Comprador:** Inicia sesión con un cliente. Busca el coche recién verificado, haz clic en "Comprar" o "Reservar". Muestra el panel de "Mis Compras" donde aparece "En progreso".
-    5.  **Cierre de la Demo:** Vuelve a la pantalla del Vendedor, muestra cómo le ha llegado esa solicitud y pulsa en "Aceptar venta" o "Marcar como realizada" para cerrar el ciclo. 
-    6.  **Despedida:** "Como habéis podido comprobar, el flujo de compra, la restricción de vistas por roles y la inyección de los tokens de seguridad funcionan perfectamente de principio a fin. Quedo a vuestra disposición para cualquier duda o pregunta."
+## ENLACE: Transición a la Demostración Práctica
+*   **Paso 1: Cambio de pantalla.** "A continuación voy a mostrar el funcionamiento en vivo de la aplicación." Sal de la presentación y abre la web en el navegador.
+*   **Paso 2: Mostrar el Frontend (Invitado).** Enseña el diseño responsive de la tienda (gracias a Tailwind CSS) y cómo buscar coches.
+*   **Paso 3: Funciones de Vendedor.** Entra con cuenta de Vendedor. Sube un coche (así muestras la integración con ImgBB).
+*   **Paso 4: Auditoría del Administrador.** Entra como Administrador y enséñales que el admin no revisa correos ni ventas, solo va a los vehículos y verifica la legitimidad de la información.
+*   **Paso 5: Proceso de Compra.** Entra como Cliente y haz una reserva del coche verificado.
+*   **Paso 6: Gestión de Venta.** Vuelve al Vendedor y muestra cómo acepta la reserva.
+*   **Paso 7: Despedida:** Cierra la presentación esperando las preguntas del tribunal.
