@@ -768,6 +768,7 @@ Como todo software, AutoLink es escalable. Se proponen las siguientes mejoras pa
    7. **Mitigación de vulnerabilidades IDOR (Insecure Direct Object Reference):** Implementar en el backend una validación que cruce la identidad del usuario extraída del Token (email) con el recurso que intenta modificar, asegurando que un usuario solo pueda editar sus propios datos.  
    8. **Uso de Identificadores No Predecibles (UUIDs):** Sustituir las IDs numéricas secuenciales por UUIDs (Universally Unique Identifiers). Esto evita que un atacante pueda deducir cuántos usuarios tiene la plataforma o "adivinar" IDs ajenas simplemente sumando uno al suyo.  
    9. **Implementación de Endpoints Alias (/me):** Crear endpoints específicos para el usuario autenticado (ej: GET /api/perfil/me) que no requieran pasar una ID por la URL, mejorando la privacidad y simplificando las llamadas desde el frontend.  
+   10. **Optimización del Procesamiento de Notificaciones:** Implementar un modelo de procesamiento asíncrono mediante la anotación @Async de Spring Boot o el uso de colas de mensajería (como RabbitMQ o ActiveMQ).  
 4. **Administración y Analítica**  
    1. Dashboard de Analítica: Panel con gráficos (usando Chart.js o similar) que muestre a los administradores las marcas más vendidas, los ingresos por mes y las ciudades con más actividad.  
    2. Exportación de Datos: Opción para descargar informes de ventas y stock en formatos Excel o PDF.
