@@ -94,6 +94,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                       <img [ngSrc]="v.imagenes[0].url" 
                         fill
                         [priority]="$index === 0"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                         class="object-cover group-hover:scale-110 transition-transform duration-700" 
                         alt="Vehículo">
                     } @else {
