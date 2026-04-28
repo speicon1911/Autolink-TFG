@@ -49,13 +49,16 @@ public class VentaService {
 	@Transactional
 	public List<VentaDTO> findByVendedor(int idVendedor) {
 		// Verificación de seguridad
-		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext()
+				.getAuthentication().getName();
+		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext()
+				.getAuthentication().getAuthorities().stream()
 				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
-		
+
 		// Buscar al vendedor para comparar el correo
 		Persona vendedor = personaRepository.findById(idVendedor)
-				.orElseThrow(() -> new com.autolink.services.exceptions.PersonaNotFoundException("Vendedor no encontrado"));
+				.orElseThrow(
+						() -> new com.autolink.services.exceptions.PersonaNotFoundException("Vendedor no encontrado"));
 
 		if (!isAdmin && !vendedor.getCorreo().equals(currentUserEmail)) {
 			throw new VentaExceptions("No tienes permiso para ver las ventas de este usuario");
@@ -68,13 +71,16 @@ public class VentaService {
 	@Transactional
 	public List<VentaDTO> findByCliente(int idCliente) {
 		// Verificación de seguridad
-		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext()
+				.getAuthentication().getName();
+		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext()
+				.getAuthentication().getAuthorities().stream()
 				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
-		
+
 		// Buscar al cliente para comparar el correo
 		Persona cliente = personaRepository.findById(idCliente)
-				.orElseThrow(() -> new com.autolink.services.exceptions.PersonaNotFoundException("Cliente no encontrado"));
+				.orElseThrow(
+						() -> new com.autolink.services.exceptions.PersonaNotFoundException("Cliente no encontrado"));
 
 		if (!isAdmin && !cliente.getCorreo().equals(currentUserEmail)) {
 			throw new VentaExceptions("No tienes permiso para ver las ventas de este usuario");
@@ -112,6 +118,14 @@ public class VentaService {
 			throw new VentaExceptions("No puedes comprar tu propio vehículo");
 		}
 
+		// Nueva validación: Comprobar si ya existe una oferta en progreso para este
+		// cliente y vehículo
+		if (this.ventaRepository.existsByCliente_IdAndVehiculo_IdVehiculoAndEstadoVenta(
+				clienteActual.getId(), vehiculoActual.getIdVehiculo(), EstadoVenta.EN_PROGRESO)) {
+			throw new VentaExceptions(
+					"Ya has enviado una propuesta de compra para este vehículo que está pendiente de respuesta.");
+		}
+
 		if (Boolean.FALSE.equals(vehiculoActual.getDisponible())) {
 			throw new VentaExceptions("El vehículo ya no está disponible para la venta");
 		}
@@ -139,12 +153,16 @@ public class VentaService {
 		Venta venta = this.ventaRepository.findById(idVenta)
 				.orElseThrow(() -> new VentaNotFoundException("No es posible encontrar la venta con ID: " + idVenta));
 
-		// Verificación de seguridad: Solo el comprador, el vendedor o un admin pueden anular
-		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+		// Verificación de seguridad: Solo el comprador, el vendedor o un admin pueden
+		// anular
+		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext()
+				.getAuthentication().getName();
+		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext()
+				.getAuthentication().getAuthorities().stream()
 				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
-		
-		if (!isAdmin && !venta.getVendedor().getCorreo().equals(currentUserEmail) && !venta.getCliente().getCorreo().equals(currentUserEmail)) {
+
+		if (!isAdmin && !venta.getVendedor().getCorreo().equals(currentUserEmail)
+				&& !venta.getCliente().getCorreo().equals(currentUserEmail)) {
 			throw new VentaExceptions("No tienes permiso para anular esta oferta");
 		}
 
@@ -158,7 +176,7 @@ public class VentaService {
 		}
 
 		this.ventaRepository.save(venta);
-		
+
 		// Notificamos a las partes que la venta ha sido cancelada
 		emailService.notificarOfertaCancelada(venta.getVendedor().getCorreo(), venta.getVehiculo().getModelo());
 		emailService.notificarOfertaCancelada(venta.getCliente().getCorreo(), venta.getVehiculo().getModelo());
@@ -174,11 +192,14 @@ public class VentaService {
 		}
 
 		// Verificación de seguridad
-		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext()
+				.getAuthentication().getName();
+		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext()
+				.getAuthentication().getAuthorities().stream()
 				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
-		
-		if (!isAdmin && !venta.getVendedor().getCorreo().equals(currentUserEmail) && !venta.getCliente().getCorreo().equals(currentUserEmail)) {
+
+		if (!isAdmin && !venta.getVendedor().getCorreo().equals(currentUserEmail)
+				&& !venta.getCliente().getCorreo().equals(currentUserEmail)) {
 			throw new VentaExceptions("No tienes permiso para completar esta oferta");
 		}
 
@@ -190,18 +211,19 @@ public class VentaService {
 		// 2. Marcar esta venta como REALIZADA
 		venta.setEstadoVenta(EstadoVenta.REALIZADA);
 		this.ventaRepository.save(venta);
-		
+
 		// Avisar de venta confirmada
 		emailService.notificarOfertaAceptada(venta.getCliente().getCorreo(), vehiculo.getModelo(), venta.getPrecio());
 		emailService.notificarOfertaAceptada(venta.getVendedor().getCorreo(), vehiculo.getModelo(), venta.getPrecio());
 
-		// 3. ANULAR automáticamente todas las demás ofertas EN_PROGRESO para este mismo vehículo
+		// 3. ANULAR automáticamente todas las demás ofertas EN_PROGRESO para este mismo
+		// vehículo
 		List<Venta> otrasOfertas = this.ventaRepository.findByVehiculo_IdVehiculo(vehiculo.getIdVehiculo());
 		for (Venta v : otrasOfertas) {
 			if (v.getIdVenta() != idVenta && v.getEstadoVenta() == EstadoVenta.EN_PROGRESO) {
 				v.setEstadoVenta(EstadoVenta.ANULADA);
 				this.ventaRepository.save(v);
-				
+
 				// Avisar al otro cliente de que este coche ya se ha vendido
 				emailService.notificarOfertaCancelada(v.getCliente().getCorreo(), vehiculo.getModelo());
 			}
@@ -254,6 +276,11 @@ public class VentaService {
 		}
 
 		return ventaMapper.toDto(ventaGuardada);
+	}
+
+	public boolean tieneOfertaPendiente(int idCliente, int idVehiculo) {
+		return this.ventaRepository.existsByCliente_IdAndVehiculo_IdVehiculoAndEstadoVenta(idCliente, idVehiculo,
+				EstadoVenta.EN_PROGRESO);
 	}
 
 }

@@ -10,4 +10,5 @@ public interface VentaRepository extends ListCrudRepository<Venta, Integer>{
 	List<Venta> findByVendedor_Id(int idVendedor);
 	List<Venta> findByCliente_Id(int idCliente);
 	List<Venta> findByVehiculo_IdVehiculo(int idVehiculo);
+	boolean existsByCliente_IdAndVehiculo_IdVehiculoAndEstadoVenta(int idCliente, int idVehiculo, com.autolink.persistence.entities.enums.EstadoVenta estadoVenta);
 }

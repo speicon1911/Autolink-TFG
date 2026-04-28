@@ -45,6 +45,11 @@ public class VentaController {
 		return ResponseEntity.ok(this.ventaService.findByVehiculo(idVehiculo));
 	}
 
+	@GetMapping("/pendiente/cliente/{idCliente}/vehiculo/{idVehiculo}")
+	public ResponseEntity<Boolean> tieneOfertaPendiente(@PathVariable int idCliente, @PathVariable int idVehiculo) {
+		return ResponseEntity.ok(this.ventaService.tieneOfertaPendiente(idCliente, idVehiculo));
+	}
+
 	@PutMapping("/{idVenta}/actualizar-precio")
 	public ResponseEntity<?> updatePrecio(@PathVariable int idVenta, @RequestBody Venta venta) {
 		return ResponseEntity.ok(this.ventaService.updatePrecioVenta(venta, idVenta));

@@ -195,15 +195,20 @@ import { ContactoService } from '../../../core/services/contacto.service';
                   <p class="text-[9px] text-content-muted font-bold uppercase tracking-wider italic">Al confirmar, el vendedor recibirá tu oferta y podrá aceptarla o rechazarla.</p>
                 </div>
 
-                <button (click)="buy()" [disabled]="buying()"
-                  class="btn-primary w-full text-surface-base font-black py-5 rounded-2xl transition-all shadow-2xl shadow-action-primary/30 active:scale-[0.98] flex items-center justify-center gap-3 group/buy disabled:opacity-50">
+                <button (click)="buy()" [disabled]="buying() || tieneOfertaPendiente()"
+                  class="btn-primary w-full text-surface-base font-black py-5 rounded-2xl transition-all shadow-2xl shadow-action-primary/30 active:scale-[0.98] flex items-center justify-center gap-3 group/buy disabled:opacity-50 disabled:cursor-not-allowed">
                   @if (buying()) {
                     <div class="w-6 h-6 border-3 border-surface-base/20 border-t-surface-base rounded-full animate-spin"></div>
                   } @else {
-                    Confirmar Propuesta de Compra
-                    <svg class="group-hover/buy:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    {{ tieneOfertaPendiente() ? 'Petición de compra enviada' : 'Confirmar Propuesta de Compra' }}
+                    @if (!tieneOfertaPendiente()) {
+                      <svg class="group-hover/buy:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    }
                   }
                 </button>
+                @if (tieneOfertaPendiente()) {
+                  <p class="text-center text-action-primary font-bold text-xs animate-pulse">Ya has enviado una petición para este vehículo. Espera a que el vendedor responda.</p>
+                }
               }
               @if (vehicle()?.disponible && (canContact() || !authService.isAuthenticated())) {
                 <button (click)="openContactModal()" class="btn-primary w-full text-surface-base font-black py-5 rounded-2xl transition-all shadow-2xl shadow-action-primary/30 active:scale-[0.98] flex items-center justify-center gap-3 group/buy">
@@ -341,6 +346,7 @@ export class VehicleDetailsComponent implements OnInit {
     showContactModal = signal(false);
     contactMessage = model('');
     isSendingContact = signal(false);
+    tieneOfertaPendiente = signal(false);
 
     canContact = computed(() => {
         const user = this.authService.currentUser$();
@@ -370,10 +376,23 @@ export class VehicleDetailsComponent implements OnInit {
                     if (vehicle) {
                         this.vehicle.set(vehicle);
                         this.offerPrice.set(vehicle.precio);
+                        this.checkPendingOffer(vehicle.idVehiculo);
                     }
                     this.loading.set(false);
                 },
                 error: () => this.loading.set(false)
+            });
+        } else {
+            this.checkPendingOffer(this.vehicle()!.idVehiculo);
+        }
+    }
+
+    checkPendingOffer(idVehiculo: number) {
+        const user = this.authService.currentUser$();
+        if (user && user.rol === Rol.CLIENTE) {
+            this.ventaService.tieneOfertaPendiente(user.id, idVehiculo).subscribe({
+                next: (res) => this.tieneOfertaPendiente.set(res),
+                error: (err) => console.error('Error al comprobar oferta pendiente:', err)
             });
         }
     }

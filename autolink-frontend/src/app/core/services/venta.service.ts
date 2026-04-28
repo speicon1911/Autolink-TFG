@@ -46,4 +46,8 @@ export class VentaService {
     deleteVenta(idVenta: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${idVenta}`);
     }
+
+    tieneOfertaPendiente(idCliente: number, idVehiculo: number): Observable<boolean> {
+        return this.http.get<boolean>(`${this.apiUrl}/pendiente/cliente/${idCliente}/vehiculo/${idVehiculo}`);
+    }
 }
