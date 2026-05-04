@@ -34,7 +34,7 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
 			+ "(:maxPrecio IS NULL OR v.precio <= :maxPrecio) AND " + "(:maxKm IS NULL OR v.kilometraje <= :maxKm) AND "
 			+ "(:plazas IS NULL OR v.plazas = :plazas) AND "
 			+ "(:anioFabricacion IS NULL OR v.anioFabricacion >= :anioFabricacion) AND "
-			+ "(:ciudad IS NULL OR UPPER(v.ciudad) = UPPER(:ciudad)) AND "
+			+ "(:ciudad IS NULL OR UPPER(v.ciudad) LIKE UPPER(CONCAT('%', :ciudad, '%'))) AND "
 			+ "(:etiqueta IS NULL OR v.etiquetaMedioambiental = :etiqueta) AND "
 			+ "(:aplicarDisp = false OR v.disponible = :disponible) AND "
 			+ "(:aplicarVerif = false OR v.verificado = :verificado)")
