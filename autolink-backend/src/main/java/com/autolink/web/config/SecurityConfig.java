@@ -92,9 +92,9 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.PUT, "/ventas/*/completar").hasAnyRole("CLIENTE", "VENDEDOR", "ADMINISTRADOR")
 						.requestMatchers(HttpMethod.DELETE, "/ventas/*").hasRole("ADMINISTRADOR")
 
-						// --- 5. MARCAS (MarcaController) ---
 						.requestMatchers(HttpMethod.POST, "/marcas").hasRole("ADMINISTRADOR")
 						.requestMatchers(HttpMethod.DELETE, "/marcas/*").hasRole("ADMINISTRADOR")
+						.requestMatchers("/ws/**").permitAll()
 						.requestMatchers("/error").permitAll()
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

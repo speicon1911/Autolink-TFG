@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { ToastComponent } from '../../components/toast/toast.component';
+import { ChatWidgetComponent } from '../../components/chat-widget/chat-widget.component';
 
 @Component({
     selector: 'app-main-layout',
     standalone: true,
-    imports: [RouterOutlet, NavbarComponent, ToastComponent],
+    imports: [RouterOutlet, NavbarComponent, ToastComponent, ChatWidgetComponent],
     template: `
     <div class="min-h-screen bg-surface-base text-content-primary font-sans selection:bg-action-primary/30">
       <app-navbar></app-navbar>
@@ -16,6 +17,7 @@ import { ToastComponent } from '../../components/toast/toast.component';
       </main>
  
       <app-toast></app-toast>
+      <app-chat-widget></app-chat-widget>
  
       <footer class="mt-auto py-12 border-t border-white/5 bg-surface-card/50">
         <div class="max-w-7xl mx-auto px-4 text-center">

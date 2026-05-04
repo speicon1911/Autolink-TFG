@@ -1,0 +1,59 @@
+<div class="chat-container" [class.open]="isOpen()">
+  <!-- Floating Button -->
+  <button class="chat-toggle" (click)="toggleChat()">
+    <i class="fas fa-comments" *ngIf="!isOpen()"></i>
+    <i class="fas fa-times" *ngIf="isOpen()"></i>
+    <!-- Optional: Badge for unread messages -->
+  </button>
+
+  <!-- Chat Window -->
+  <div class="chat-window" *ngIf="isOpen()">
+    <div class="chat-header">
+      <div *ngIf="selectedContact()" class="header-back" (click)="backToList()">
+        <i class="fas fa-chevron-left"></i>
+      </div>
+      <div class="header-title">
+        {{ selectedContact() ? selectedContact().nombre : 'Mensajes' }}
+      </div>
+    </div>
+
+    <!-- Contact List -->
+    <div class="contact-list" *ngIf="!selectedContact()">
+      <div *ngIf="contactos().length === 0" class="no-chats">
+        No tienes conversaciones activas.
+      </div>
+      <div *ngFor="let c of contactos()" class="contact-item" (click)='selectContact(c)'>
+        <div class="contact-avatar">
+          <img [src]="c.fotoPerfil || 'assets/img/default-avatar.png'" alt="Avatar">
+        </div>
+        <div class="contact-info">
+          <div class="contact-name">{{ c.nombre }} {{ c.apellidos }}</div>
+          <div class="contact-email">{{ c.correo }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-messages" *ngIf="selectedContact()">
+      <div #scrollMe class="messages-list">
+        <div *ngFor="let m of mensajes()" class="message" 
+             [class.sent]="m.idRemitente === currentUser()?.id"
+             [class.received]="m.idRemitente !== currentUser()?.id">
+          <div class="message-content">
+            {{ m.contenido }}
+          </div>
+          <div class="message-time">
+            {{ m.fechaEnvio | date:'HH:mm' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input">
+        <input type="text" [(ngModel)]="nuevoMensaje" (keyup.enter)="enviar()" placeholder="Escribe un mensaje...">
+        <button (click)="enviar()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
