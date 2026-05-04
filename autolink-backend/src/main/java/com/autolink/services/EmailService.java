@@ -105,4 +105,12 @@ public class EmailService {
 			throw new RuntimeException("Error técnico al enviar el email");
 		}
 	}
+
+	public void notificarNuevoMensajeChat(String emailDestino, String nombreRemitente, String extracto) {
+		String asunto = "Tienes un nuevo mensaje de chat de " + nombreRemitente;
+		String cuerpo = "Hola,\n\nHas recibido un nuevo mensaje de " + nombreRemitente + " en Autolink.\n\n"
+				+ "Mensaje: \"" + (extracto.length() > 50 ? extracto.substring(0, 50) + "..." : extracto) + "\"\n\n"
+				+ "Entra en la aplicación para responder.";
+		enviarCorreo(emailDestino, asunto, cuerpo);
+	}
 }

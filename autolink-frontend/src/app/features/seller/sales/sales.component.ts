@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VentaService } from '../../../core/services/venta.service';
@@ -6,6 +7,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Sale } from '../../../core/models/sale.model';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
+import { ChatService } from '../../../core/services/chat.service';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
@@ -125,6 +127,9 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                       </button>
                     }
+                    <button (click)="iniciarChat(s)" class="p-2 hover:bg-action-primary/10 rounded-lg text-action-primary transition-all tooltip" title="Chat con Cliente">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </button>
                   } @else {
                     <span [ngClass]="{
                       'bg-emerald-500/10 text-emerald-500 border-emerald-500/20': s.estadoVenta === 'REALIZADA',
@@ -166,10 +171,13 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
     .tooltip { position: relative; }
   `]
 })
-export class SellerSalesComponent implements OnInit {
+export class SellerSalesComponent implements OnInit, OnDestroy {
   private ventaService = inject(VentaService);
   private authService = inject(AuthService);
   private ns = inject(NotificationService);
+  private chatService = inject(ChatService);
+
+  private subs = new Subscription();
 
   sales = signal<Sale[]>([]);
   loading = signal(true);
@@ -213,6 +221,22 @@ export class SellerSalesComponent implements OnInit {
 
   ngOnInit() {
     this.loadSales();
+    this.listenToRealTimeUpdates();
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+
+  private listenToRealTimeUpdates() {
+    this.subs.add(
+      this.chatService.ofertasUpdates$.subscribe(note => {
+        if (note) {
+          this.ns.info(note.message);
+          this.loadSales();
+        }
+      })
+    );
   }
 
   loadSales() {
@@ -340,5 +364,11 @@ export class SellerSalesComponent implements OnInit {
 
   private closeConfirmModal() {
     this.modalConfig.update(prev => ({ ...prev, isOpen: false, action: null, data: null }));
+  }
+
+  iniciarChat(sale: Sale) {
+    if (sale.cliente) {
+      this.chatService.abrirChatCon(sale.cliente);
+    }
   }
 }

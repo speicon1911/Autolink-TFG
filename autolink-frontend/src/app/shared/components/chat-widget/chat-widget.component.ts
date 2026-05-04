@@ -25,6 +25,7 @@ export class ChatWidgetComponent implements OnInit, OnDestroy, AfterViewChecked 
   public contactos = signal<any[]>([]);
   public mensajes = signal<Mensaje[]>([]);
   public nuevoMensaje = signal<string>('');
+  public totalUnread = signal<number>(0);
   
   public currentUser = this.authService.currentUser$;
   private subs = new Subscription();
@@ -34,24 +35,46 @@ export class ChatWidgetComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.subs.add(
       this.chatService.mensajesNuevos$.subscribe((msg: Mensaje) => {
         if (msg) {
-          // Si es el chat abierto, añadirlo
-          if (this.selectedContact() && (msg.idRemitente === this.selectedContact().id || msg.idDestinatario === this.selectedContact().id)) {
+          const currentUserId = this.currentUser()?.id;
+          const esDelOtro = msg.idRemitente !== currentUserId;
+          
+          if (this.selectedContact() && esDelOtro &&
+              (msg.idRemitente === this.selectedContact().id || msg.idDestinatario === this.selectedContact().id)) {
             this.mensajes.update(ms => [...ms, msg]);
-            if (msg.idRemitente === this.selectedContact().id) {
-              this.chatService.marcarComoLeidos(msg.idRemitente).subscribe();
-            }
+            this.chatService.marcarComoLeidos(msg.idRemitente).subscribe(() => {
+              this.updateTotalUnread();
+              this.loadContactos();
+            });
+          } else {
+            this.updateTotalUnread();
+            this.loadContactos();
           }
-          // Recargar lista de contactos para actualizar últimos mensajes/leídos
-          this.loadContactos();
         }
       })
     );
+
+    // Responder a solicitudes externas de apertura de chat
+    effect(() => {
+      const request = this.chatService.externalChatRequest();
+      if (request) {
+        this.isOpen.set(true);
+        this.selectContact(request);
+        this.chatService.resetRequest();
+      }
+    });
   }
 
   ngOnInit(): void {
     if (this.currentUser()) {
       this.loadContactos();
+      this.updateTotalUnread();
     }
+  }
+
+  updateTotalUnread() {
+    this.chatService.getTotalUnreadCount().subscribe(count => {
+      this.totalUnread.set(count);
+    });
   }
 
   ngOnDestroy(): void {
@@ -85,7 +108,10 @@ export class ChatWidgetComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.selectedContact.set(contacto);
     this.chatService.getConversacion(contacto.id).subscribe((res: Mensaje[]) => {
       this.mensajes.set(res);
-      this.chatService.marcarComoLeidos(contacto.id).subscribe(() => this.loadContactos());
+      this.chatService.marcarComoLeidos(contacto.id).subscribe(() => {
+        this.loadContactos();
+        this.updateTotalUnread();
+      });
     });
   }
 
@@ -96,11 +122,31 @@ export class ChatWidgetComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   enviar() {
-    if (!this.nuevoMensaje().trim() || !this.selectedContact()) return;
+    const contenido = this.nuevoMensaje().trim();
+    if (!contenido || !this.selectedContact()) return;
 
-    this.chatService.enviarMensaje(this.selectedContact().id, this.nuevoMensaje());
-    
-    // El mensaje nos llegará de vuelta por el WebSocket y se añadirá solo
+    const user = this.currentUser();
+    if (!user) return;
+
+    // 1. Actualización optimista: mostrar el mensaje de inmediato
+    const mensajeOptimista: Mensaje = {
+      idRemitente: user.id,
+      idDestinatario: this.selectedContact().id,
+      contenido: contenido,
+      fechaEnvio: new Date().toISOString(),
+      leido: false
+    };
+    this.mensajes.update(ms => [...ms, mensajeOptimista]);
     this.nuevoMensaje.set('');
+
+    // 2. Enviar por WebSocket (la confirmación del servidor se descartará para no duplicar)
+    this.chatService.enviarMensaje(this.selectedContact().id, contenido);
+  }
+
+  getInitials(user: any): string {
+    if (!user) return '?';
+    const name = user.nombre || '';
+    const surname = user.apellidos || '';
+    return ((name.charAt(0) || '') + (surname.charAt(0) || '')).toUpperCase() || '?';
   }
 }

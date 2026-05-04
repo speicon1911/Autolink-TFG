@@ -5,7 +5,7 @@ import { Mensaje, ConversacionResumen } from '../models/mensaje.model';
 import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { environment } from '../../../environments/environment';
-import { BehaviorSubject, Observable, filter, map } from 'rxjs';
+import { BehaviorSubject, Observable, filter, map, catchError, of } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -25,6 +25,17 @@ export class ChatService {
   private connected = signal<boolean>(false);
   public isConnected = this.connected.asReadonly();
 
+  // Estado para controlar apertura desde otros componentes
+  private requestedContact = signal<any | null>(null);
+  public externalChatRequest = this.requestedContact.asReadonly();
+
+  // Notificaciones de ofertas y vehículos
+  private ofertasSubject = new BehaviorSubject<any>(null);
+  public ofertasUpdates$ = this.ofertasSubject.asObservable().pipe(filter(o => o !== null));
+
+  private vehiculosSubject = new BehaviorSubject<any>(null);
+  public vehiculosUpdates$ = this.vehiculosSubject.asObservable().pipe(filter(v => v !== null));
+
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       toObservable(this.authService.currentUser$).subscribe(user => {
@@ -35,6 +46,14 @@ export class ChatService {
         }
       });
     }
+  }
+
+  public abrirChatCon(contacto: any) {
+    this.requestedContact.set(contacto);
+  }
+
+  public resetRequest() {
+    this.requestedContact.set(null);
   }
 
   private connect() {
@@ -79,12 +98,39 @@ export class ChatService {
     const user = this.authService.currentUser$();
     if (!user || !this.stompClient) return;
 
-    // Suscribirse a la cola de usuario del backend
-    // En el backend enviamos a /user/{email}/queue/messages
+    // 1. Chat
     this.stompClient.subscribe(`/user/queue/messages`, (message: IMessage) => {
       if (message.body) {
-        const msg: Mensaje = JSON.parse(message.body);
-        this.mensajesNuevosSubject.next(msg);
+        try {
+          const msg: Mensaje = JSON.parse(message.body);
+          this.mensajesNuevosSubject.next(msg);
+        } catch (e) {
+          console.error('Error parseando mensaje chat:', e);
+        }
+      }
+    });
+
+    // 2. Notificaciones privadas (Ofertas)
+    this.stompClient.subscribe(`/user/queue/notifications`, (message: IMessage) => {
+      if (message.body) {
+        try {
+          const note = JSON.parse(message.body);
+          this.ofertasSubject.next(note);
+        } catch (e) {
+          console.error('Error parseando notificación oferta:', e);
+        }
+      }
+    });
+
+    // 3. Notificaciones públicas (Vehículos)
+    this.stompClient.subscribe(`/topic/vehiculos`, (message: IMessage) => {
+      if (message.body) {
+        try {
+          const note = JSON.parse(message.body);
+          this.vehiculosSubject.next(note);
+        } catch (e) {
+          console.error('Error parseando notificación vehículo:', e);
+        }
       }
     });
   }
@@ -100,21 +146,49 @@ export class ChatService {
       leido: false
     };
 
-    this.stompClient.publish({
-      destination: '/app/chat.enviar',
-      body: JSON.stringify(mensaje)
-    });
+    try {
+      this.stompClient.publish({
+        destination: '/app/chat.enviar',
+        body: JSON.stringify(mensaje)
+      });
+    } catch (e) {
+      console.error('Error publicando mensaje:', e);
+    }
   }
 
   getConversacion(idOtro: number): Observable<Mensaje[]> {
-    return this.http.get<Mensaje[]>(`${this.apiUrl}/mensajes/conversacion/${idOtro}`);
+    return this.http.get<Mensaje[]>(`${this.apiUrl}/mensajes/conversacion/${idOtro}`).pipe(
+      catchError(err => {
+        console.error('Error cargando conversación:', err);
+        return of([]);
+      })
+    );
   }
 
   getContactos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/mensajes/contactos`);
+    return this.http.get<any[]>(`${this.apiUrl}/mensajes/contactos`).pipe(
+      catchError(err => {
+        console.error('Error cargando contactos:', err);
+        return of([]);
+      })
+    );
   }
 
-  marcarComoLeidos(idRemitente: number): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/mensajes/leer/${idRemitente}`, {});
+  getTotalUnreadCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/mensajes/sin-leer/total`).pipe(
+      catchError(err => {
+        console.error('Error cargando total sin leer:', err);
+        return of(0);
+      })
+    );
+  }
+
+  marcarComoLeidos(idRemitente: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/mensajes/leer/${idRemitente}`, {}).pipe(
+      catchError(err => {
+        console.error('Error marcando como leídos:', err);
+        return of(null);
+      })
+    );
   }
 }

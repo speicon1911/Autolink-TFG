@@ -41,6 +41,18 @@ public class VentaService {
 	@Autowired
 	private EmailService emailService;
 
+	@Autowired
+	private org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+
+	private void notifyUser(String email, String type, String message, Object data) {
+		com.autolink.services.dto.NotificationDTO notification = com.autolink.services.dto.NotificationDTO.builder()
+				.type(type)
+				.message(message)
+				.data(data)
+				.build();
+		messagingTemplate.convertAndSendToUser(email, "/queue/notifications", notification);
+	}
+
 	@Transactional
 	public List<VentaDTO> findAll() {
 		return this.ventaRepository.findAll().stream().map(ventaMapper::toDto).collect(Collectors.toList());
@@ -144,7 +156,12 @@ public class VentaService {
 		emailService.notificarNuevaOferta(vendedorActual.getCorreo(), clienteActual.getNombre(),
 				vehiculoActual.getModelo(), venta.getPrecio());
 
-		// 3. Devolvemos el resultado
+		// 3. Notificación en tiempo real
+		notifyUser(vendedorActual.getCorreo(), "OFFER_CREATED", 
+				"Has recibido una nueva oferta de " + clienteActual.getNombre() + " por el " + vehiculoActual.getModelo(), 
+				ventaMapper.toDto(ventaGuardada));
+
+		// 4. Devolvemos el resultado
 		return ventaMapper.toDto(ventaGuardada);
 	}
 
@@ -180,6 +197,9 @@ public class VentaService {
 		// Notificamos a las partes que la venta ha sido cancelada
 		emailService.notificarOfertaCancelada(venta.getVendedor().getCorreo(), venta.getVehiculo().getModelo());
 		emailService.notificarOfertaCancelada(venta.getCliente().getCorreo(), venta.getVehiculo().getModelo());
+
+		notifyUser(venta.getVendedor().getCorreo(), "OFFER_CANCELLED", "Oferta cancelada para " + venta.getVehiculo().getModelo(), venta.getIdVenta());
+		notifyUser(venta.getCliente().getCorreo(), "OFFER_CANCELLED", "Oferta cancelada para " + venta.getVehiculo().getModelo(), venta.getIdVenta());
 	}
 
 	@Transactional
@@ -215,6 +235,9 @@ public class VentaService {
 		// Avisar de venta confirmada
 		emailService.notificarOfertaAceptada(venta.getCliente().getCorreo(), vehiculo.getModelo(), venta.getPrecio());
 		emailService.notificarOfertaAceptada(venta.getVendedor().getCorreo(), vehiculo.getModelo(), venta.getPrecio());
+
+		notifyUser(venta.getCliente().getCorreo(), "OFFER_ACCEPTED", "¡Oferta aceptada! El " + vehiculo.getModelo() + " es tuyo.", venta.getIdVenta());
+		notifyUser(venta.getVendedor().getCorreo(), "OFFER_ACCEPTED", "Venta confirmada para el " + vehiculo.getModelo(), venta.getIdVenta());
 
 		// 3. ANULAR automáticamente todas las demás ofertas EN_PROGRESO para este mismo
 		// vehículo
@@ -274,6 +297,9 @@ public class VentaService {
 					ventaGuardada.getCliente().getNombre(), ventaGuardada.getVehiculo().getModelo(),
 					ventaGuardada.getPrecio());
 		}
+
+		notifyUser(ventaGuardada.getVendedor().getCorreo(), "OFFER_UPDATED", "Cambio en la oferta del " + ventaGuardada.getVehiculo().getModelo(), ventaMapper.toDto(ventaGuardada));
+		notifyUser(ventaGuardada.getCliente().getCorreo(), "OFFER_UPDATED", "Cambio en la oferta del " + ventaGuardada.getVehiculo().getModelo(), ventaMapper.toDto(ventaGuardada));
 
 		return ventaMapper.toDto(ventaGuardada);
 	}

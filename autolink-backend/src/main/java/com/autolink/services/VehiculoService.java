@@ -39,6 +39,18 @@ public class VehiculoService {
 	@Autowired
 	private ImagenVehiculoRepository imagenVehiculoRepository;
 
+	@Autowired
+	private org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+
+	private void notifyPublic(String type, String message, Object data) {
+		com.autolink.services.dto.NotificationDTO notification = com.autolink.services.dto.NotificationDTO.builder()
+				.type(type)
+				.message(message)
+				.data(data)
+				.build();
+		messagingTemplate.convertAndSend("/topic/vehiculos", notification);
+	}
+
 	public List<VehiculoDTO> getAllVehiculos() {
 		return this.vehiculoRepository.findAll().stream().map(vehiculoMapper::toDto).collect(Collectors.toList());
 	}
@@ -92,7 +104,10 @@ public class VehiculoService {
 			vehiculo.setFechaVerificacion(LocalDate.now());
 		}
 		Vehiculo saved = this.vehiculoRepository.save(vehiculo);
-		return vehiculoMapper.toDto(saved);
+		VehiculoDTO dto = vehiculoMapper.toDto(saved);
+		String marcaNombre = (dto.getMarca() != null) ? dto.getMarca().getNombre() : "Desconocida";
+		notifyPublic("VEHICLE_CREATED", "Nuevo vehículo publicado: " + marcaNombre + " " + dto.getModelo(), dto);
+		return dto;
 	}
 
 	public void deleteVehiculo(int idVehiculo) {
@@ -109,6 +124,7 @@ public class VehiculoService {
 		}
 
 		this.vehiculoRepository.deleteById(idVehiculo);
+		notifyPublic("VEHICLE_DELETED", "Vehículo retirado del catálogo", idVehiculo);
 	}
 
 	public VehiculoDTO updateVehiculo(Vehiculo vehiculoRequest, int idVehiculo) {
@@ -151,7 +167,9 @@ public class VehiculoService {
 		}
 
 		Vehiculo saved = vehiculoRepository.save(vehiculoBD);
-		return vehiculoMapper.toDto(saved);
+		VehiculoDTO dto = vehiculoMapper.toDto(saved);
+		notifyPublic("VEHICLE_UPDATED", "Vehículo actualizado: " + dto.getModelo(), dto);
+		return dto;
 	}
 
 	public VehiculoDTO updateDisponible(boolean disponible, int idVehiculo) {
@@ -175,7 +193,9 @@ public class VehiculoService {
 
 		vehiculoBD.setDisponible(disponible);
 		Vehiculo saved = this.vehiculoRepository.save(vehiculoBD);
-		return vehiculoMapper.toDto(saved);
+		VehiculoDTO dto = vehiculoMapper.toDto(saved);
+		notifyPublic("VEHICLE_UPDATED", "Disponibilidad de vehículo cambiada", dto);
+		return dto;
 	}
 
 	public VehiculoDTO updateVerificado(Boolean verificado, int idVehiculo) {
@@ -203,7 +223,9 @@ public class VehiculoService {
 		}
 
 		Vehiculo saved = this.vehiculoRepository.save(vehiculoBD);
-		return vehiculoMapper.toDto(saved);
+		VehiculoDTO dto = vehiculoMapper.toDto(saved);
+		notifyPublic("VEHICLE_UPDATED", "Estado de verificación cambiado", dto);
+		return dto;
 	}
 
 	// desactivar los vehiculos de un vendedor cuando es inactivo

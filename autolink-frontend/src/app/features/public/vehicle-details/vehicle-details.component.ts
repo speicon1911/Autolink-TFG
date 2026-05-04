@@ -10,6 +10,7 @@ import { VentaService } from '../../../core/services/venta.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Rol } from '../../../core/models/user.model';
 import { ContactoService } from '../../../core/services/contacto.service';
+import { ChatService } from '../../../core/services/chat.service';
 
 @Component({
     selector: 'app-vehicle-details',
@@ -195,24 +196,34 @@ import { ContactoService } from '../../../core/services/contacto.service';
                   <p class="text-[9px] text-content-muted font-bold uppercase tracking-wider italic">Al confirmar, el vendedor recibirá tu oferta y podrá aceptarla o rechazarla.</p>
                 </div>
 
-                <button (click)="buy()" [disabled]="buying() || tieneOfertaPendiente()"
-                  class="btn-primary w-full text-surface-base font-black py-5 rounded-2xl transition-all shadow-2xl shadow-action-primary/30 active:scale-[0.98] flex items-center justify-center gap-3 group/buy disabled:opacity-50 disabled:cursor-not-allowed">
-                  @if (buying()) {
-                    <div class="w-6 h-6 border-3 border-surface-base/20 border-t-surface-base rounded-full animate-spin"></div>
-                  } @else {
-                    {{ tieneOfertaPendiente() ? 'Petición de compra enviada' : 'Confirmar Propuesta de Compra' }}
-                    @if (!tieneOfertaPendiente()) {
-                      <svg class="group-hover/buy:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <div class="flex gap-4">
+                  <button (click)="buy()" [disabled]="buying() || tieneOfertaPendiente()"
+                    class="btn-primary flex-1 text-surface-base font-black py-5 rounded-2xl transition-all shadow-2xl shadow-action-primary/30 active:scale-[0.98] flex items-center justify-center gap-3 group/buy disabled:opacity-50 disabled:cursor-not-allowed">
+                    @if (buying()) {
+                      <div class="w-6 h-6 border-3 border-surface-base/20 border-t-surface-base rounded-full animate-spin"></div>
+                    } @else {
+                      {{ tieneOfertaPendiente() ? 'Petición enviada' : 'Confirmar Compra' }}
+                      @if (!tieneOfertaPendiente()) {
+                        <svg class="group-hover/buy:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                      }
                     }
-                  }
-                </button>
+                  </button>
+
+                  <button (click)="iniciarChat()" 
+                    class="bg-white/10 hover:bg-white/20 border border-white/10 text-content-primary font-black py-5 px-8 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 group/chat">
+                    <i class="fas fa-comments text-xl text-action-primary"></i>
+                    Chat
+                  </button>
+                </div>
+
                 @if (tieneOfertaPendiente()) {
                   <p class="text-center text-action-primary font-bold text-xs animate-pulse">Ya has enviado una petición para este vehículo. Espera a que el vendedor responda.</p>
                 }
               }
+
               @if (vehicle()?.disponible && (canContact() || !authService.isAuthenticated())) {
                 <button (click)="openContactModal()" class="btn-primary w-full text-surface-base font-black py-5 rounded-2xl transition-all shadow-2xl shadow-action-primary/30 active:scale-[0.98] flex items-center justify-center gap-3 group/buy">
-                  Contactar con el Vendedor
+                  {{ canContact() ? 'Contactar con el Vendedor (Chat)' : 'Contactar con el Vendedor' }}
                   <svg class="group-hover/buy:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3 3.8z"/></svg>
                 </button>
               } @else if (!vehicle()?.disponible) {
@@ -224,6 +235,7 @@ import { ContactoService } from '../../../core/services/contacto.service';
           </div>
         </div>
       }
+
     
       @if (!vehicle() && !loading()) {
         <div class="text-center py-40">
@@ -336,6 +348,7 @@ export class VehicleDetailsComponent implements OnInit {
     private ventaService = inject(VentaService);
     private contactoService = inject(ContactoService);
     private ns = inject(NotificationService);
+    private chatService = inject(ChatService);
 
     vehicle = signal<Vehicle | null>(null);
     loading = signal(true);
@@ -464,20 +477,25 @@ export class VehicleDetailsComponent implements OnInit {
     }
 
     // CONTACT LOGIC
-    openContactModal() {
+    iniciarChat() {
         if (!this.authService.isAuthenticated()) {
-            this.ns.info('Debes iniciar sesión para contactar con el vendedor');
+            this.ns.info('Debes iniciar sesión para chatear con el vendedor');
             this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
             return;
         }
-
-        if (!this.canContact()) {
-            this.ns.error('Solo los vendedores o administradores pueden contactar directamente. Como cliente, puedes realizar una oferta.');
-            return;
+        const v = this.vehicle();
+        if (v?.vendedor) {
+            this.chatService.abrirChatCon(v.vendedor);
         }
+    }
 
-        this.showContactModal.set(true);
-        document.body.style.overflow = 'hidden';
+    openContactModal() {
+        if (this.authService.isAuthenticated()) {
+            this.iniciarChat();
+        } else {
+            this.showContactModal.set(true);
+            document.body.style.overflow = 'hidden';
+        }
     }
 
     closeContactModal() {

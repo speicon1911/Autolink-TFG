@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { VehicleService } from '../../../core/services/vehicle.service';
@@ -7,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { ChatService } from '../../../core/services/chat.service';
 
 @Component({
   selector: 'app-vehicle-catalog',
@@ -323,10 +325,13 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
     .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(29, 154, 226, 0.2); border-radius: 10px; }
   `]
 })
-export class VehicleCatalogComponent implements OnInit {
+export class VehicleCatalogComponent implements OnInit, OnDestroy {
   private vehicleService = inject(VehicleService);
   private router = inject(Router);
   private ns = inject(NotificationService);
+  private chatService = inject(ChatService);
+
+  private subs = new Subscription();
 
   vehiculos = signal<Vehicle[]>([]);
   marcas = signal<Marca[]>([]);
@@ -358,6 +363,25 @@ export class VehicleCatalogComponent implements OnInit {
   ngOnInit() {
     this.cargarMarcas();
     this.fetchVehiculos();
+    this.listenToRealTimeUpdates();
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+
+  private listenToRealTimeUpdates() {
+    this.subs.add(
+      this.chatService.vehiculosUpdates$.subscribe(note => {
+        if (note) {
+          // Si alguien publica o borra, refrescamos el catálogo
+          this.fetchVehiculos();
+          if (note.type === 'VEHICLE_CREATED') {
+             this.ns.info('¡Un nuevo vehículo acaba de entrar en el catálogo!');
+          }
+        }
+      })
+    );
   }
 
   cargarMarcas() {

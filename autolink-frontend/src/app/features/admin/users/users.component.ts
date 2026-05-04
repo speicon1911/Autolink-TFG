@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { PersonaService } from '../../../core/services/persona.service';
 import { User, Rol } from '../../../core/models/user.model';
 import { NotificationService } from '../../../core/services/notification.service';
+import { ChatService } from '../../../core/services/chat.service';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { PaginatedResponse } from '../../../core/models/pagination.model';
@@ -135,6 +136,9 @@ import { PaginatedResponse } from '../../../core/models/pagination.model';
                               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
                             </button>
                           }
+                          <button (click)="iniciarChat(u)" class="p-2 hover:bg-action-primary/10 rounded-lg text-content-muted hover:text-action-primary transition-all" title="Enviar Mensaje">
+                            <i class="fas fa-comment-dots text-lg"></i>
+                          </button>
                         </div>
                       </div>
                     </td>
@@ -174,6 +178,7 @@ import { PaginatedResponse } from '../../../core/models/pagination.model';
 export class AdminUsersComponent implements OnInit {
   private personaService = inject(PersonaService);
   private ns = inject(NotificationService);
+  private chatService = inject(ChatService);
 
   users = signal<User[]>([]);          // Solo los usuarios de la página actual
   loading = signal(true);
@@ -204,6 +209,10 @@ export class AdminUsersComponent implements OnInit {
 
   ngOnInit() {
     this.cargarUsuarios();
+  }
+
+  iniciarChat(user: User) {
+    this.chatService.abrirChatCon(user);
   }
 
   // [MODIFICADO] La función maestra ahora usa el servicio paginado

@@ -25,4 +25,10 @@ public interface MensajeRepository extends JpaRepository<Mensaje, Integer> {
            "SELECT m.remitente.id FROM Mensaje m WHERE m.destinatario.id = :userId UNION " +
            "SELECT m.destinatario.id FROM Mensaje m WHERE m.remitente.id = :userId)")
     List<com.autolink.persistence.entities.Persona> findContactos(@Param("userId") Integer userId);
+
+    @Query("SELECT COUNT(m) FROM Mensaje m WHERE m.destinatario.id = :userId AND m.remitente.id = :remitenteId AND m.leido = false")
+    long countUnreadFromSpecificUser(@Param("userId") Integer userId, @Param("remitenteId") Integer remitenteId);
+
+    @Query("SELECT COUNT(m) FROM Mensaje m WHERE m.destinatario.id = :userId AND m.leido = false")
+    long countTotalUnread(@Param("userId") Integer userId);
 }

@@ -1,8 +1,10 @@
 package com.autolink.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.autolink.services.dto.ChatContactoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,9 @@ public class MensajeService {
     @Autowired
     private PersonaRepository personaRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     @Transactional
     public Mensaje enviarMensaje(Integer idRemitente, Integer idDestinatario, String contenido) {
         Persona remitente = personaRepository.findById(idRemitente)
@@ -36,7 +41,21 @@ public class MensajeService {
                 .leido(false)
                 .build();
 
-        return mensajeRepository.save(mensaje);
+        Mensaje saved = mensajeRepository.save(mensaje);
+
+        // Notificar por email de forma asíncrona (aproximada, sin complicar la arquitectura)
+        try {
+            emailService.notificarNuevoMensajeChat(
+                destinatario.getCorreo(), 
+                remitente.getNombre() + " " + remitente.getApellidos(), 
+                contenido
+            );
+        } catch (Exception e) {
+            // Ignoramos errores de email para no bloquear el chat en tiempo real
+            System.err.println("Error enviando notificación de chat: " + e.getMessage());
+        }
+
+        return saved;
     }
 
     public List<Mensaje> getConversacion(Integer user1, Integer user2) {
@@ -56,7 +75,21 @@ public class MensajeService {
         mensajeRepository.saveAll(mensajes);
     }
 
-    public List<Persona> getContactos(Integer userId) {
-        return mensajeRepository.findContactos(userId);
+    public List<ChatContactoDTO> getChatContactos(Integer userId) {
+        List<Persona> personas = mensajeRepository.findContactos(userId);
+        List<ChatContactoDTO> dtos = new ArrayList<>();
+        
+        for (Persona p : personas) {
+            long unread = mensajeRepository.countUnreadFromSpecificUser(userId, p.getId());
+            dtos.add(ChatContactoDTO.builder()
+                    .persona(p)
+                    .mensajesNoLeidos(unread)
+                    .build());
+        }
+        return dtos;
+    }
+
+    public long getTotalUnreadCount(Integer userId) {
+        return mensajeRepository.countTotalUnread(userId);
     }
 }

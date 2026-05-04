@@ -1,9 +1,12 @@
 package com.autolink.web.controllers;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -18,8 +21,12 @@ import com.autolink.persistence.entities.Persona;
 import com.autolink.services.MensajeService;
 import com.autolink.services.PersonaService;
 import com.autolink.services.dto.MensajeDTO;
+import com.autolink.services.dto.ChatContactoDTO;
+
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Slf4j
 public class MensajeController {
 
     @Autowired
@@ -33,55 +40,87 @@ public class MensajeController {
 
     @MessageMapping("/chat.enviar")
     public void processMessage(@Payload MensajeDTO mensajeDto) {
-        Mensaje saved = mensajeService.enviarMensaje(
-                mensajeDto.getIdRemitente(),
-                mensajeDto.getIdDestinatario(),
-                mensajeDto.getContenido()
-        );
+        try {
+            Mensaje saved = mensajeService.enviarMensaje(
+                    mensajeDto.getIdRemitente(),
+                    mensajeDto.getIdDestinatario(),
+                    mensajeDto.getContenido()
+            );
 
-        MensajeDTO response = MensajeDTO.builder()
-                .id(saved.getId())
-                .idRemitente(saved.getRemitente().getId())
-                .idDestinatario(saved.getDestinatario().getId())
-                .nombreRemitente(saved.getRemitente().getNombre())
-                .contenido(saved.getContenido())
-                .fechaEnvio(saved.getFechaEnvio())
-                .leido(saved.isLeido())
-                .build();
+            MensajeDTO response = convertToDto(saved);
 
-        // Enviar al destinatario
-        messagingTemplate.convertAndSendToUser(
-                saved.getDestinatario().getCorreo(),
-                "/queue/messages",
-                response
-        );
-        
-        // También enviar al remitente para confirmación (opcional si el front ya lo muestra)
-        messagingTemplate.convertAndSendToUser(
-                saved.getRemitente().getCorreo(),
-                "/queue/messages",
-                response
-        );
+            // Enviar al destinatario
+            messagingTemplate.convertAndSendToUser(
+                    saved.getDestinatario().getCorreo(),
+                    "/queue/messages",
+                    response
+            );
+            
+            // También enviar al remitente para confirmación
+            messagingTemplate.convertAndSendToUser(
+                    saved.getRemitente().getCorreo(),
+                    "/queue/messages",
+                    response
+            );
+        } catch (Exception e) {
+            log.error("Error procesando mensaje WebSocket: {}", e.getMessage());
+        }
     }
 
     @GetMapping("/mensajes/conversacion/{idOtro}")
-    public List<MensajeDTO> getConversacion(@PathVariable Integer idOtro, Authentication auth) {
-        Persona current = personaService.findByCorreoEntity(auth.getName());
-        return mensajeService.getConversacion(current.getId(), idOtro).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<MensajeDTO>> getConversacion(@PathVariable Integer idOtro, Authentication auth) {
+        try {
+            Persona current = personaService.findByCorreoEntity(auth.getName());
+            if (current == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            
+            List<MensajeDTO> mensajes = mensajeService.getConversacion(current.getId(), idOtro).stream()
+                    .map(this::convertToDto)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(mensajes);
+        } catch (Exception e) {
+            log.error("Error obteniendo conversación: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+        }
     }
 
     @GetMapping("/mensajes/contactos")
-    public List<Persona> getContactos(Authentication auth) {
-        Persona current = personaService.findByCorreoEntity(auth.getName());
-        return mensajeService.getContactos(current.getId());
+    public ResponseEntity<List<ChatContactoDTO>> getContactos(Authentication auth) {
+        try {
+            Persona current = personaService.findByCorreoEntity(auth.getName());
+            if (current == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            
+            return ResponseEntity.ok(mensajeService.getChatContactos(current.getId()));
+        } catch (Exception e) {
+            log.error("Error obteniendo contactos: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+        }
+    }
+
+    @GetMapping("/mensajes/sin-leer/total")
+    public ResponseEntity<Long> getTotalUnread(Authentication auth) {
+        try {
+            Persona current = personaService.findByCorreoEntity(auth.getName());
+            if (current == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            
+            return ResponseEntity.ok(mensajeService.getTotalUnreadCount(current.getId()));
+        } catch (Exception e) {
+            log.error("Error obteniendo total de mensajes no leídos: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0L);
+        }
     }
 
     @PutMapping("/mensajes/leer/{idRemitente}")
-    public void marcarComoLeidos(@PathVariable Integer idRemitente, Authentication auth) {
-        Persona current = personaService.findByCorreoEntity(auth.getName());
-        mensajeService.marcarComoLeidos(idRemitente, current.getId());
+    public ResponseEntity<Void> marcarComoLeidos(@PathVariable Integer idRemitente, Authentication auth) {
+        try {
+            Persona current = personaService.findByCorreoEntity(auth.getName());
+            if (current == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            
+            mensajeService.marcarComoLeidos(idRemitente, current.getId());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Error marcando mensajes como leídos: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     private MensajeDTO convertToDto(Mensaje m) {
