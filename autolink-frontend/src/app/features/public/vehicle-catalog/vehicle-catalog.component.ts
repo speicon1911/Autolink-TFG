@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { VehicleService } from '../../../core/services/vehicle.service';
-import { Vehicle, Marca, TipoVehiculo, CombustibleVehiculo } from '../../../core/models/vehicle.model';
+import { Vehicle, Marca, TipoVehiculo, CombustibleVehiculo, EtiquetaMedioambiental } from '../../../core/models/vehicle.model';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -111,6 +111,12 @@ import { ChatService } from '../../../core/services/chat.service';
                         VERIFICADO
                       </div>
                     }
+
+                    <!-- Etiqueta DGT -->
+                    <div [class]="'absolute top-5 left-5 px-3 py-1.5 rounded-lg text-[9px] font-black shadow-xl z-10 flex items-center gap-1.5 transition-all duration-300 group-hover:scale-110 ' + getEtiquetaInfo(v.etiquetaMedioambiental).color + ' ' + getEtiquetaInfo(v.etiquetaMedioambiental).textColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                      {{ getEtiquetaInfo(v.etiquetaMedioambiental).text }}
+                    </div>
                   </div>
                   <div class="p-5 space-y-4">
                     <div class="space-y-1">
@@ -136,15 +142,20 @@ import { ChatService } from '../../../core/services/chat.service';
                           {{ v.potencia }} CV
                         </div>
                       }
-                      @if (v.kilometraje !== undefined) {
+                      @if (v.ciudad) {
                         <div class="flex items-center gap-2 text-content-secondary text-[10px] font-bold uppercase tracking-widest">
                           <div class="w-6 h-6 rounded bg-action-primary/10 flex items-center justify-center text-action-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                           </div>
-                          {{ v.kilometraje }} Km
+                          {{ v.ciudad }}
                         </div>
                       }
                     </div>
+                    @if (v.descripcion) {
+                      <p class="text-content-secondary text-[10px] line-clamp-2 italic leading-relaxed">
+                        {{ v.descripcion }}
+                      </p>
+                    }
                     <button (click)="verDetalles(v)"
                       class="btn-primary w-full font-black py-3 rounded-xl transition-all shadow-xl shadow-action-primary/20 active:scale-[0.98] flex items-center justify-center gap-3 group/btn text-[10px] uppercase tracking-widest">
                       Ver Detalles
@@ -275,11 +286,22 @@ import { ChatService } from '../../../core/services/chat.service';
               class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted text-sm">
           </div>
           <div class="space-y-1">
-            <label for="plazas-input" class="text-[10px] font-black uppercase tracking-widest text-action-primary ml-1">Plazas</label>
-            <input id="plazas-input" type="number" [(ngModel)]="filtros.plazas" (input)="onFiltrosChange()"
-              placeholder="5" min="1"
+            <label for="ciudad-input" class="text-[10px] font-black uppercase tracking-widest text-action-primary ml-1">Ciudad</label>
+            <input id="ciudad-input" type="text" [(ngModel)]="filtros.ciudad" (input)="onFiltrosChange()"
+              placeholder="Ej: Madrid"
               class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted text-sm">
           </div>
+        </div>
+
+        <div class="space-y-1">
+          <label for="etiqueta-select" class="text-[10px] font-black uppercase tracking-widest text-action-primary ml-1">Distintivo Ambiental</label>
+          <select id="etiqueta-select" [(ngModel)]="filtros.etiqueta" (change)="onFiltrosChange()"
+            class="w-full bg-surface-base border border-white/5 rounded-xl px-4 py-3 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer">
+            <option value="" class="bg-surface-card">Cualquier distintivo</option>
+            @for (e of etiquetas; track e) {
+              <option [value]="e" class="bg-surface-card">{{ e | formatEnum }}</option>
+            }
+          </select>
         </div>
 
         <!-- Solo Verificados toggle -->
@@ -338,6 +360,7 @@ export class VehicleCatalogComponent implements OnInit, OnDestroy {
   loading = signal(true);
   tipos = Object.values(TipoVehiculo);
   combustibles = Object.values(CombustibleVehiculo);
+  etiquetas = Object.values(EtiquetaMedioambiental);
 
   // ESTADO DE PAGINACIÓN
   totalItems = signal(0);
@@ -355,7 +378,9 @@ export class VehicleCatalogComponent implements OnInit, OnDestroy {
     plazas: null as number | null,
     disponible: true,
     verificado: null as boolean | null,
-    anioFabricacion: null as number | null
+    anioFabricacion: null as number | null,
+    ciudad: '',
+    etiqueta: '' as any
   };
 
   showMobileFilters = signal(false);
@@ -473,12 +498,29 @@ export class VehicleCatalogComponent implements OnInit, OnDestroy {
       plazas: null,
       disponible: true,
       verificado: null,
-      anioFabricacion: null
+      anioFabricacion: null,
+      ciudad: '',
+      etiqueta: '' as any
     };
     this.currentPage.set(0);
     this.showMobileFilters.set(false);
     document.body.style.overflow = 'auto';
     this.fetchVehiculos();
+  }
+
+  getEtiquetaInfo(e?: EtiquetaMedioambiental) {
+    switch (e) {
+      case EtiquetaMedioambiental.CERO: 
+        return { color: 'bg-[#0079C1]', text: 'CERO', textColor: 'text-white' };
+      case EtiquetaMedioambiental.ECO: 
+        return { color: 'bg-gradient-to-r from-[#8DB92E] to-[#0079C1]', text: 'ECO', textColor: 'text-white' };
+      case EtiquetaMedioambiental.C: 
+        return { color: 'bg-[#8DB92E]', text: 'C', textColor: 'text-white' };
+      case EtiquetaMedioambiental.B: 
+        return { color: 'bg-[#FFD700]', text: 'B', textColor: 'text-black' };
+      default: 
+        return { color: 'bg-content-muted/20', text: 'SIN ET.', textColor: 'text-content-muted' };
+    }
   }
 
   verDetalles(v: Vehicle) {

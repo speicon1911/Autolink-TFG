@@ -48,13 +48,13 @@ public class ContactoController {
 	public void contactarVendedor(@PathVariable int idVehiculo, @RequestBody ContactoDTO contacto) {
 		// obtener cliente logueado
 		String emailCliente = SecurityContextHolder.getContext().getAuthentication().getName();
-		
+
 		// 2. Cargamos las entidades usando sus servicios específicos
-        Persona cliente = personaService.findByCorreoEntity(emailCliente);
-        Vehiculo vehiculo = vehiculoService.findByIdEntity(idVehiculo);
-		
-     // 3. Delegamos el envío al servicio de email
-        emailService.enviarCorreoInteresVehiculo(cliente, vehiculo, contacto.getMensaje());
+		Persona cliente = personaService.findByCorreoEntity(emailCliente);
+		Vehiculo vehiculo = vehiculoService.findByIdEntity(idVehiculo);
+
+		// 3. Delegamos el envío al servicio de email
+		emailService.enviarCorreoInteresVehiculo(cliente, vehiculo, contacto.getMensaje());
 
 	}
 }

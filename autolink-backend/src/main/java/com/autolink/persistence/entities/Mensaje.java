@@ -23,24 +23,24 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Mensaje {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "remitente_id", nullable = false)
-    private Persona remitente;
+	@ManyToOne
+	@JoinColumn(name = "remitente_id", nullable = false)
+	private Persona remitente;
 
-    @ManyToOne
-    @JoinColumn(name = "destinatario_id", nullable = false)
-    private Persona destinatario;
+	@ManyToOne
+	@JoinColumn(name = "destinatario_id", nullable = false)
+	private Persona destinatario;
 
-    @Column(nullable = false, length = 1000)
-    private String contenido;
+	@Column(nullable = false, length = 1000)
+	private String contenido;
 
-    @Column(name = "fecha_envio", nullable = false)
-    private LocalDateTime fechaEnvio;
+	@Column(name = "fecha_envio", nullable = false)
+	private LocalDateTime fechaEnvio;
 
-    @Column(nullable = false)
-    private boolean leido;
+	@Column(nullable = false)
+	private boolean leido;
 }

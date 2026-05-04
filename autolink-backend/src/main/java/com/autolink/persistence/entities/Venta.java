@@ -26,30 +26,31 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Venta {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_venta")
 	private int idVenta;
-	
+
 	private LocalDate fecha;
-	
+
 	@Enumerated(value = EnumType.STRING)
 	@Column(name = "estado")
 	private EstadoVenta estadoVenta;
-	
+
 	private Double precio;
-	
+
 	@Enumerated(value = EnumType.STRING)
 	@Column(name = "rol_ultimo_modificador")
 	private Rol rolUltimoModificador;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "id_vendedor", nullable = false)
-	// me permite enviar datos en json y que no salgan reflejados en bucle al solicitar datos
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY) 
+	// me permite enviar datos en json y que no salgan reflejados en bucle al
+	// solicitar datos
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Persona vendedor;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "id_cliente", nullable = false)
 	private Persona cliente;
@@ -58,5 +59,4 @@ public class Venta {
 	@JoinColumn(name = "id_vehiculo", nullable = false)
 	private Vehiculo vehiculo;
 
-	
 }

@@ -13,12 +13,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class VentaDTO {
-    private int idVenta;
-    private LocalDate fecha;
-    private EstadoVenta estadoVenta;
-    private Double precio;
-    private Rol rolUltimoModificador;
-    private PersonaDTO vendedor;
-    private PersonaDTO cliente;
-    private VehiculoDTO vehiculo;
+	private int idVenta;
+	private LocalDate fecha;
+	private EstadoVenta estadoVenta;
+	private Double precio;
+	private Rol rolUltimoModificador;
+	private PersonaDTO vendedor;
+	private PersonaDTO cliente;
+	private VehiculoDTO vehiculo;
 }

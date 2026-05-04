@@ -35,6 +35,14 @@ export interface ImagenVehiculo {
     url: string;
 }
 
+export enum EtiquetaMedioambiental {
+    CERO = 'CERO',
+    ECO = 'ECO',
+    C = 'C',
+    B = 'B',
+    SIN_ETIQUETA = 'SIN_ETIQUETA'
+}
+
 export interface Vehicle {
     idVehiculo: number;
     precio: number;
@@ -51,6 +59,14 @@ export interface Vehicle {
     disponible: boolean;
     verificado: boolean;
     fechaVerificacion?: string;
-    vendedor?: any; // To avoid circular dependency initially or just use partial User
+    vendedor?: any;
     imagenes?: ImagenVehiculo[];
+    
+    // Nuevos campos
+    matricula?: string;
+    fechaMatriculacion?: string;
+    vencimientoItv?: string;
+    etiquetaMedioambiental?: EtiquetaMedioambiental;
+    descripcion?: string;
+    ciudad?: string;
 }

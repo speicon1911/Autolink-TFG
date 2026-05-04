@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RefreshDTO {
-	
+
 	private String refresh;
 
 }

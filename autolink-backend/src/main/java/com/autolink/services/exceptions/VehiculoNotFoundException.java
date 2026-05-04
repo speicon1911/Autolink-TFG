@@ -1,6 +1,6 @@
 package com.autolink.services.exceptions;
 
-public class VehiculoNotFoundException extends RuntimeException{
+public class VehiculoNotFoundException extends RuntimeException {
 
 	/**
 	 * 
@@ -11,7 +11,5 @@ public class VehiculoNotFoundException extends RuntimeException{
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 
 }

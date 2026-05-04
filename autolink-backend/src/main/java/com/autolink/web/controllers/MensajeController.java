@@ -29,109 +29,95 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MensajeController {
 
-    @Autowired
-    private MensajeService mensajeService;
+	@Autowired
+	private MensajeService mensajeService;
 
-    @Autowired
-    private PersonaService personaService;
+	@Autowired
+	private PersonaService personaService;
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+	@Autowired
+	private SimpMessagingTemplate messagingTemplate;
 
-    @MessageMapping("/chat.enviar")
-    public void processMessage(@Payload MensajeDTO mensajeDto) {
-        try {
-            Mensaje saved = mensajeService.enviarMensaje(
-                    mensajeDto.getIdRemitente(),
-                    mensajeDto.getIdDestinatario(),
-                    mensajeDto.getContenido()
-            );
+	@MessageMapping("/chat.enviar")
+	public void processMessage(@Payload MensajeDTO mensajeDto) {
+		try {
+			Mensaje saved = mensajeService.enviarMensaje(mensajeDto.getIdRemitente(), mensajeDto.getIdDestinatario(),
+					mensajeDto.getContenido());
 
-            MensajeDTO response = convertToDto(saved);
+			MensajeDTO response = convertToDto(saved);
 
-            // Enviar al destinatario
-            messagingTemplate.convertAndSendToUser(
-                    saved.getDestinatario().getCorreo(),
-                    "/queue/messages",
-                    response
-            );
-            
-            // También enviar al remitente para confirmación
-            messagingTemplate.convertAndSendToUser(
-                    saved.getRemitente().getCorreo(),
-                    "/queue/messages",
-                    response
-            );
-        } catch (Exception e) {
-            log.error("Error procesando mensaje WebSocket: {}", e.getMessage());
-        }
-    }
+			// Enviar al destinatario
+			messagingTemplate.convertAndSendToUser(saved.getDestinatario().getCorreo(), "/queue/messages", response);
 
-    @GetMapping("/mensajes/conversacion/{idOtro}")
-    public ResponseEntity<List<MensajeDTO>> getConversacion(@PathVariable Integer idOtro, Authentication auth) {
-        try {
-            Persona current = personaService.findByCorreoEntity(auth.getName());
-            if (current == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            
-            List<MensajeDTO> mensajes = mensajeService.getConversacion(current.getId(), idOtro).stream()
-                    .map(this::convertToDto)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(mensajes);
-        } catch (Exception e) {
-            log.error("Error obteniendo conversación: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
-        }
-    }
+			// También enviar al remitente para confirmación
+			messagingTemplate.convertAndSendToUser(saved.getRemitente().getCorreo(), "/queue/messages", response);
+		} catch (Exception e) {
+			log.error("Error procesando mensaje WebSocket: {}", e.getMessage());
+		}
+	}
 
-    @GetMapping("/mensajes/contactos")
-    public ResponseEntity<List<ChatContactoDTO>> getContactos(Authentication auth) {
-        try {
-            Persona current = personaService.findByCorreoEntity(auth.getName());
-            if (current == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            
-            return ResponseEntity.ok(mensajeService.getChatContactos(current.getId()));
-        } catch (Exception e) {
-            log.error("Error obteniendo contactos: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
-        }
-    }
+	@GetMapping("/mensajes/conversacion/{idOtro}")
+	public ResponseEntity<List<MensajeDTO>> getConversacion(@PathVariable Integer idOtro, Authentication auth) {
+		try {
+			Persona current = personaService.findByCorreoEntity(auth.getName());
+			if (current == null)
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-    @GetMapping("/mensajes/sin-leer/total")
-    public ResponseEntity<Long> getTotalUnread(Authentication auth) {
-        try {
-            Persona current = personaService.findByCorreoEntity(auth.getName());
-            if (current == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            
-            return ResponseEntity.ok(mensajeService.getTotalUnreadCount(current.getId()));
-        } catch (Exception e) {
-            log.error("Error obteniendo total de mensajes no leídos: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0L);
-        }
-    }
+			List<MensajeDTO> mensajes = mensajeService.getConversacion(current.getId(), idOtro).stream()
+					.map(this::convertToDto).collect(Collectors.toList());
+			return ResponseEntity.ok(mensajes);
+		} catch (Exception e) {
+			log.error("Error obteniendo conversación: {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+		}
+	}
 
-    @PutMapping("/mensajes/leer/{idRemitente}")
-    public ResponseEntity<Void> marcarComoLeidos(@PathVariable Integer idRemitente, Authentication auth) {
-        try {
-            Persona current = personaService.findByCorreoEntity(auth.getName());
-            if (current == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            
-            mensajeService.marcarComoLeidos(idRemitente, current.getId());
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            log.error("Error marcando mensajes como leídos: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+	@GetMapping("/mensajes/contactos")
+	public ResponseEntity<List<ChatContactoDTO>> getContactos(Authentication auth) {
+		try {
+			Persona current = personaService.findByCorreoEntity(auth.getName());
+			if (current == null)
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-    private MensajeDTO convertToDto(Mensaje m) {
-        return MensajeDTO.builder()
-                .id(m.getId())
-                .idRemitente(m.getRemitente().getId())
-                .idDestinatario(m.getDestinatario().getId())
-                .nombreRemitente(m.getRemitente().getNombre())
-                .contenido(m.getContenido())
-                .fechaEnvio(m.getFechaEnvio())
-                .leido(m.isLeido())
-                .build();
-    }
+			return ResponseEntity.ok(mensajeService.getChatContactos(current.getId()));
+		} catch (Exception e) {
+			log.error("Error obteniendo contactos: {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+		}
+	}
+
+	@GetMapping("/mensajes/sin-leer/total")
+	public ResponseEntity<Long> getTotalUnread(Authentication auth) {
+		try {
+			Persona current = personaService.findByCorreoEntity(auth.getName());
+			if (current == null)
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+			return ResponseEntity.ok(mensajeService.getTotalUnreadCount(current.getId()));
+		} catch (Exception e) {
+			log.error("Error obteniendo total de mensajes no leídos: {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0L);
+		}
+	}
+
+	@PutMapping("/mensajes/leer/{idRemitente}")
+	public ResponseEntity<Void> marcarComoLeidos(@PathVariable Integer idRemitente, Authentication auth) {
+		try {
+			Persona current = personaService.findByCorreoEntity(auth.getName());
+			if (current == null)
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+			mensajeService.marcarComoLeidos(idRemitente, current.getId());
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
+			log.error("Error marcando mensajes como leídos: {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	private MensajeDTO convertToDto(Mensaje m) {
+		return MensajeDTO.builder().id(m.getId()).idRemitente(m.getRemitente().getId())
+				.idDestinatario(m.getDestinatario().getId()).nombreRemitente(m.getRemitente().getNombre())
+				.contenido(m.getContenido()).fechaEnvio(m.getFechaEnvio()).leido(m.isLeido()).build();
+	}
 }

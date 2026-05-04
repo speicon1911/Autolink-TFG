@@ -22,9 +22,9 @@ public class ImagenVehiculo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	
+
 	private String url; // url de la imagen
-	
+
 	@ManyToOne
 	@JoinColumn(name = "id_vehiculo")
 	@JsonIgnore

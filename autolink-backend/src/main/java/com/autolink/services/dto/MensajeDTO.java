@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MensajeDTO {
-    private Integer id;
-    private Integer idRemitente;
-    private Integer idDestinatario;
-    private String nombreRemitente;
-    private String contenido;
-    private LocalDateTime fechaEnvio;
-    private boolean leido;
+	private Integer id;
+	private Integer idRemitente;
+	private Integer idDestinatario;
+	private String nombreRemitente;
+	private String contenido;
+	private LocalDateTime fechaEnvio;
+	private boolean leido;
 }

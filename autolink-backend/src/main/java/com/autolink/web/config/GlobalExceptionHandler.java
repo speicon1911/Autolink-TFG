@@ -1,6 +1,7 @@
 package com.autolink.web.config;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,10 @@ import com.autolink.services.exceptions.MarcaExceptions;
 import com.autolink.services.exceptions.MarcaNotFoundException;
 import com.autolink.services.exceptions.PersonaExceptions;
 import com.autolink.services.exceptions.PersonaNotFoundException;
+import com.autolink.services.exceptions.MatriculaDuplicadaException;
 import com.autolink.services.exceptions.VehiculoExceptions;
 import com.autolink.services.exceptions.VehiculoNotFoundException;
+import com.autolink.services.exceptions.VehiculoValidationException;
 import com.autolink.services.exceptions.VentaExceptions;
 import com.autolink.services.exceptions.VentaNotFoundException;
 
@@ -33,7 +36,8 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
-		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permisos suficientes para realizar esta acción.");
+		return ResponseEntity.status(HttpStatus.FORBIDDEN)
+				.body("No tienes permisos suficientes para realizar esta acción.");
 	}
 
 	// --- EXCEPCIONES DE PARÁMETROS ---
@@ -63,8 +67,18 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(VehiculoExceptions.class)
-	public ResponseEntity<String> handleVehiculoExceptions(VehiculoExceptions ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	public ResponseEntity<Map<String, String>> handleVehiculoExceptions(VehiculoExceptions ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+	}
+
+	@ExceptionHandler(MatriculaDuplicadaException.class)
+	public ResponseEntity<Map<String, String>> handleMatriculaDuplicada(MatriculaDuplicadaException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
+	}
+
+	@ExceptionHandler(VehiculoValidationException.class)
+	public ResponseEntity<Map<String, String>> handleVehiculoValidation(VehiculoValidationException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
 	}
 
 	// --- EXCEPCIONES DE VENTAS ---
@@ -78,31 +92,32 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleVentaExceptions(VentaExceptions ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 	}
-	
+
 	// --- EXCEPCIONES DE MARCAS ---
 
 	@ExceptionHandler(MarcaNotFoundException.class)
-	public ResponseEntity<String> handleMarcaNotFound(MarcaNotFoundException ex){
+	public ResponseEntity<String> handleMarcaNotFound(MarcaNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
 
 	@ExceptionHandler(MarcaExceptions.class)
-	public ResponseEntity<String> handleMarcaExceptions(MarcaExceptions ex){
+	public ResponseEntity<String> handleMarcaExceptions(MarcaExceptions ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 	}
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-		return ResponseEntity.status(HttpStatus.CONFLICT).body("Error de integridad de datos: Es posible que el registro esté siendo utilizado por otras entidades.");
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(
+				"Error de integridad de datos: Es posible que el registro esté siendo utilizado por otras entidades.");
 	}
-	
+
 	// --- EXCEPCIONES DE ARCHIVOS / SUBIDA ---ç
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
-	public ResponseEntity<String> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex){
+	public ResponseEntity<String> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
 		return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-	            .body("El archivo es demasiado grande. El límite máximo permitido es de 5MB por foto.");
+				.body("El archivo es demasiado grande. El límite máximo permitido es de 5MB por foto.");
 	}
-	
+
 	@ExceptionHandler(IOException.class)
 	public ResponseEntity<String> handleIOException(IOException ex) {
 		ex.printStackTrace(); // Log the error for the developer
@@ -116,5 +131,5 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body("Ha ocurrido un error inesperado: " + ex.getMessage());
 	}
-	
+
 }

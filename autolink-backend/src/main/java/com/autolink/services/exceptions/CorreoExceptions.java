@@ -1,6 +1,6 @@
 package com.autolink.services.exceptions;
 
-public class CorreoExceptions extends RuntimeException{
+public class CorreoExceptions extends RuntimeException {
 
 	/**
 	 * 

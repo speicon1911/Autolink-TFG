@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatContactoDTO {
-    private Persona persona;
-    private long mensajesNoLeidos;
-    private String ultimoMensaje;
+	private Persona persona;
+	private long mensajesNoLeidos;
+	private String ultimoMensaje;
 }

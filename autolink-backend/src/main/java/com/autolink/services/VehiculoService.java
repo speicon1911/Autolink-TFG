@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,12 +16,16 @@ import org.springframework.web.multipart.MultipartFile;
 import com.autolink.persistence.entities.ImagenVehiculo;
 import com.autolink.persistence.entities.Vehiculo;
 import com.autolink.persistence.entities.enums.CombustibleVehiculo;
+import com.autolink.persistence.entities.enums.EtiquetaMedioambiental;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 import com.autolink.persistence.repositories.ImagenVehiculoRepository;
 import com.autolink.persistence.repositories.VehiculoRepository;
+import com.autolink.services.dto.NotificationDTO;
 import com.autolink.services.dto.VehiculoDTO;
+import com.autolink.services.exceptions.MatriculaDuplicadaException;
 import com.autolink.services.exceptions.VehiculoExceptions;
 import com.autolink.services.exceptions.VehiculoNotFoundException;
+import com.autolink.services.exceptions.VehiculoValidationException;
 import com.autolink.services.mappers.VehiculoMapper;
 
 import jakarta.transaction.Transactional;
@@ -40,14 +45,10 @@ public class VehiculoService {
 	private ImagenVehiculoRepository imagenVehiculoRepository;
 
 	@Autowired
-	private org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+	private SimpMessagingTemplate messagingTemplate;
 
 	private void notifyPublic(String type, String message, Object data) {
-		com.autolink.services.dto.NotificationDTO notification = com.autolink.services.dto.NotificationDTO.builder()
-				.type(type)
-				.message(message)
-				.data(data)
-				.build();
+		NotificationDTO notification = NotificationDTO.builder().type(type).message(message).data(data).build();
 		messagingTemplate.convertAndSend("/topic/vehiculos", notification);
 	}
 
@@ -71,12 +72,12 @@ public class VehiculoService {
 
 	public Page<VehiculoDTO> filtrarVehiculos(String marca, String modelo, TipoVehiculo tipo,
 			CombustibleVehiculo combustible, String color, Integer minPotencia, Integer maxPrecio, Integer maxKm,
-			Integer plazas, Integer anioFabricacion, boolean disponible, boolean aplicarDisp, boolean verificado,
-			boolean aplicarVerif, Pageable pageable) {
+			Integer plazas, Integer anioFabricacion, String ciudad, EtiquetaMedioambiental etiqueta, boolean disponible,
+			boolean aplicarDisp, boolean verificado, boolean aplicarVerif, Pageable pageable) {
 
 		Page<Vehiculo> vehiculos = vehiculoRepository.buscarConFiltros(marca, modelo, tipo, combustible, color,
-				minPotencia, maxPrecio, maxKm, plazas, anioFabricacion, disponible, aplicarDisp, verificado,
-				aplicarVerif, pageable);
+				minPotencia, maxPrecio, maxKm, plazas, anioFabricacion, ciudad, etiqueta, disponible, aplicarDisp,
+				verificado, aplicarVerif, pageable);
 
 		if (vehiculos.isEmpty()) {
 			throw new VehiculoNotFoundException("No se han encontrado vehiculos con los filtros asignados");
@@ -103,6 +104,9 @@ public class VehiculoService {
 		if (vehiculo.getVerificado() != null && vehiculo.getVerificado()) {
 			vehiculo.setFechaVerificacion(LocalDate.now());
 		}
+
+		validarVehiculo(vehiculo, null);
+
 		Vehiculo saved = this.vehiculoRepository.save(vehiculo);
 		VehiculoDTO dto = vehiculoMapper.toDto(saved);
 		String marcaNombre = (dto.getMarca() != null) ? dto.getMarca().getNombre() : "Desconocida";
@@ -165,6 +169,20 @@ public class VehiculoService {
 		if (vehiculoRequest.getMarca() != null) {
 			vehiculoBD.setMarca(vehiculoRequest.getMarca());
 		}
+		if (vehiculoRequest.getMatricula() != null)
+			vehiculoBD.setMatricula(vehiculoRequest.getMatricula());
+		if (vehiculoRequest.getFechaMatriculacion() != null)
+			vehiculoBD.setFechaMatriculacion(vehiculoRequest.getFechaMatriculacion());
+		if (vehiculoRequest.getVencimientoItv() != null)
+			vehiculoBD.setVencimientoItv(vehiculoRequest.getVencimientoItv());
+		if (vehiculoRequest.getEtiquetaMedioambiental() != null)
+			vehiculoBD.setEtiquetaMedioambiental(vehiculoRequest.getEtiquetaMedioambiental());
+		if (vehiculoRequest.getDescripcion() != null)
+			vehiculoBD.setDescripcion(vehiculoRequest.getDescripcion());
+		if (vehiculoRequest.getCiudad() != null)
+			vehiculoBD.setCiudad(vehiculoRequest.getCiudad());
+
+		validarVehiculo(vehiculoBD, idVehiculo);
 
 		Vehiculo saved = vehiculoRepository.save(vehiculoBD);
 		VehiculoDTO dto = vehiculoMapper.toDto(saved);
@@ -304,5 +322,34 @@ public class VehiculoService {
 	public Vehiculo findByIdEntity(int id) {
 		return vehiculoRepository.findById(id)
 				.orElseThrow(() -> new VehiculoNotFoundException("Vehículo no encontrado"));
+	}
+
+	private void validarVehiculo(Vehiculo v, Integer currentId) {
+		// 1. Validar Matrícula Duplicada
+		if (v.getMatricula() != null && !v.getMatricula().isBlank()) {
+			vehiculoRepository.findByMatricula(v.getMatricula()).ifPresent(existing -> {
+				if (currentId == null || existing.getIdVehiculo() != currentId) {
+					throw new MatriculaDuplicadaException(v.getMatricula());
+				}
+			});
+		}
+
+		// 2. Validar Fechas
+		if (v.getFechaMatriculacion() != null) {
+			if (v.getFechaMatriculacion().isAfter(LocalDate.now())) {
+				throw new VehiculoValidationException("La fecha de matriculación no puede ser futura.");
+			}
+		}
+
+		if (v.getVencimientoItv() != null && v.getFechaMatriculacion() != null) {
+			if (v.getVencimientoItv().isBefore(v.getFechaMatriculacion())) {
+				throw new VehiculoValidationException("El vencimiento de la ITV no puede ser anterior a la fecha de matriculación.");
+			}
+		}
+
+		// 3. Validar Longitud Descripción
+		if (v.getDescripcion() != null && v.getDescripcion().length() > 1000) {
+			throw new VehiculoValidationException("La descripción no puede exceder los 1000 caracteres.");
+		}
 	}
 }

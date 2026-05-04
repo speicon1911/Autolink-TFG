@@ -1,6 +1,6 @@
 package com.autolink.services.exceptions;
 
-public class PersonaExceptions extends RuntimeException{
+public class PersonaExceptions extends RuntimeException {
 
 	/**
 	 * 

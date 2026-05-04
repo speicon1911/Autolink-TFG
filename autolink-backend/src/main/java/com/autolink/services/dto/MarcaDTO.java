@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class MarcaDTO {
-    private int idMarca;
-    private String nombre;
+	private int idMarca;
+	private String nombre;
 }

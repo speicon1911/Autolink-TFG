@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.autolink.persistence.entities.enums.CombustibleVehiculo;
+import com.autolink.persistence.entities.enums.EtiquetaMedioambiental;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 
 import jakarta.persistence.CascadeType;
@@ -30,52 +31,70 @@ import lombok.Setter;
 @Entity
 public class Vehiculo {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_vehiculo")
-    private int idVehiculo;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_vehiculo")
+	private int idVehiculo;
 
-    private Integer precio;
+	private Integer precio;
 
-    private Integer plazas;
+	private Integer plazas;
 
-    private Integer potencia;
+	private Integer potencia;
 
-    private Integer puertas;
+	private Integer puertas;
 
-    private Integer kilometraje;
+	private Integer kilometraje;
 
-    private String color;
-    
-    @Column(name = "combustible")
-    @Enumerated(EnumType.STRING)
-    private CombustibleVehiculo combustible;
+	private String color;
 
-    @Column(name = "tipo_vehiculo")
-    @Enumerated(EnumType.STRING)
-    private TipoVehiculo tipoVehiculo;
+	@Column(name = "combustible")
+	@Enumerated(EnumType.STRING)
+	private CombustibleVehiculo combustible;
 
-    @ManyToOne
-    @JoinColumn(name = "id_marca")
-    private Marca marca;
+	@Column(name = "tipo_vehiculo")
+	@Enumerated(EnumType.STRING)
+	private TipoVehiculo tipoVehiculo;
 
-    private String modelo;
+	@ManyToOne
+	@JoinColumn(name = "id_marca")
+	private Marca marca;
 
-    @Column(name = "anio_fabricacion")
-    private int anioFabricacion;
+	private String modelo;
 
-    private Boolean disponible;
+	@Column(name = "anio_fabricacion")
+	private int anioFabricacion;
 
-    private Boolean verificado;
+	private Boolean disponible;
 
-    @Column(name = "fecha_verificacion")
-    private LocalDate fechaVerificacion;
+	private Boolean verificado;
 
-    @ManyToOne
-    @JoinColumn(name = "id_vendedor")
-    private Persona vendedor;
-    
-    @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ImagenVehiculo> imagenes = new ArrayList<>();
+	@Column(name = "fecha_verificacion")
+	private LocalDate fechaVerificacion;
+
+	@ManyToOne
+	@JoinColumn(name = "id_vendedor")
+	private Persona vendedor;
+
+	@Column(length = 10)
+	private String matricula;
+
+	@Column(name = "fecha_matriculacion")
+	private LocalDate fechaMatriculacion;
+
+	@Column(name = "vencimiento_itv")
+	private LocalDate vencimientoItv;
+
+	@Column(name = "etiqueta_medioambiental")
+	@Enumerated(EnumType.STRING)
+	private EtiquetaMedioambiental etiquetaMedioambiental;
+
+	@Column(length = 1000)
+	private String descripcion;
+
+	private String ciudad;
+
+	@OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ImagenVehiculo> imagenes = new ArrayList<>();
 
 }

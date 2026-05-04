@@ -10,15 +10,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PersonaDTO {
-    private int id;
-    private String nombre;
-    private String apellidos;
-    private String DNI;
-    private String correo;
-    private Rol rol;
-    private Integer telefono;
-    private Double salarioAnual;
-    private String ciudadAsignada;
-    private Boolean activo;
-    private String fotoPerfil;
+	private int id;
+	private String nombre;
+	private String apellidos;
+	private String DNI;
+	private String correo;
+	private Rol rol;
+	private Integer telefono;
+	private Double salarioAnual;
+	private String ciudadAsignada;
+	private Boolean activo;
+	private String fotoPerfil;
 }

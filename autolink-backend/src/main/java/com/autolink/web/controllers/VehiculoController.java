@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.autolink.persistence.entities.Vehiculo;
 import com.autolink.persistence.entities.enums.CombustibleVehiculo;
+import com.autolink.persistence.entities.enums.EtiquetaMedioambiental;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 import com.autolink.services.VehiculoService;
 import com.autolink.services.dto.VehiculoDTO;
@@ -59,6 +60,8 @@ public class VehiculoController {
 			@RequestParam(required = false) String color, @RequestParam(required = false) Integer minPotencia,
 			@RequestParam(required = false) Integer maxPrecio, @RequestParam(required = false) Integer maxKm,
 			@RequestParam(required = false) Integer plazas, @RequestParam(required = false) Integer anioFabricacion,
+			@RequestParam(required = false) String ciudad,
+			@RequestParam(required = false) EtiquetaMedioambiental etiqueta,
 			@RequestParam(defaultValue = "false") boolean disponible,
 			@RequestParam(defaultValue = "false") boolean verificado,
 			@RequestParam(required = false) Boolean filterDisp, @RequestParam(required = false) Boolean filterVerif,
@@ -69,8 +72,8 @@ public class VehiculoController {
 		Pageable pageable = PageRequest.of(page, size);
 
 		Page<VehiculoDTO> resultados = this.vehiculoService.filtrarVehiculos(marca, modelo, tipo, combustible, color,
-				minPotencia, maxPrecio, maxKm, plazas, anioFabricacion, disponible, aplicarDisp, verificado,
-				aplicarVerif, pageable);
+				minPotencia, maxPrecio, maxKm, plazas, anioFabricacion, ciudad, etiqueta, disponible, aplicarDisp,
+				verificado, aplicarVerif, pageable);
 		return ResponseEntity.ok(resultados);
 	}
 

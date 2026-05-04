@@ -1,6 +1,6 @@
 package com.autolink.services.exceptions;
 
-public class VentaExceptions extends RuntimeException{
+public class VentaExceptions extends RuntimeException {
 
 	/**
 	 * 

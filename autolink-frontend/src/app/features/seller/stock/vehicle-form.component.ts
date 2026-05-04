@@ -3,7 +3,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
 
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { VehicleService } from '../../../core/services/vehicle.service';
-import { Vehicle, Marca, TipoVehiculo, CombustibleVehiculo } from '../../../core/models/vehicle.model';
+import { Vehicle, Marca, TipoVehiculo, CombustibleVehiculo, EtiquetaMedioambiental } from '../../../core/models/vehicle.model';
 import { NotificationService } from '../../../core/services/notification.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
@@ -106,13 +106,61 @@ import { ImagenVehiculo } from '../../../core/models/vehicle.model';
                             <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Puertas</label>
                             <input type="number" formControlName="puertas"
                               class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
-                            </div>
-                            <div class="flex items-center gap-3 pt-6">
-                              <input type="checkbox" formControlName="disponible" id="disp"
-                                class="w-5 h-5 rounded border-white/10 bg-surface-base text-action-primary focus:ring-action-primary outline-none cursor-pointer">
-                                <label for="disp" class="text-sm font-bold text-content-secondary cursor-pointer">Disponible</label>
-                              </div>
-                            </div>
+                        </div>
+                      </div>
+
+                        <!-- Technical Expansion -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                          <div class="space-y-1">
+                            <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Matrícula</label>
+                            <input type="text" formControlName="matricula" placeholder="1234BBB"
+                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                            <p class="text-[8px] text-content-muted ml-1 italic">Formato: 1234BBB o Provincial</p>
+                          </div>
+                          <div class="space-y-1">
+                            <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Distintivo Ambiental DGT</label>
+                            <select formControlName="etiquetaMedioambiental"
+                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer">
+                              @for (e of etiquetas; track e) {
+                                <option [value]="e">{{ e | formatEnum }}</option>
+                              }
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div class="space-y-1">
+                            <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Fecha 1ª Matriculación</label>
+                            <input type="date" formControlName="fechaMatriculacion"
+                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                          </div>
+                          <div class="space-y-1">
+                            <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Vencimiento ITV</label>
+                            <input type="date" formControlName="vencimientoItv"
+                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                          </div>
+                        </div>
+
+                        <div class="space-y-1">
+                          <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Ubicación (Ciudad)</label>
+                          <input type="text" formControlName="ciudad" placeholder="Ej: Madrid, Barcelona..."
+                            class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                        </div>
+
+                        <div class="space-y-1">
+                          <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Descripción Detallada (Opcional)</label>
+                          <textarea formControlName="descripcion" rows="4" placeholder="Detalla el estado, revisiones, extras..."
+                            class="w-full bg-surface-base border border-white/10 rounded-xl p-4 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all resize-none"></textarea>
+                          <div class="flex justify-end">
+                            <span class="text-[8px] font-bold text-content-muted">{{ vehicleForm.get('descripcion')?.value?.length || 0 }}/1000</span>
+                          </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 pt-4 pb-2">
+                          <input type="checkbox" formControlName="disponible" id="disp"
+                            class="w-5 h-5 rounded border-white/10 bg-surface-base text-action-primary focus:ring-action-primary outline-none cursor-pointer">
+                          <label for="disp" class="text-sm font-bold text-content-secondary cursor-pointer">Disponible para la venta</label>
+                        </div>
     
                             <!-- Gestion de Imagenes -->
                             <div class="space-y-4 pt-4">
@@ -221,6 +269,7 @@ export class VehicleFormComponent implements OnInit {
   marcas = signal<Marca[]>([]);
   tipos = Object.values(TipoVehiculo);
   combustibles = Object.values(CombustibleVehiculo);
+  etiquetas = Object.values(EtiquetaMedioambiental);
 
   vehicleForm = this.fb.group({
     id_marca: [null as number | null, Validators.required],
@@ -234,7 +283,13 @@ export class VehicleFormComponent implements OnInit {
     color: ['', Validators.required],
     plazas: [5, [Validators.required, Validators.min(1)]],
     puertas: [5, [Validators.required, Validators.min(0)]],
-    disponible: [true]
+    disponible: [true],
+    matricula: ['', [Validators.required, Validators.pattern(/^[0-9]{4}[A-Z]{3}$|^[A-Z]{1,2}[0-9]{4}[A-Z]{1,2}$/)]],
+    fechaMatriculacion: ['', Validators.required],
+    vencimientoItv: ['', Validators.required],
+    etiquetaMedioambiental: [EtiquetaMedioambiental.C, Validators.required],
+    descripcion: ['', [Validators.maxLength(1000)]],
+    ciudad: ['', Validators.required]
   });
 
   selectedFiles = signal<File[]>([]);
@@ -272,7 +327,13 @@ export class VehicleFormComponent implements OnInit {
         color: this.vehicleToEdit.color,
         plazas: this.vehicleToEdit.plazas,
         puertas: this.vehicleToEdit.puertas,
-        disponible: this.vehicleToEdit.disponible
+        disponible: this.vehicleToEdit.disponible,
+        matricula: this.vehicleToEdit.matricula,
+        fechaMatriculacion: this.vehicleToEdit.fechaMatriculacion,
+        vencimientoItv: this.vehicleToEdit.vencimientoItv,
+        etiquetaMedioambiental: this.vehicleToEdit.etiquetaMedioambiental,
+        descripcion: this.vehicleToEdit.descripcion,
+        ciudad: this.vehicleToEdit.ciudad
       });
     }
   }
@@ -315,7 +376,13 @@ export class VehicleFormComponent implements OnInit {
         disponible: formVal.disponible,
         verificado: false,
         marca: { idMarca: formVal.id_marca },
-        vendedor: { id: user.id }
+        vendedor: { id: user.id },
+        matricula: formVal.matricula,
+        fechaMatriculacion: formVal.fechaMatriculacion,
+        vencimientoItv: formVal.vencimientoItv,
+        etiquetaMedioambiental: formVal.etiquetaMedioambiental,
+        descripcion: formVal.descripcion,
+        ciudad: formVal.ciudad
       };
 
       const request = this.editMode && this.vehicleToEdit
@@ -332,6 +399,7 @@ export class VehicleFormComponent implements OnInit {
                 this.finishSubmit();
               },
               error: (err) => {
+                console.error('Error al subir imágenes:', err);
                 this.ns.error('Vehículo guardado, pero hubo un error al subir las fotos');
                 this.finishSubmit();
               }
@@ -342,9 +410,20 @@ export class VehicleFormComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error al guardar vehículo:', err);
-          const errorMsg = err.error?.message || err.message || 'Error desconocido';
-          this.ns.error(`Error al procesar la solicitud: ${errorMsg}`);
           this.loading.set(false);
+          
+          let errorMsg = 'Error inesperado al procesar la solicitud';
+          
+          if (err.status === 409) {
+            // Caso específico para matrícula duplicada
+            errorMsg = typeof err.error === 'string' ? err.error : (err.error?.message || 'Ya existe un vehículo con esta matrícula.');
+          } else if (typeof err.error === 'string' && err.error.length < 200) {
+            errorMsg = err.error;
+          } else if (err.error?.message) {
+            errorMsg = err.error.message;
+          }
+
+          this.ns.error(errorMsg);
         }
       });
     }

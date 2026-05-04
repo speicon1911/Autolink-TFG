@@ -3,7 +3,7 @@ import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Vehicle } from '../../../core/models/vehicle.model';
+import { Vehicle, EtiquetaMedioambiental } from '../../../core/models/vehicle.model';
 import { VehicleService } from '../../../core/services/vehicle.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { VentaService } from '../../../core/services/venta.service';
@@ -181,7 +181,74 @@ import { ChatService } from '../../../core/services/chat.service';
                   </p>
                 </div>
               }
+              @if(vehicle()?.ciudad){
+                <div class="space-y-1 relative z-10">
+                  <span class="text-content-muted text-[10px] font-black uppercase tracking-widest opacity-60">Ubicación</span>
+                  <p class="text-vehicle-teal font-bold text-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    {{ vehicle()?.ciudad }}
+                  </p>
+                </div>
+              }
             </div>
+
+            <!-- Datos Técnicos Pro -->
+            <div class="bg-surface-card/40 border border-white/5 rounded-3xl p-6 grid grid-cols-2 gap-y-6">
+              <div class="flex items-center gap-4">
+                 <div [class]="'w-12 h-12 rounded-xl flex items-center justify-center shadow-lg font-black text-xs ' + getEtiquetaInfo(vehicle()?.etiquetaMedioambiental).color + ' ' + getEtiquetaInfo(vehicle()?.etiquetaMedioambiental).textColor">
+                    {{ getEtiquetaInfo(vehicle()?.etiquetaMedioambiental).text }}
+                 </div>
+                 <div>
+                   <p class="text-[10px] text-content-muted font-black uppercase tracking-widest">Distintivo</p>
+                   <p class="text-content-primary font-bold text-sm">DGT España</p>
+                 </div>
+              </div>
+
+              @if (vehicle()?.matricula) {
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-content-muted">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M7 8h10"/><path d="M7 12h10"/><path d="M7 16h10"/></svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] text-content-muted font-black uppercase tracking-widest">Matrícula</p>
+                    <p class="text-content-primary font-bold text-sm tracking-widest">{{ vehicle()?.matricula }}</p>
+                  </div>
+                </div>
+              }
+
+              @if (vehicle()?.fechaMatriculacion) {
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-content-muted">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 2v4"/><path d="M16 2v4"/></svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] text-content-muted font-black uppercase tracking-widest">1ª Matrícula</p>
+                    <p class="text-content-primary font-bold text-sm">{{ vehicle()?.fechaMatriculacion | date:'MM/yyyy' }}</p>
+                  </div>
+                </div>
+              }
+
+              @if (vehicle()?.vencimientoItv) {
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-content-muted">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  </div>
+                  <div>
+                    <p class="text-[10px] text-content-muted font-black uppercase tracking-widest">Vence ITV</p>
+                    <p [class.text-rose-500]="isItvExpired()" class="text-content-primary font-bold text-sm">{{ vehicle()?.vencimientoItv | date:'MM/yyyy' }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+
+            @if (vehicle()?.descripcion) {
+              <div class="space-y-3 pt-4 border-t border-white/5">
+                 <h3 class="text-xs font-black text-action-primary uppercase tracking-widest">Descripción del Vendedor</h3>
+                 <p class="text-content-secondary leading-relaxed text-sm whitespace-pre-wrap">
+                   {{ vehicle()?.descripcion }}
+                 </p>
+              </div>
+            }
 
             <div class="space-y-4">
               @if (isClient() && vehicle()?.disponible) {
@@ -525,5 +592,26 @@ export class VehicleDetailsComponent implements OnInit {
                 this.isSendingContact.set(false);
             }
         });
+    }
+
+    getEtiquetaInfo(e?: EtiquetaMedioambiental) {
+        switch (e) {
+          case EtiquetaMedioambiental.CERO: 
+            return { color: 'bg-[#0079C1]', text: 'CERO', textColor: 'text-white' };
+          case EtiquetaMedioambiental.ECO: 
+            return { color: 'bg-gradient-to-r from-[#8DB92E] to-[#0079C1]', text: 'ECO', textColor: 'text-white' };
+          case EtiquetaMedioambiental.C: 
+            return { color: 'bg-[#8DB92E]', text: 'C', textColor: 'text-white' };
+          case EtiquetaMedioambiental.B: 
+            return { color: 'bg-[#FFD700]', text: 'B', textColor: 'text-black' };
+          default: 
+            return { color: 'bg-content-muted/20', text: 'SIN ET.', textColor: 'text-content-muted' };
+        }
+    }
+
+    isItvExpired(): boolean {
+        const itv = this.vehicle()?.vencimientoItv;
+        if (!itv) return false;
+        return new Date(itv) < new Date();
     }
 }

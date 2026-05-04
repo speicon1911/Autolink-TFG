@@ -1,6 +1,6 @@
 package com.autolink.services.exceptions;
 
-public class MarcaNotFoundException extends RuntimeException{
+public class MarcaNotFoundException extends RuntimeException {
 
 	/**
 	 * 
@@ -11,7 +11,5 @@ public class MarcaNotFoundException extends RuntimeException{
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 
 }

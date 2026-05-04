@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ContactoDTO {
-    private String nombre;
-    private String email;
-    private String asunto;
-    private String mensaje;
+	private String nombre;
+	private String email;
+	private String asunto;
+	private String mensaje;
 }

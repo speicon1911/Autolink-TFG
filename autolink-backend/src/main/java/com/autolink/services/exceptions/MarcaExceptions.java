@@ -1,6 +1,6 @@
 package com.autolink.services.exceptions;
 
-public class MarcaExceptions extends RuntimeException{
+public class MarcaExceptions extends RuntimeException {
 
 	/**
 	 * 

@@ -13,28 +13,26 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    @Value("${app.cors.allowed-origin}")
-    private String corsAllowedOrigin;
+	@Value("${app.cors.allowed-origin}")
+	private String corsAllowedOrigin;
 
-    @Autowired
-    private WebSocketAuthInterceptor webSocketAuthInterceptor;
+	@Autowired
+	private WebSocketAuthInterceptor webSocketAuthInterceptor;
 
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic", "/queue");
-        config.setApplicationDestinationPrefixes("/app");
-        config.setUserDestinationPrefix("/user");
-    }
+	@Override
+	public void configureMessageBroker(MessageBrokerRegistry config) {
+		config.enableSimpleBroker("/topic", "/queue");
+		config.setApplicationDestinationPrefixes("/app");
+		config.setUserDestinationPrefix("/user");
+	}
 
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
-                .setAllowedOrigins(corsAllowedOrigin)
-                .withSockJS();
-    }
+	@Override
+	public void registerStompEndpoints(StompEndpointRegistry registry) {
+		registry.addEndpoint("/ws").setAllowedOrigins(corsAllowedOrigin).withSockJS();
+	}
 
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(webSocketAuthInterceptor);
-    }
+	@Override
+	public void configureClientInboundChannel(ChannelRegistration registration) {
+		registration.interceptors(webSocketAuthInterceptor);
+	}
 }

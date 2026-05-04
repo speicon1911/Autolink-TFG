@@ -48,7 +48,9 @@ export class VehicleService {
             verificado: 'verificado',
             filterDisp: 'filterDisp',
             filterVerif: 'filterVerif',
-            anioFabricacion: 'anioFabricacion'
+            anioFabricacion: 'anioFabricacion',
+            ciudad: 'ciudad',
+            etiqueta: 'etiqueta'
         };
 
         Object.keys(filtros).forEach(key => {

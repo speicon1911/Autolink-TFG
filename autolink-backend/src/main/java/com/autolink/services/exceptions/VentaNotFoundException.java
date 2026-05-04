@@ -1,6 +1,6 @@
 package com.autolink.services.exceptions;
 
-public class VentaNotFoundException extends RuntimeException{
+public class VentaNotFoundException extends RuntimeException {
 
 	/**
 	 * 
@@ -11,7 +11,5 @@ public class VentaNotFoundException extends RuntimeException{
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 
 }

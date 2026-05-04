@@ -24,60 +24,59 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Persona {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_persona")
-    private int id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_persona")
+	private int id;
 
-    @Column(length = 25)
-    private String nombre;
+	@Column(length = 25)
+	private String nombre;
 
-    @Column(length = 50)
-    private String apellidos;
+	@Column(length = 50)
+	private String apellidos;
 
-    @Column(unique = true)
-    private String DNI;
+	@Column(unique = true)
+	private String DNI;
 
-    @Column(unique = true, nullable = false, length = 100)
-    private String correo;
-    private String password;
+	@Column(unique = true, nullable = false, length = 100)
+	private String correo;
+	private String password;
 
-    @Column(name = "rol")
-    @Enumerated(EnumType.STRING)
-    private Rol rol;
+	@Column(name = "rol")
+	@Enumerated(EnumType.STRING)
+	private Rol rol;
 
-    // foto de perfil
-    @Column(name = "foto_perfil")
-    private String fotoPerfil;
-    
-    // --- CAMPOS ESPECÍFICOS (Antes en subclases) ---
+	// foto de perfil
+	@Column(name = "foto_perfil")
+	private String fotoPerfil;
 
-    // De Vendedor
-    private Integer telefono;
+	// --- CAMPOS ESPECÍFICOS (Antes en subclases) ---
 
-    // De Administrador
-    @Column(name = "salario_anual")
-    private Double salarioAnual;
+	// De Vendedor
+	private Integer telefono;
 
-    @Column(name = "ciudad_asignada")
-    private String ciudadAsignada;
-    
-    @Column(columnDefinition = "boolean default true", nullable = false)
-    private Boolean activo = true;
-    
-    // Conexiones a otras tablas
-    
-    @OneToMany(mappedBy = "vendedor")
-    @JsonIgnore // bloquea que aparezcan las ventas realizadas al buscar
-    private List<Venta> ventasRealizadas;
-    
-    @OneToMany(mappedBy = "cliente")
-    @JsonIgnore
-    private List<Venta> comprasRealizadas;
-    
-    @OneToMany(mappedBy = "vendedor")
-    @JsonIgnore
-    private List<Vehiculo> vehiculosEnStock;
+	// De Administrador
+	@Column(name = "salario_anual")
+	private Double salarioAnual;
 
- 
+	@Column(name = "ciudad_asignada")
+	private String ciudadAsignada;
+
+	@Column(columnDefinition = "boolean default true", nullable = false)
+	private Boolean activo = true;
+
+	// Conexiones a otras tablas
+
+	@OneToMany(mappedBy = "vendedor")
+	@JsonIgnore // bloquea que aparezcan las ventas realizadas al buscar
+	private List<Venta> ventasRealizadas;
+
+	@OneToMany(mappedBy = "cliente")
+	@JsonIgnore
+	private List<Venta> comprasRealizadas;
+
+	@OneToMany(mappedBy = "vendedor")
+	@JsonIgnore
+	private List<Vehiculo> vehiculosEnStock;
+
 }

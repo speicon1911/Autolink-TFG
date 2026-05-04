@@ -57,17 +57,17 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
 						// --- 1. AUTH & PÚBLICO ---
-						.requestMatchers("/auth/**").permitAll()
-						.requestMatchers(HttpMethod.GET, "/marcas").permitAll()
+						.requestMatchers("/auth/**").permitAll().requestMatchers(HttpMethod.GET, "/marcas").permitAll()
 						.requestMatchers(HttpMethod.GET, "/vehiculos/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/contacto").permitAll()
 
 						// --- 2. PERSONAS (PersonaController) ---
 						.requestMatchers(HttpMethod.GET, "/personas").hasRole("ADMINISTRADOR")
-						.requestMatchers(HttpMethod.GET, "/personas/vendedor", "/personas/cliente", "/personas/admin").hasRole("ADMINISTRADOR")
-						.requestMatchers(HttpMethod.PUT, "/personas/*/tipo-usuario").hasRole("ADMINISTRADOR")
-						.requestMatchers(HttpMethod.DELETE, "/personas/*").hasRole("ADMINISTRADOR")
-						.requestMatchers("/personas/**").authenticated() // Ver perfil propio y updatePerfil
+						.requestMatchers(HttpMethod.GET, "/personas/vendedor", "/personas/cliente", "/personas/admin")
+						.hasRole("ADMINISTRADOR").requestMatchers(HttpMethod.PUT, "/personas/*/tipo-usuario")
+						.hasRole("ADMINISTRADOR").requestMatchers(HttpMethod.DELETE, "/personas/*")
+						.hasRole("ADMINISTRADOR").requestMatchers("/personas/**").authenticated() // Ver perfil propio y
+																									// updatePerfil
 
 						// --- 3. VEHÍCULOS (VehiculoController) ---
 						.requestMatchers(HttpMethod.POST, "/vehiculos").hasAnyRole("VENDEDOR", "ADMINISTRADOR")
@@ -88,15 +88,16 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/ventas/cliente/**").authenticated()
 						.requestMatchers(HttpMethod.GET, "/ventas/vehiculo/**").hasAnyRole("VENDEDOR", "ADMINISTRADOR")
 						.requestMatchers(HttpMethod.POST, "/ventas").hasAnyRole("CLIENTE", "VENDEDOR", "ADMINISTRADOR")
-						.requestMatchers(HttpMethod.PUT, "/ventas/*/anular").hasAnyRole("CLIENTE", "VENDEDOR", "ADMINISTRADOR")
-						.requestMatchers(HttpMethod.PUT, "/ventas/*/completar").hasAnyRole("CLIENTE", "VENDEDOR", "ADMINISTRADOR")
+						.requestMatchers(HttpMethod.PUT, "/ventas/*/anular")
+						.hasAnyRole("CLIENTE", "VENDEDOR", "ADMINISTRADOR")
+						.requestMatchers(HttpMethod.PUT, "/ventas/*/completar")
+						.hasAnyRole("CLIENTE", "VENDEDOR", "ADMINISTRADOR")
 						.requestMatchers(HttpMethod.DELETE, "/ventas/*").hasRole("ADMINISTRADOR")
 
 						.requestMatchers(HttpMethod.POST, "/marcas").hasRole("ADMINISTRADOR")
 						.requestMatchers(HttpMethod.DELETE, "/marcas/*").hasRole("ADMINISTRADOR")
-						.requestMatchers("/ws/**").permitAll()
-						.requestMatchers("/error").permitAll()
-						.anyRequest().authenticated())
+						.requestMatchers("/ws/**").permitAll().requestMatchers("/error").permitAll().anyRequest()
+						.authenticated())
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();

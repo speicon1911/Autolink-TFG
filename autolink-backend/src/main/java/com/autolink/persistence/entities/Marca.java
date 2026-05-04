@@ -22,14 +22,14 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Marca {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_marca")
-    private int idMarca;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_marca")
+	private int idMarca;
 
-    private String nombre;
+	private String nombre;
 
-    @OneToMany(mappedBy = "marca")
-    @JsonIgnore
-    private List<Vehiculo> vehiculos;
+	@OneToMany(mappedBy = "marca")
+	@JsonIgnore
+	private List<Vehiculo> vehiculos;
 }

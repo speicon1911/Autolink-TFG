@@ -24,22 +24,22 @@ import com.autolink.services.dto.MarcaDTO;
 public class MarcaController {
 	@Autowired
 	private MarcaService marcaService;
-	
+
 	@GetMapping
-	public ResponseEntity<Page<MarcaDTO>> findAll(@RequestParam(defaultValue = "0") int page, 
-			@RequestParam(defaultValue = "10")  int size){
+	public ResponseEntity<Page<MarcaDTO>> findAll(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by("nombre").ascending());
 		return ResponseEntity.ok(this.marcaService.findAll(pageable));
 	}
-	
+
 	@PostMapping
 	public ResponseEntity<MarcaDTO> create(@RequestBody MarcaDTO marcaDTO) {
-	    return ResponseEntity.status(HttpStatus.CREATED).body(this.marcaService.createMarca(marcaDTO));
+		return ResponseEntity.status(HttpStatus.CREATED).body(this.marcaService.createMarca(marcaDTO));
 	}
 
 	@DeleteMapping("/{idMarca}")
 	public ResponseEntity<Void> delete(@PathVariable int idMarca) {
-	    this.marcaService.deleteMarca(idMarca);
-	    return ResponseEntity.noContent().build();
+		this.marcaService.deleteMarca(idMarca);
+		return ResponseEntity.noContent().build();
 	}
 }

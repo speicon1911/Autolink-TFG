@@ -1,6 +1,6 @@
 package com.autolink.services.exceptions;
 
-public class PersonaNotFoundException extends RuntimeException{
+public class PersonaNotFoundException extends RuntimeException {
 
 	/**
 	 * 
@@ -11,7 +11,5 @@ public class PersonaNotFoundException extends RuntimeException{
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 
 }

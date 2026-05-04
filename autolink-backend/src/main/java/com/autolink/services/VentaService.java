@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.autolink.persistence.entities.Persona;
@@ -15,7 +16,9 @@ import com.autolink.persistence.entities.enums.Rol;
 import com.autolink.persistence.repositories.PersonaRepository;
 import com.autolink.persistence.repositories.VehiculoRepository;
 import com.autolink.persistence.repositories.VentaRepository;
+import com.autolink.services.dto.NotificationDTO;
 import com.autolink.services.dto.VentaDTO;
+import com.autolink.services.exceptions.PersonaNotFoundException;
 import com.autolink.services.exceptions.VehiculoNotFoundException;
 import com.autolink.services.exceptions.VentaExceptions;
 import com.autolink.services.exceptions.VentaNotFoundException;
@@ -45,11 +48,7 @@ public class VentaService {
 	private org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
 
 	private void notifyUser(String email, String type, String message, Object data) {
-		com.autolink.services.dto.NotificationDTO notification = com.autolink.services.dto.NotificationDTO.builder()
-				.type(type)
-				.message(message)
-				.data(data)
-				.build();
+		NotificationDTO notification = NotificationDTO.builder().type(type).message(message).data(data).build();
 		messagingTemplate.convertAndSendToUser(email, "/queue/notifications", notification);
 	}
 
@@ -61,16 +60,13 @@ public class VentaService {
 	@Transactional
 	public List<VentaDTO> findByVendedor(int idVendedor) {
 		// Verificación de seguridad
-		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext()
-				.getAuthentication().getName();
-		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext()
-				.getAuthentication().getAuthorities().stream()
+		String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+		boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
 				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
 
 		// Buscar al vendedor para comparar el correo
 		Persona vendedor = personaRepository.findById(idVendedor)
-				.orElseThrow(
-						() -> new com.autolink.services.exceptions.PersonaNotFoundException("Vendedor no encontrado"));
+				.orElseThrow(() -> new PersonaNotFoundException("Vendedor no encontrado"));
 
 		if (!isAdmin && !vendedor.getCorreo().equals(currentUserEmail)) {
 			throw new VentaExceptions("No tienes permiso para ver las ventas de este usuario");
@@ -83,16 +79,13 @@ public class VentaService {
 	@Transactional
 	public List<VentaDTO> findByCliente(int idCliente) {
 		// Verificación de seguridad
-		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext()
-				.getAuthentication().getName();
-		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext()
-				.getAuthentication().getAuthorities().stream()
+		String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+		boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
 				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
 
 		// Buscar al cliente para comparar el correo
 		Persona cliente = personaRepository.findById(idCliente)
-				.orElseThrow(
-						() -> new com.autolink.services.exceptions.PersonaNotFoundException("Cliente no encontrado"));
+				.orElseThrow(() -> new PersonaNotFoundException("Cliente no encontrado"));
 
 		if (!isAdmin && !cliente.getCorreo().equals(currentUserEmail)) {
 			throw new VentaExceptions("No tienes permiso para ver las ventas de este usuario");
@@ -132,8 +125,8 @@ public class VentaService {
 
 		// Nueva validación: Comprobar si ya existe una oferta en progreso para este
 		// cliente y vehículo
-		if (this.ventaRepository.existsByCliente_IdAndVehiculo_IdVehiculoAndEstadoVenta(
-				clienteActual.getId(), vehiculoActual.getIdVehiculo(), EstadoVenta.EN_PROGRESO)) {
+		if (this.ventaRepository.existsByCliente_IdAndVehiculo_IdVehiculoAndEstadoVenta(clienteActual.getId(),
+				vehiculoActual.getIdVehiculo(), EstadoVenta.EN_PROGRESO)) {
 			throw new VentaExceptions(
 					"Ya has enviado una propuesta de compra para este vehículo que está pendiente de respuesta.");
 		}
@@ -157,8 +150,9 @@ public class VentaService {
 				vehiculoActual.getModelo(), venta.getPrecio());
 
 		// 3. Notificación en tiempo real
-		notifyUser(vendedorActual.getCorreo(), "OFFER_CREATED", 
-				"Has recibido una nueva oferta de " + clienteActual.getNombre() + " por el " + vehiculoActual.getModelo(), 
+		notifyUser(
+				vendedorActual.getCorreo(), "OFFER_CREATED", "Has recibido una nueva oferta de "
+						+ clienteActual.getNombre() + " por el " + vehiculoActual.getModelo(),
 				ventaMapper.toDto(ventaGuardada));
 
 		// 4. Devolvemos el resultado
@@ -172,10 +166,8 @@ public class VentaService {
 
 		// Verificación de seguridad: Solo el comprador, el vendedor o un admin pueden
 		// anular
-		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext()
-				.getAuthentication().getName();
-		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext()
-				.getAuthentication().getAuthorities().stream()
+		String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+		boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
 				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
 
 		if (!isAdmin && !venta.getVendedor().getCorreo().equals(currentUserEmail)
@@ -198,8 +190,10 @@ public class VentaService {
 		emailService.notificarOfertaCancelada(venta.getVendedor().getCorreo(), venta.getVehiculo().getModelo());
 		emailService.notificarOfertaCancelada(venta.getCliente().getCorreo(), venta.getVehiculo().getModelo());
 
-		notifyUser(venta.getVendedor().getCorreo(), "OFFER_CANCELLED", "Oferta cancelada para " + venta.getVehiculo().getModelo(), venta.getIdVenta());
-		notifyUser(venta.getCliente().getCorreo(), "OFFER_CANCELLED", "Oferta cancelada para " + venta.getVehiculo().getModelo(), venta.getIdVenta());
+		notifyUser(venta.getVendedor().getCorreo(), "OFFER_CANCELLED",
+				"Oferta cancelada para " + venta.getVehiculo().getModelo(), venta.getIdVenta());
+		notifyUser(venta.getCliente().getCorreo(), "OFFER_CANCELLED",
+				"Oferta cancelada para " + venta.getVehiculo().getModelo(), venta.getIdVenta());
 	}
 
 	@Transactional
@@ -212,10 +206,8 @@ public class VentaService {
 		}
 
 		// Verificación de seguridad
-		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext()
-				.getAuthentication().getName();
-		boolean isAdmin = org.springframework.security.core.context.SecurityContextHolder.getContext()
-				.getAuthentication().getAuthorities().stream()
+		String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+		boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
 				.anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
 
 		if (!isAdmin && !venta.getVendedor().getCorreo().equals(currentUserEmail)
@@ -236,8 +228,10 @@ public class VentaService {
 		emailService.notificarOfertaAceptada(venta.getCliente().getCorreo(), vehiculo.getModelo(), venta.getPrecio());
 		emailService.notificarOfertaAceptada(venta.getVendedor().getCorreo(), vehiculo.getModelo(), venta.getPrecio());
 
-		notifyUser(venta.getCliente().getCorreo(), "OFFER_ACCEPTED", "¡Oferta aceptada! El " + vehiculo.getModelo() + " es tuyo.", venta.getIdVenta());
-		notifyUser(venta.getVendedor().getCorreo(), "OFFER_ACCEPTED", "Venta confirmada para el " + vehiculo.getModelo(), venta.getIdVenta());
+		notifyUser(venta.getCliente().getCorreo(), "OFFER_ACCEPTED",
+				"¡Oferta aceptada! El " + vehiculo.getModelo() + " es tuyo.", venta.getIdVenta());
+		notifyUser(venta.getVendedor().getCorreo(), "OFFER_ACCEPTED",
+				"Venta confirmada para el " + vehiculo.getModelo(), venta.getIdVenta());
 
 		// 3. ANULAR automáticamente todas las demás ofertas EN_PROGRESO para este mismo
 		// vehículo
@@ -298,8 +292,10 @@ public class VentaService {
 					ventaGuardada.getPrecio());
 		}
 
-		notifyUser(ventaGuardada.getVendedor().getCorreo(), "OFFER_UPDATED", "Cambio en la oferta del " + ventaGuardada.getVehiculo().getModelo(), ventaMapper.toDto(ventaGuardada));
-		notifyUser(ventaGuardada.getCliente().getCorreo(), "OFFER_UPDATED", "Cambio en la oferta del " + ventaGuardada.getVehiculo().getModelo(), ventaMapper.toDto(ventaGuardada));
+		notifyUser(ventaGuardada.getVendedor().getCorreo(), "OFFER_UPDATED",
+				"Cambio en la oferta del " + ventaGuardada.getVehiculo().getModelo(), ventaMapper.toDto(ventaGuardada));
+		notifyUser(ventaGuardada.getCliente().getCorreo(), "OFFER_UPDATED",
+				"Cambio en la oferta del " + ventaGuardada.getVehiculo().getModelo(), ventaMapper.toDto(ventaGuardada));
 
 		return ventaMapper.toDto(ventaGuardada);
 	}
