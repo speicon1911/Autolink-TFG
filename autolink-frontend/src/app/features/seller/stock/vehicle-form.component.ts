@@ -32,17 +32,25 @@ import { ImagenVehiculo } from '../../../core/models/vehicle.model';
             <div class="space-y-1">
               <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Marca</label>
               <select formControlName="id_marca"
-                class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer">
+                class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer"
+                [class.border-feedback-error]="isFieldInvalid('id_marca')">
                 <option [value]="null">Selecciona una marca</option>
                 @for (m of marcas(); track m) {
                   <option [value]="m.idMarca">{{ m.nombre | formatEnum }}</option>
                 }
               </select>
+              @if (isFieldInvalid('id_marca')) {
+                <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('id_marca') }}</p>
+              }
             </div>
             <div class="space-y-1">
               <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Modelo</label>
               <input type="text" formControlName="modelo" placeholder="Ej: Golf GTI"
-                class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted">
+                class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted"
+                [class.border-feedback-error]="isFieldInvalid('modelo')">
+                @if (isFieldInvalid('modelo')) {
+                  <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('modelo') }}</p>
+                }
               </div>
             </div>
     
@@ -50,25 +58,37 @@ import { ImagenVehiculo } from '../../../core/models/vehicle.model';
               <div class="space-y-1">
                 <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Tipo de Vehículo</label>
                 <select formControlName="tipoVehiculo"
-                  class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer">
+                  class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer"
+                  [class.border-feedback-error]="isFieldInvalid('tipoVehiculo')">
                   @for (t of tipos; track t) {
                     <option [value]="t">{{ t | formatEnum }}</option>
                   }
                 </select>
+                @if (isFieldInvalid('tipoVehiculo')) {
+                  <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('tipoVehiculo') }}</p>
+                }
               </div>
               <div class="space-y-1">
                 <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Combustible</label>
                 <select formControlName="combustible"
-                  class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer">
+                  class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer"
+                  [class.border-feedback-error]="isFieldInvalid('combustible')">
                   @for (c of combustibles; track c) {
                     <option [value]="c">{{ c | formatEnum }}</option>
                   }
                 </select>
+                @if (isFieldInvalid('combustible')) {
+                  <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('combustible') }}</p>
+                }
               </div>
               <div class="space-y-1">
                 <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Año Fabricación</label>
                 <input type="number" formControlName="anioFabricacion" placeholder="Ej: 2024" min="1900" max="2100"
-                  class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                  class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all"
+                  [class.border-feedback-error]="isFieldInvalid('anioFabricacion')">
+                  @if (isFieldInvalid('anioFabricacion')) {
+                    <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('anioFabricacion') }}</p>
+                  }
                 </div>
               </div>
     
@@ -77,22 +97,38 @@ import { ImagenVehiculo } from '../../../core/models/vehicle.model';
                 <div class="space-y-1">
                   <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Precio (€)</label>
                   <input type="number" formControlName="precio"
-                    class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                    class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all"
+                    [class.border-feedback-error]="isFieldInvalid('precio')">
+                    @if (isFieldInvalid('precio')) {
+                      <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('precio') }}</p>
+                    }
                   </div>
                   <div class="space-y-1">
                     <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Kilometraje</label>
                     <input type="number" formControlName="kilometraje"
-                      class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                      class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all"
+                      [class.border-feedback-error]="isFieldInvalid('kilometraje')">
+                      @if (isFieldInvalid('kilometraje')) {
+                        <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('kilometraje') }}</p>
+                      }
                     </div>
                     <div class="space-y-1">
                       <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Potencia (CV)</label>
                       <input type="number" formControlName="potencia"
-                        class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                        class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all"
+                        [class.border-feedback-error]="isFieldInvalid('potencia')">
+                        @if (isFieldInvalid('potencia')) {
+                          <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('potencia') }}</p>
+                        }
                       </div>
                       <div class="space-y-1">
                         <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Color</label>
                         <input type="text" formControlName="color" placeholder="Blanco"
-                          class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted">
+                          class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted"
+                          [class.border-feedback-error]="isFieldInvalid('color')">
+                          @if (isFieldInvalid('color')) {
+                            <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('color') }}</p>
+                          }
                         </div>
                       </div>
     
@@ -100,58 +136,92 @@ import { ImagenVehiculo } from '../../../core/models/vehicle.model';
                         <div class="space-y-1">
                           <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Plazas</label>
                           <input type="number" formControlName="plazas"
-                            class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                            class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all"
+                            [class.border-feedback-error]="isFieldInvalid('plazas')">
+                            @if (isFieldInvalid('plazas')) {
+                              <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('plazas') }}</p>
+                            }
                           </div>
                           <div class="space-y-1">
                             <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Puertas</label>
                             <input type="number" formControlName="puertas"
-                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all"
+                              [class.border-feedback-error]="isFieldInvalid('puertas')">
+                              @if (isFieldInvalid('puertas')) {
+                                <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('puertas') }}</p>
+                              }
                         </div>
                       </div>
-
+ 
                         <!-- Technical Expansion -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/5">
                           <div class="space-y-1">
                             <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Matrícula</label>
                             <input type="text" formControlName="matricula" placeholder="1234BBB"
-                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all"
+                              [class.border-feedback-error]="isFieldInvalid('matricula')">
                             <p class="text-[8px] text-content-muted ml-1 italic">Formato: 1234BBB o Provincial</p>
+                            @if (isFieldInvalid('matricula')) {
+                              <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('matricula') }}</p>
+                            }
                           </div>
                           <div class="space-y-1">
                             <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Distintivo Ambiental DGT</label>
                             <select formControlName="etiquetaMedioambiental"
-                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer">
+                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all cursor-pointer"
+                              [class.border-feedback-error]="isFieldInvalid('etiquetaMedioambiental')">
                               @for (e of etiquetas; track e) {
                                 <option [value]="e">{{ e | formatEnum }}</option>
                               }
                             </select>
+                            @if (isFieldInvalid('etiquetaMedioambiental')) {
+                              <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('etiquetaMedioambiental') }}</p>
+                            }
                           </div>
                         </div>
-
+ 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div class="space-y-1">
                             <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Fecha 1ª Matriculación</label>
                             <input type="date" formControlName="fechaMatriculacion"
-                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all"
+                              [class.border-feedback-error]="isFieldInvalid('fechaMatriculacion')">
+                              @if (isFieldInvalid('fechaMatriculacion')) {
+                                <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('fechaMatriculacion') }}</p>
+                              }
                           </div>
                           <div class="space-y-1">
                             <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Vencimiento ITV</label>
                             <input type="date" formControlName="vencimientoItv"
-                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                              class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all"
+                              [class.border-feedback-error]="isFieldInvalid('vencimientoItv')">
+                              @if (isFieldInvalid('vencimientoItv')) {
+                                <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('vencimientoItv') }}</p>
+                              }
                           </div>
                         </div>
-
+ 
                         <div class="space-y-1">
                           <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Ubicación (Ciudad)</label>
                           <input type="text" formControlName="ciudad" placeholder="Ej: Madrid, Barcelona..."
-                            class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all">
+                            class="w-full bg-surface-base border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all"
+                            [class.border-feedback-error]="isFieldInvalid('ciudad')">
+                            @if (isFieldInvalid('ciudad')) {
+                              <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('ciudad') }}</p>
+                            }
                         </div>
-
+ 
                         <div class="space-y-1">
                           <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Descripción Detallada (Opcional)</label>
                           <textarea formControlName="descripcion" rows="4" placeholder="Detalla el estado, revisiones, extras..."
-                            class="w-full bg-surface-base border border-white/10 rounded-xl p-4 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all resize-none"></textarea>
-                          <div class="flex justify-end">
+                            class="w-full bg-surface-base border border-white/10 rounded-xl p-4 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all resize-none"
+                            [class.border-feedback-error]="isFieldInvalid('descripcion')"></textarea>
+                          <div class="flex justify-between">
+                            @if (isFieldInvalid('descripcion')) {
+                              <p class="text-[9px] text-feedback-error font-bold ml-1 animate-pulse">{{ getErrorMessage('descripcion') }}</p>
+                            } @else {
+                              <span></span>
+                            }
                             <span class="text-[8px] font-bold text-content-muted">{{ vehicleForm.get('descripcion')?.value?.length || 0 }}/1000</span>
                           </div>
                         </div>
@@ -226,8 +296,8 @@ import { ImagenVehiculo } from '../../../core/models/vehicle.model';
                                 class="flex-1 bg-white/10 hover:bg-white/20 text-content-secondary font-bold py-4 rounded-2xl transition-all">
                                 Cancelar
                               </button>
-                              <button type="submit" [disabled]="vehicleForm.invalid || loading()"
-                                class="flex-[2] btn-primary font-black py-4 rounded-2xl transition-all shadow-xl shadow-action-primary/20 active:scale-[0.98] flex items-center justify-center gap-2">
+                              <button type="submit" [disabled]="loading()"
+                                class="flex-[2] btn-primary font-black py-4 rounded-2xl transition-all shadow-xl shadow-action-primary/20 active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                                 @if (!loading()) {
                                   <span>{{ editMode ? 'Guardar Cambios' : 'Publicar Ahora' }}</span>
                                 }
@@ -350,16 +420,29 @@ export class VehicleFormComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.vehicleForm.valid) {
-      this.loading.set(true);
-      const user = this.authService.currentUser$();
-      if (!user) {
-        this.ns.error('Debes estar autenticado para realizar esta acción');
+    if (this.vehicleForm.invalid) {
+      this.vehicleForm.markAllAsTouched();
+      this.ns.error('Por favor, completa todos los campos obligatorios correctamente');
+      return;
+    }
+
+    this.loading.set(true);
+    const user = this.authService.currentUser$();
+    if (!user) {
+      this.ns.error('Debes estar autenticado para realizar esta acción');
+      this.loading.set(false);
+      return;
+    }
+
+      const formVal: any = this.vehicleForm.value;
+
+      // Validación extra: Fecha matriculación >= Año fabricación
+      const matriculacionYear = new Date(formVal.fechaMatriculacion).getUTCFullYear();
+      if (matriculacionYear < formVal.anioFabricacion) {
+        this.ns.error(`La fecha de matriculación no puede ser anterior al año de fabricación (${formVal.anioFabricacion})`);
         this.loading.set(false);
         return;
       }
-
-      const formVal: any = this.vehicleForm.value;
 
       // Clean up payload based on backend entity structure
       const vehicleData: any = {
@@ -426,7 +509,6 @@ export class VehicleFormComponent implements OnInit {
           this.ns.error(errorMsg);
         }
       });
-    }
   }
 
   private finishSubmit() {
@@ -541,5 +623,26 @@ export class VehicleFormComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.vehicleForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getErrorMessage(fieldName: string): string {
+    const field = this.vehicleForm.get(fieldName);
+    if (!field || !field.errors) return '';
+
+    if (field.errors['required']) return 'Este campo es obligatorio';
+    if (field.errors['min']) return `Valor mínimo: ${field.errors['min'].min}`;
+    if (field.errors['max']) return `Valor máximo: ${field.errors['max'].max}`;
+    if (field.errors['pattern']) {
+      if (fieldName === 'matricula') return 'Formato de matrícula no válido (ej: 1234BBB)';
+      return 'Formato no válido';
+    }
+    if (field.errors['maxlength']) return `Máximo ${field.errors['maxlength'].requiredLength} caracteres`;
+
+    return 'Campo no válido';
   }
 }

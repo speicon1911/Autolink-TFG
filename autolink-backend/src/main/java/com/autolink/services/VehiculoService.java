@@ -347,7 +347,14 @@ public class VehiculoService {
 			}
 		}
 
-		// 3. Validar Longitud Descripción
+		// 3. Validar que la fecha de matriculación no sea anterior al año de fabricación
+		if (v.getFechaMatriculacion() != null && v.getAnioFabricacion() != 0) {
+			if (v.getFechaMatriculacion().getYear() < v.getAnioFabricacion()) {
+				throw new VehiculoValidationException("La fecha de matriculación no puede ser anterior al año de fabricación (" + v.getAnioFabricacion() + ").");
+			}
+		}
+
+		// 4. Validar Longitud Descripción
 		if (v.getDescripcion() != null && v.getDescripcion().length() > 1000) {
 			throw new VehiculoValidationException("La descripción no puede exceder los 1000 caracteres.");
 		}
