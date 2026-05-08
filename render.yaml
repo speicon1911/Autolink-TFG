@@ -1,0 +1,62 @@
+services:
+  # 1. BASE DE DATOS (Servicio Privado)
+  - type: pvt
+    name: autolink-db
+    env: docker
+    dockerfilePath: ./autolink-db.Dockerfile
+    plan: free
+    envVars:
+      - key: MYSQL_ROOT_PASSWORD
+        sync: false # Se pedirá en el Dashboard de Render (Seguro)
+      - key: MYSQL_DATABASE
+        value: autolink
+    disk:
+      name: mariadb-data
+      mountPath: /var/lib/mysql
+      sizeGB: 1
+
+  # 2. BACKEND (Web Service)
+  - type: web
+    name: autolink-backend
+    env: docker
+    dockerContext: autolink-backend
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mariadb://autolink-db:3306/autolink?createDatabaseIfNotExist=true
+      - key: SPRING_DATASOURCE_USERNAME
+        value: root
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false # Se pedirá en el Dashboard de Render (Seguro)
+      - key: JWT_SECRET
+        sync: false # Se pedirá en el Dashboard de Render (Seguro)
+      - key: IMGBB_API_KEY
+        sync: false # Se pedirá en el Dashboard de Render (Seguro)
+      - key: IMGBB_API_URL
+        value: https://api.imgbb.com/1/upload
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USERNAME
+        sync: false # Se pedirá en el Dashboard de Render (Seguro)
+      - key: MAIL_PASSWORD
+        sync: false # Se pedirá en el Dashboard de Render (Seguro)
+      - key: ADMIN_EMAIL
+        sync: false # Se pedirá en el Dashboard de Render (Seguro)
+      - key: CORS_ALLOWED_ORIGIN
+        value: https://autolink-frontend.onrender.com
+
+  # 3. FRONTEND (Web Service)
+  - type: web
+    name: autolink-frontend
+    env: docker
+    dockerContext: autolink-frontend
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: BACKEND_URL
+        value: https://autolink-backend.onrender.com
