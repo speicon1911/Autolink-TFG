@@ -1,6 +1,6 @@
 services:
   # 1. BASE DE DATOS (Servicio Privado)
-  - type: pservice
+  - type: pserv
     name: autolink-db
     env: docker
     dockerfilePath: ./autolink-db.Dockerfile
