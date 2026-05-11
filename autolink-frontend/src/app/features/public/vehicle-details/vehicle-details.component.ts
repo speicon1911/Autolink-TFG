@@ -9,7 +9,6 @@ import { AuthService } from '../../../core/services/auth.service';
 import { VentaService } from '../../../core/services/venta.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Rol } from '../../../core/models/user.model';
-import { ContactoService } from '../../../core/services/contacto.service';
 import { ChatService } from '../../../core/services/chat.service';
 
 @Component({
@@ -347,55 +346,6 @@ import { ChatService } from '../../../core/services/chat.service';
       </div>
     }
 
-    <!-- Contact Modal -->
-    @if (showContactModal()) {
-      <div 
-        class="fixed inset-0 z-[100] bg-surface-base/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
-        (click)="closeContactModal()">
-        
-        <div 
-          class="bg-surface-card/90 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-8 lg:p-12 max-w-lg w-full shadow-2xl relative overflow-hidden animate-zoom-in"
-          (click)="$event.stopPropagation()">
-          
-          <!-- Background Glow -->
-          <div class="absolute top-0 right-0 w-64 h-64 bg-action-primary/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
-
-          <button (click)="closeContactModal()" class="absolute top-6 right-6 text-content-primary/40 hover:text-content-primary transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-
-          <div class="relative z-10 space-y-8">
-            <div class="space-y-2 text-center">
-              <h3 class="text-3xl font-black text-content-primary tracking-tight">Contactar con el Vendedor</h3>
-              <p class="text-action-primary font-medium whitespace-nowrap overflow-hidden text-ellipsis">Envía un mensaje sobre este {{ vehicle()?.modelo }}</p>
-            </div>
-
-            <div class="space-y-4">
-              <div class="space-y-2">
-                <label class="text-[10px] text-action-primary font-black uppercase tracking-widest px-1">Tu Mensaje</label>
-                <textarea 
-                  [(ngModel)]="contactMessage"
-                  rows="5"
-                  class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-content-primary placeholder:text-content-primary/20 outline-none focus:border-action-primary transition-all resize-none shadow-inner"
-                  placeholder="Escribe aquí tu consulta o interés por el vehículo..."></textarea>
-              </div>
-            </div>
-
-            <button 
-              (click)="sendContactMessage()"
-              [disabled]="isSendingContact() || !contactMessage().trim()"
-              class="btn-primary w-full text-surface-base font-black py-5 rounded-2xl transition-all shadow-2xl shadow-action-primary/30 active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed">
-              @if (isSendingContact()) {
-                <div class="w-6 h-6 border-3 border-surface-base/20 border-t-surface-base rounded-full animate-spin"></div>
-              } @else {
-                Enviar Mensaje
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              }
-            </button>
-          </div>
-        </div>
-      </div>
-    }
     `,
     styles: [`
     .animate-fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -413,7 +363,6 @@ export class VehicleDetailsComponent implements OnInit {
     private vehicleService = inject(VehicleService);
     public authService = inject(AuthService);
     private ventaService = inject(VentaService);
-    private contactoService = inject(ContactoService);
     private ns = inject(NotificationService);
     private chatService = inject(ChatService);
 
@@ -423,9 +372,6 @@ export class VehicleDetailsComponent implements OnInit {
     offerPrice = model(0);
     selectedImageIndex = signal(0);
     isLightboxOpen = signal(false);
-    showContactModal = signal(false);
-    contactMessage = model('');
-    isSendingContact = signal(false);
     tieneOfertaPendiente = signal(false);
 
     canContact = computed(() => {
@@ -557,42 +503,14 @@ export class VehicleDetailsComponent implements OnInit {
     }
 
     openContactModal() {
-        if (this.authService.isAuthenticated()) {
-            this.iniciarChat();
-        } else {
-            this.showContactModal.set(true);
-            document.body.style.overflow = 'hidden';
+        if (!this.authService.isAuthenticated()) {
+            this.ns.info('Debes iniciar sesión para contactar con el vendedor');
+            this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+            return;
         }
+        this.iniciarChat();
     }
 
-    closeContactModal() {
-        this.showContactModal.set(false);
-        this.contactMessage.set('');
-        if (!this.isLightboxOpen()) {
-            document.body.style.overflow = 'auto';
-        }
-    }
-
-    sendContactMessage() {
-        const v = this.vehicle();
-        const msg = this.contactMessage().trim();
-        
-        if (!v || !msg) return;
-
-        this.isSendingContact.set(true);
-        this.contactoService.enviarMensajeVehiculo(v.idVehiculo, msg).subscribe({
-            next: () => {
-                this.ns.success('Mensaje enviado al vendedor correctamente');
-                this.closeContactModal();
-                this.isSendingContact.set(false);
-            },
-            error: (err) => {
-                console.error('Error al enviar mensaje:', err);
-                this.ns.error('No se pudo enviar el mensaje. Inténtalo de nuevo.');
-                this.isSendingContact.set(false);
-            }
-        });
-    }
 
     getEtiquetaInfo(e?: EtiquetaMedioambiental) {
         switch (e) {
