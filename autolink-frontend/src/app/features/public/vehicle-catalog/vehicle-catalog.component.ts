@@ -151,11 +151,7 @@ import { ChatService } from '../../../core/services/chat.service';
                         </div>
                       }
                     </div>
-                    @if (v.descripcion) {
-                      <p class="text-content-secondary text-[10px] line-clamp-2 italic leading-relaxed">
-                        {{ v.descripcion }}
-                      </p>
-                    }
+
                     <button (click)="verDetalles(v)"
                       class="btn-primary w-full font-black py-3 rounded-xl transition-all shadow-xl shadow-action-primary/20 active:scale-[0.98] flex items-center justify-center gap-3 group/btn text-[10px] uppercase tracking-widest">
                       Ver Detalles

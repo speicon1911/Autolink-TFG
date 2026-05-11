@@ -1040,59 +1040,59 @@ insert into persona (nombre, apellidos, dni, correo, password, rol, telefono, sa
 -- 4. VEHÍCULOS (Se mantiene igual)
 INSERT INTO vehiculo (precio, plazas, potencia, puertas, kilometraje, color, combustible, tipo_vehiculo, id_marca, id_vendedor, modelo, disponible, verificado, anio_fabricacion, fecha_verificacion) VALUES 
 (28500, 5, 150, 5, 0, 'Blanco', 'DIESEL', 'SUV', 1, 2, 'RAV4', true, true, 2023, '2026-02-21'),
-(42000, 4, 250, 3, 15000, 'Negro', 'G98_SP', 'COUPE', 13, 2, 'M2', true, true, 2021, '2026-02-21'),
-(15000, 5, 95, 5, 60000, 'Gris', 'G95_SP', 'HATCHBACK', 8, 2, 'Polo', true, false, 2019, NULL),
-(210000, 2, 720, 2, 10, 'Rojo', 'G98_SP', 'SUPERCAR', 23, 3, 'F8 Tributo', true, false, 2024, NULL),
-(11500, 2, 119, 0, 0, 'Azul', 'G95_SP', 'MOTOCICLETA', 37, 3, 'MT-09', true, false, 2023, NULL);
+(42000, 4, 250, 3, 15000, 'Negro', 'GASOLINA', 'COUPE', 13, 2, 'M2', true, true, 2021, '2026-02-21'),
+(15000, 5, 95, 5, 60000, 'Gris', 'GASOLINA', 'HATCHBACK', 8, 2, 'Polo', true, false, 2019, NULL),
+(210000, 2, 720, 2, 10, 'Rojo', 'GASOLINA', 'SUPERCAR', 23, 3, 'F8 Tributo', true, false, 2024, NULL),
+(11500, 2, 119, 0, 0, 'Azul', 'GASOLINA', 'MOTOCICLETA', 37, 3, 'MT-09', true, false, 2023, NULL);
 
 INSERT INTO vehiculo (precio, plazas, potencia, puertas, kilometraje, color, combustible, tipo_vehiculo, id_marca, id_vendedor, modelo, disponible, verificado, anio_fabricacion, fecha_verificacion) VALUES 
 
 -- TOYOTA
 (24000, 5, 140, 5, 12000, 'Gris', 'DIESEL', 'SUV', 1, 2, 'Corolla Cross', true, true, 2022, '2026-02-20'),
-(18000, 5, 122, 5, 30000, 'Blanco', 'G95_SP', 'SEDAN', 1, 3, 'Corolla', true, false, 2021, NULL),
+(18000, 5, 122, 5, 30000, 'Blanco', 'GASOLINA', 'SEDAN', 1, 3, 'Corolla', true, false, 2021, NULL),
 
 -- FORD
 (32000, 5, 190, 5, 10000, 'Azul', 'DIESEL', 'SUV', 2, 2, 'Kuga', true, true, 2023, '2026-02-22'),
-(27000, 5, 155, 5, 22000, 'Rojo', 'G95_SP', 'SUV', 2, 3, 'Puma', true, false, 2022, NULL),
+(27000, 5, 155, 5, 22000, 'Rojo', 'GASOLINA', 'SUV', 2, 3, 'Puma', true, false, 2022, NULL),
 
 -- CHEVROLET
 (21000, 5, 130, 5, 40000, 'Negro', 'DIESEL', 'SUV', 3, 2, 'Captiva', true, false, 2020, NULL),
 
 -- HONDA
-(19500, 5, 129, 5, 28000, 'Gris', 'G95_SP', 'SEDAN', 4, 3, 'Civic', true, true, 2021, '2026-02-20'),
+(19500, 5, 129, 5, 28000, 'Gris', 'GASOLINA', 'SEDAN', 4, 3, 'Civic', true, true, 2021, '2026-02-20'),
 
 -- HYUNDAI
 (23000, 5, 150, 5, 18000, 'Blanco', 'DIESEL', 'SUV', 5, 2, 'Tucson', true, true, 2022, '2026-02-19'),
-(17000, 5, 100, 5, 35000, 'Azul', 'G95_SP', 'HATCHBACK', 5, 3, 'i30', true, false, 2021, NULL),
+(17000, 5, 100, 5, 35000, 'Azul', 'GASOLINA', 'HATCHBACK', 5, 3, 'i30', true, false, 2021, NULL),
 
 -- KIA
 (26000, 5, 160, 5, 14000, 'Negro', 'DIESEL', 'SUV', 6, 2, 'Sportage', true, true, 2023, '2026-02-18'),
 
 -- NISSAN
-(20000, 5, 140, 5, 26000, 'Gris', 'G95_SP', 'SUV', 7, 3, 'Qashqai', true, false, 2021, NULL),
+(20000, 5, 140, 5, 26000, 'Gris', 'GASOLINA', 'SUV', 7, 3, 'Qashqai', true, false, 2021, NULL),
 
 -- VOLKSWAGEN
-(22000, 5, 150, 5, 24000, 'Blanco', 'G95_SP', 'SUV', 8, 2, 'T-Roc', true, true, 2022, '2026-02-21'),
+(22000, 5, 150, 5, 24000, 'Blanco', 'GASOLINA', 'SUV', 8, 2, 'T-Roc', true, true, 2022, '2026-02-21'),
 (16000, 5, 110, 5, 50000, 'Rojo', 'DIESEL', 'HATCHBACK', 8, 3, 'Golf', true, false, 2019, NULL),
 
 -- MAZDA
-(25000, 5, 165, 5, 15000, 'Gris', 'G95_SP', 'SUV', 9, 2, 'CX-5', true, true, 2022, '2026-02-20'),
+(25000, 5, 165, 5, 15000, 'Gris', 'GASOLINA', 'SUV', 9, 2, 'CX-5', true, true, 2022, '2026-02-20'),
 
 -- RENAULT
-(17500, 5, 115, 5, 34000, 'Azul', 'G95_SP', 'SUV', 10, 3, 'Captur', true, false, 2020, NULL),
-(14000, 5, 95, 5, 45000, 'Blanco', 'G95_SP', 'HATCHBACK', 10, 2, 'Clio', true, false, 2019, NULL),
+(17500, 5, 115, 5, 34000, 'Azul', 'GASOLINA', 'SUV', 10, 3, 'Captur', true, false, 2020, NULL),
+(14000, 5, 95, 5, 45000, 'Blanco', 'GASOLINA', 'HATCHBACK', 10, 2, 'Clio', true, false, 2019, NULL),
 
 -- PEUGEOT
 (21000, 5, 130, 5, 30000, 'Gris', 'DIESEL', 'SUV', 11, 3, '3008', true, true, 2021, '2026-02-20'),
 
 -- FIAT
-(13000, 4, 85, 3, 42000, 'Rojo', 'G95_SP', 'HATCHBACK', 12, 2, '500', true, false, 2018, NULL),
+(13000, 4, 85, 3, 42000, 'Rojo', 'GASOLINA', 'HATCHBACK', 12, 2, '500', true, false, 2018, NULL),
 
 -- BMW
-(48000, 5, 258, 5, 12000, 'Negro', 'G98_SP', 'SEDAN', 13, 3, '330i', true, true, 2023, '2026-02-22'),
+(48000, 5, 258, 5, 12000, 'Negro', 'GASOLINA', 'SEDAN', 13, 3, '330i', true, true, 2023, '2026-02-22'),
 
 -- MERCEDES
-(52000, 5, 265, 5, 10000, 'Gris', 'G98_SP', 'SEDAN', 14, 2, 'C300', true, true, 2023, '2026-02-22'),
+(52000, 5, 265, 5, 10000, 'Gris', 'GASOLINA', 'SEDAN', 14, 2, 'C300', true, true, 2023, '2026-02-22'),
 
 -- AUDI
 (47000, 5, 245, 5, 17000, 'Blanco', 'DIESEL', 'SUV', 15, 3, 'Q5', true, true, 2022, '2026-02-21'),
@@ -1101,7 +1101,7 @@ INSERT INTO vehiculo (precio, plazas, potencia, puertas, kilometraje, color, com
 (60000, 5, 351, 5, 9000, 'Negro', 'ELECTRICO', 'SEDAN', 21, 2, 'Model 3', true, true, 2023, '2026-02-23'),
 
 -- PORSCHE
-(98000, 4, 350, 5, 8000, 'Gris', 'G98_SP', 'SUV', 18, 3, 'Cayenne', true, true, 2023, '2026-02-23'),
+(98000, 4, 350, 5, 8000, 'Gris', 'GASOLINA', 'SUV', 18, 3, 'Cayenne', true, true, 2023, '2026-02-23'),
 
 -- LAND ROVER
 (85000, 5, 300, 5, 12000, 'Verde', 'DIESEL', 'SUV', 19, 2, 'Range Rover Evoque', true, true, 2022, '2026-02-21'),
@@ -1110,12 +1110,12 @@ INSERT INTO vehiculo (precio, plazas, potencia, puertas, kilometraje, color, com
 (72000, 5, 296, 5, 15000, 'Negro', 'DIESEL', 'SUV', 20, 3, 'F-Pace', true, true, 2022, '2026-02-21'),
 
 -- MOTOS
-(9800, 2, 110, 0, 2000, 'Negro', 'G95_SP', 'MOTOCICLETA', 36, 3, 'Ninja 650', true, false, 2023, NULL),
-(7200, 2, 75, 0, 5000, 'Azul', 'G95_SP', 'MOTOCICLETA', 37, 2, 'YZF-R7', true, false, 2022, NULL),
-(6800, 2, 70, 0, 8000, 'Rojo', 'G95_SP', 'MOTOCICLETA', 38, 3, 'GSX-8S', true, false, 2022, NULL),
-(15500, 2, 150, 0, 3000, 'Naranja', 'G98_SP', 'MOTOCICLETA', 40, 2, '1290 Super Duke', true, false, 2023, NULL),
-(13500, 2, 120, 0, 4000, 'Negro', 'G98_SP', 'MOTOCICLETA', 41, 3, 'Street Triple', true, false, 2023, NULL),
-(17000, 2, 136, 0, 3500, 'Gris', 'G98_SP', 'MOTOCICLETA', 42, 2, 'S1000R', true, false, 2023, NULL);
+(9800, 2, 110, 0, 2000, 'Negro', 'GASOLINA', 'MOTOCICLETA', 36, 3, 'Ninja 650', true, false, 2023, NULL),
+(7200, 2, 75, 0, 5000, 'Azul', 'GASOLINA', 'MOTOCICLETA', 37, 2, 'YZF-R7', true, false, 2022, NULL),
+(6800, 2, 70, 0, 8000, 'Rojo', 'GASOLINA', 'MOTOCICLETA', 38, 3, 'GSX-8S', true, false, 2022, NULL),
+(15500, 2, 150, 0, 3000, 'Naranja', 'GASOLINA', 'MOTOCICLETA', 40, 2, '1290 Super Duke', true, false, 2023, NULL),
+(13500, 2, 120, 0, 4000, 'Negro', 'GASOLINA', 'MOTOCICLETA', 41, 3, 'Street Triple', true, false, 2023, NULL),
+(17000, 2, 136, 0, 3500, 'Gris', 'GASOLINA', 'MOTOCICLETA', 42, 2, 'S1000R', true, false, 2023, NULL);
 
 -- 5. VENTAS (Se mantiene igual)
 INSERT INTO venta (fecha, estado, precio, id_vendedor, id_cliente, id_vehiculo) VALUES 

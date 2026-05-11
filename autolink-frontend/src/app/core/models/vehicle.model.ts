@@ -1,6 +1,6 @@
 export enum CombustibleVehiculo {
-    G95_SP = 'G95_SP',
-    G98_SP = 'G98_SP',
+    GASOLINA = 'GASOLINA',
+    HIBRIDO = 'HIBRIDO',
     DIESEL = 'DIESEL',
     GLP = 'GLP',
     GNC = 'GNC',

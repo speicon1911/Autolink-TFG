@@ -9,6 +9,24 @@ export class FormatEnumPipe implements PipeTransform {
     if (!value || typeof value !== 'string') {
       return value;
     }
-    return value.replace(/_/g, ' ');
+
+    const mapping: { [key: string]: string } = {
+      'GASOLINA': 'Gasolina',
+      'HIBRIDO': 'Híbrido',
+      'DIESEL': 'Diésel',
+      'ELECTRICO': 'Eléctrico',
+      'GLP': 'GLP',
+      'GNC': 'GNC',
+      'HIDROGENO': 'Hidrógeno'
+    };
+
+    if (mapping[value]) {
+      return mapping[value];
+    }
+
+    // Fallback for other enums: replace underscores and title case
+    return value.split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   }
 }

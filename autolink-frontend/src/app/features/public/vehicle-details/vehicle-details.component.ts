@@ -112,7 +112,7 @@ import { ChatService } from '../../../core/services/chat.service';
               <p class="text-4xl font-black text-action-primary pt-4">{{ vehicle()?.precio | currency:'EUR' }}</p>
             </div>
 
-            <div class="grid grid-cols-2 gap-6 bg-white/5 backdrop-blur-md p-8 rounded-3xl border border-action-primary/20 shadow-xl relative overflow-hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white/5 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-action-primary/20 shadow-xl relative overflow-hidden">
               <div class="absolute top-0 right-0 w-32 h-32 bg-action-primary/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
               
               @if (vehicle()?.kilometraje !== undefined) {
@@ -192,7 +192,7 @@ import { ChatService } from '../../../core/services/chat.service';
             </div>
 
             <!-- Datos Técnicos Pro -->
-            <div class="bg-surface-card/40 border border-white/5 rounded-3xl p-6 grid grid-cols-2 gap-y-6">
+            <div class="bg-surface-card/40 border border-white/5 rounded-3xl p-6 grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-4">
               <div class="flex items-center gap-4">
                  <div [class]="'w-12 h-12 rounded-xl flex items-center justify-center shadow-lg font-black text-xs ' + getEtiquetaInfo(vehicle()?.etiquetaMedioambiental).color + ' ' + getEtiquetaInfo(vehicle()?.etiquetaMedioambiental).textColor">
                     {{ getEtiquetaInfo(vehicle()?.etiquetaMedioambiental).text }}
@@ -243,7 +243,7 @@ import { ChatService } from '../../../core/services/chat.service';
             @if (vehicle()?.descripcion) {
               <div class="space-y-3 pt-4 border-t border-white/5">
                  <h3 class="text-xs font-black text-action-primary uppercase tracking-widest">Descripción del Vendedor</h3>
-                 <p class="text-content-secondary leading-relaxed text-sm whitespace-pre-wrap">
+                 <p class="text-content-primary/90 leading-relaxed text-base whitespace-pre-wrap italic font-medium">
                    {{ vehicle()?.descripcion }}
                  </p>
               </div>
