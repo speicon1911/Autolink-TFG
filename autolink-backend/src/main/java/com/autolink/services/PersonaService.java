@@ -6,8 +6,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +22,7 @@ import com.autolink.persistence.entities.Persona;
 import com.autolink.persistence.entities.enums.Rol;
 import com.autolink.persistence.repositories.PersonaRepository;
 import com.autolink.persistence.repositories.VehiculoRepository;
+import com.autolink.services.dto.NotificationDTO;
 import com.autolink.services.dto.PersonaDTO;
 import com.autolink.services.exceptions.PersonaExceptions;
 import com.autolink.services.exceptions.PersonaNotFoundException;
@@ -44,6 +47,10 @@ public class PersonaService implements UserDetailsService {
 
 	@Autowired
 	private EmailService emailService;
+
+	@Autowired
+	@Lazy
+	private SimpMessagingTemplate messagingTemplate;
 
 	// tipos permitidos de imagenes
 	private static final List<String> TIPOS_PERMITIDOS = List.of("image/jpeg", "image/png", "image/webp");
@@ -194,9 +201,20 @@ public class PersonaService implements UserDetailsService {
 		// 1. Cambiamos el rol y guardamos
 		personaBD.setRol(nuevo);
 		Persona personaGuardada = this.personaRepository.save(personaBD);
-		// 2. Enviamos la notificación
+		
+		// 2. Enviamos la notificación por Email
 		emailService.notificarCambioRol(personaGuardada.getCorreo(), nuevo.name());
-		// 3. Devolvemos el DTO
+		
+		// 3. Notificamos por WebSocket para actualización en tiempo real en el frontend
+		NotificationDTO notification = NotificationDTO.builder()
+				.type("ROLE_UPDATED")
+				.message("Tu rol ha sido actualizado a: " + nuevo.name())
+				.data(nuevo.name())
+				.build();
+		
+		messagingTemplate.convertAndSendToUser(personaGuardada.getCorreo(), "/queue/notifications", notification);
+		
+		// 4. Devolvemos el DTO
 		return personaMapper.toDto(personaGuardada);
 	}
 

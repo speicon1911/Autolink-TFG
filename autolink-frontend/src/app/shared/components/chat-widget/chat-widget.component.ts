@@ -62,6 +62,18 @@ export class ChatWidgetComponent implements OnInit, OnDestroy, AfterViewChecked 
         this.chatService.resetRequest();
       }
     });
+
+    // Resetear estado al cerrar sesión
+    effect(() => {
+      if (!this.currentUser()) {
+        this.isOpen.set(false);
+        this.selectedContact.set(null);
+        this.contactos.set([]);
+        this.mensajes.set([]);
+        this.nuevoMensaje.set('');
+        this.totalUnread.set(0);
+      }
+    });
   }
 
   ngOnInit(): void {

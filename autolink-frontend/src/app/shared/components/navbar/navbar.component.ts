@@ -194,6 +194,11 @@ import { NgOptimizedImage } from '@angular/common';
                 </button>
               }
             </div>
+            @if (isDaltonismModeActive()) {
+              <button (click)="setTheme('normal'); closeMobileMenu()" class="w-full mt-2 text-center px-4 py-2 rounded-lg text-[10px] font-bold text-feedback-error bg-feedback-error/10 hover:bg-feedback-error/20 transition-colors uppercase tracking-widest border border-feedback-error/20">
+                Restablecer Filtros de Daltonismo
+              </button>
+            }
           </div>
 
           <!-- Legal Links -->

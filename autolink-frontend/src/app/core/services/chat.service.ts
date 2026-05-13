@@ -90,7 +90,14 @@ export class ChatService {
   private disconnect() {
     if (this.stompClient) {
       this.stompClient.deactivate();
+      this.stompClient = null;
       this.connected.set(false);
+
+      // Limpiar estados para evitar fugas de datos entre sesiones
+      this.mensajesNuevosSubject.next(null);
+      this.requestedContact.set(null);
+      this.ofertasSubject.next(null);
+      this.vehiculosSubject.next(null);
     }
   }
 
@@ -110,14 +117,24 @@ export class ChatService {
       }
     });
 
-    // 2. Notificaciones privadas (Ofertas)
+    // 2. Notificaciones privadas (Ofertas y Cambios de Rol)
     this.stompClient.subscribe(`/user/queue/notifications`, (message: IMessage) => {
       if (message.body) {
         try {
           const note = JSON.parse(message.body);
-          this.ofertasSubject.next(note);
+
+          if (note.type === 'ROLE_UPDATED') {
+            // Primero refrescamos...
+            this.authService.refreshUserSession().subscribe(() => {
+              // ...y SOLO cuando haya terminado el refresco, recargamos la página
+              window.location.reload();
+            });
+          }
+          else {
+            this.ofertasSubject.next(note);
+          }
         } catch (e) {
-          console.error('Error parseando notificación oferta:', e);
+          console.error('Error parseando notificación:', e);
         }
       }
     });

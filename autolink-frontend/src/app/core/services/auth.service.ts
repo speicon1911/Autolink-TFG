@@ -163,6 +163,50 @@ export class AuthService {
         this.currentUser.set(user);
     }
 
+    refreshUserSession(): Observable<User | null> {
+        const refresh = this.getRefreshToken();
+        if (!refresh) return of(null);
+
+        return this.refreshToken(refresh).pipe(
+            switchMap(response => this.handleAuthentication(response)),
+            tap(user => {
+                if (user) {
+                    this.checkRoutePermissions(user.rol);
+                }
+            }),
+            catchError(() => {
+                this.logout();
+                return of(null);
+            })
+        );
+    }
+
+    private checkRoutePermissions(role: Rol) {
+        const url = this.router.url;
+        console.log('Verificando permisos para URL:', url, 'con nuevo rol:', role);
+        
+        // Normalizar la URL (quitar parámetros de consulta)
+        const path = url.split('?')[0];
+
+        // Definir si la ruta actual es restringida
+        const isVendedorRoute = path.startsWith('/vendedor');
+        const isAdminRoute = path.startsWith('/admin');
+        const isClienteRoute = path.startsWith('/cliente');
+
+        if (isVendedorRoute && role !== Rol.VENDEDOR && role !== Rol.ADMINISTRADOR) {
+            console.log('REDIRECCIÓN: Usuario ya no es vendedor. Enviando a catálogo.');
+            this.router.navigate(['/']);
+        }
+        else if (isAdminRoute && role !== Rol.ADMINISTRADOR) {
+            console.log('REDIRECCIÓN: Usuario ya no es administrador. Enviando a catálogo.');
+            this.router.navigate(['/']);
+        }
+        else if (isClienteRoute && role === Rol.ADMINISTRADOR) {
+            // Un admin quizás no debería estar en la zona de cliente (opcional)
+            // this.router.navigate(['/admin']);
+        }
+    }
+
     getAccessToken(): string | null {
         return typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
     }
