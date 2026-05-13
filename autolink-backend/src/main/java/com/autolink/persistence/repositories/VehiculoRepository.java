@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import com.autolink.persistence.entities.Vehiculo;
 import com.autolink.persistence.entities.enums.CombustibleVehiculo;
 import com.autolink.persistence.entities.enums.EtiquetaMedioambiental;
+import com.autolink.persistence.entities.enums.EstadoVerificacion;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 
 import jakarta.transaction.Transactional;
@@ -38,12 +39,16 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
 			+ "(:etiqueta IS NULL OR v.etiquetaMedioambiental = :etiqueta) AND "
 			+ "(:aplicarDisp = false OR v.disponible = :disponible) AND "
 			+ "(:aplicarVerif = false OR v.verificado = :verificado)")
-	Page<Vehiculo> buscarConFiltros(@Param("marca") String marca, @Param("modelo") String modelo, @Param("tipo") TipoVehiculo tipo, 
-			@Param("combustible") CombustibleVehiculo combustible, @Param("color") String color, @Param("minPotencia") Integer minPotencia, 
-			@Param("maxPrecio") Integer maxPrecio, @Param("maxKm") Integer maxKm, @Param("plazas") Integer plazas, 
-			@Param("anioFabricacion") Integer anioFabricacion, @Param("ciudad") String ciudad, @Param("etiqueta") EtiquetaMedioambiental etiqueta, 
-			@Param("disponible") boolean disponible, @Param("aplicarDisp") boolean aplicarDisp, 
-			@Param("verificado") boolean verificado, @Param("aplicarVerif") boolean aplicarVerif, Pageable pageable);
+	Page<Vehiculo> buscarConFiltros(@Param("marca") String marca, @Param("modelo") String modelo,
+			@Param("tipo") TipoVehiculo tipo,
+			@Param("combustible") CombustibleVehiculo combustible, @Param("color") String color,
+			@Param("minPotencia") Integer minPotencia,
+			@Param("maxPrecio") Integer maxPrecio, @Param("maxKm") Integer maxKm, @Param("plazas") Integer plazas,
+			@Param("anioFabricacion") Integer anioFabricacion, @Param("ciudad") String ciudad,
+			@Param("etiqueta") EtiquetaMedioambiental etiqueta,
+			@Param("disponible") boolean disponible, @Param("aplicarDisp") boolean aplicarDisp,
+			@Param("verificado") EstadoVerificacion verificado, @Param("aplicarVerif") boolean aplicarVerif,
+			Pageable pageable);
 
 	// paginar los vehiculos de un vendedor
 	Page<Vehiculo> findByVendedorId(int idVendedor, Pageable pageable);

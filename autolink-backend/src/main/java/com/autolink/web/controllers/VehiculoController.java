@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.autolink.persistence.entities.Vehiculo;
 import com.autolink.persistence.entities.enums.CombustibleVehiculo;
 import com.autolink.persistence.entities.enums.EtiquetaMedioambiental;
+import com.autolink.persistence.entities.enums.EstadoVerificacion;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 import com.autolink.services.VehiculoService;
 import com.autolink.services.dto.VehiculoDTO;
@@ -63,7 +64,7 @@ public class VehiculoController {
 			@RequestParam(required = false) String ciudad,
 			@RequestParam(required = false) EtiquetaMedioambiental etiqueta,
 			@RequestParam(defaultValue = "false") boolean disponible,
-			@RequestParam(defaultValue = "false") boolean verificado,
+			@RequestParam(required = false) EstadoVerificacion verificado,
 			@RequestParam(required = false) Boolean filterDisp, @RequestParam(required = false) Boolean filterVerif,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 		boolean aplicarDisp = (filterDisp != null);
@@ -96,7 +97,7 @@ public class VehiculoController {
 	}
 
 	@PutMapping("/{idVehiculo}/verificado")
-	public ResponseEntity<?> updateVerificado(@PathVariable int idVehiculo, @RequestBody Boolean verificado) {
+	public ResponseEntity<?> updateVerificado(@PathVariable int idVehiculo, @RequestBody EstadoVerificacion verificado) {
 		return ResponseEntity.ok(this.vehiculoService.updateVerificado(verificado, idVehiculo));
 	}
 

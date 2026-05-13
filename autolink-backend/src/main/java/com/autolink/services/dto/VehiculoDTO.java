@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.autolink.persistence.entities.enums.CombustibleVehiculo;
 import com.autolink.persistence.entities.enums.EtiquetaMedioambiental;
+import com.autolink.persistence.entities.enums.EstadoVerificacion;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class VehiculoDTO {
 	private String modelo;
 	private int anioFabricacion;
 	private Boolean disponible;
-	private Boolean verificado;
+	private EstadoVerificacion verificado;
 	private LocalDate fechaVerificacion;
 	private PersonaDTO vendedor;
 	private String matricula;

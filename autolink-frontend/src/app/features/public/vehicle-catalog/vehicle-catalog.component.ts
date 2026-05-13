@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { VehicleService } from '../../../core/services/vehicle.service';
-import { Vehicle, Marca, TipoVehiculo, CombustibleVehiculo, EtiquetaMedioambiental } from '../../../core/models/vehicle.model';
+import { Vehicle, Marca, TipoVehiculo, CombustibleVehiculo, EtiquetaMedioambiental, EstadoVerificacion } from '../../../core/models/vehicle.model';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -105,7 +105,7 @@ import { ChatService } from '../../../core/services/chat.service';
                       </div>
                     }
                     
-                    @if (v.verificado) {
+                    @if (v.verificado === 'VERIFICADO') {
                       <div class="absolute top-5 right-5 bg-status-success text-surface-base text-[10px] font-black px-3 py-1.5 rounded-full shadow-2xl flex items-center gap-1.5 z-10 transition-transform duration-300 group-hover:scale-105">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                         VERIFICADO
@@ -373,7 +373,7 @@ export class VehicleCatalogComponent implements OnInit, OnDestroy {
     minPotencia: null as number | null,
     plazas: null as number | null,
     disponible: true,
-    verificado: null as boolean | null,
+    verificado: null as EstadoVerificacion | null,
     anioFabricacion: null as number | null,
     ciudad: '',
     etiqueta: '' as any
@@ -452,7 +452,7 @@ export class VehicleCatalogComponent implements OnInit, OnDestroy {
   }
 
   toggleVerificado() {
-    this.filtros.verificado = this.filtros.verificado ? null : true;
+    this.filtros.verificado = this.filtros.verificado ? null : EstadoVerificacion.VERIFICADO;
     this.currentPage.set(0);
     this.fetchVehiculos();
   }

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VehicleService } from '../../../core/services/vehicle.service';
-import { Vehicle } from '../../../core/models/vehicle.model';
+import { Vehicle, EstadoVerificacion } from '../../../core/models/vehicle.model';
 import { NotificationService } from '../../../core/services/notification.service';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
@@ -96,7 +96,7 @@ export class AdminVerificationsComponent implements OnInit {
   cargarPendientes() {
     this.loading.set(true);
     // Usamos buscarVehiculos con filtro de no verificado
-    const filtros = { verificado: false };
+    const filtros = { verificado: EstadoVerificacion.PENDIENTE };
 
     this.vehicleService.buscarVehiculos(filtros, this.currentPage(), this.itemsPerPage).subscribe({
       next: (response) => {
@@ -112,8 +112,9 @@ export class AdminVerificationsComponent implements OnInit {
     });
   }
 
-  verify(id: number, status: boolean) {
+  verify(id: number, approved: boolean) {
     this.isProcessing.set(true);
+    const status = approved ? EstadoVerificacion.VERIFICADO : EstadoVerificacion.RECHAZADO;
     this.vehicleService.verificarVehiculo(id, status).subscribe({
       next: () => {
         this.ns.success(status ? 'Vehículo verificado con éxito' : 'Vehículo rechazado');

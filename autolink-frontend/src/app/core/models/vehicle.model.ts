@@ -43,6 +43,12 @@ export enum EtiquetaMedioambiental {
     SIN_ETIQUETA = 'SIN_ETIQUETA'
 }
 
+export enum EstadoVerificacion {
+    PENDIENTE = 'PENDIENTE',
+    VERIFICADO = 'VERIFICADO',
+    RECHAZADO = 'RECHAZADO'
+}
+
 export interface Vehicle {
     idVehiculo: number;
     precio: number;
@@ -57,7 +63,7 @@ export interface Vehicle {
     modelo?: string;
     anioFabricacion: number;
     disponible: boolean;
-    verificado: boolean;
+    verificado: EstadoVerificacion;
     fechaVerificacion?: string;
     vendedor?: any;
     imagenes?: ImagenVehiculo[];

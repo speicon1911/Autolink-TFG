@@ -3,7 +3,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
 
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { VehicleService } from '../../../core/services/vehicle.service';
-import { Vehicle, Marca, TipoVehiculo, CombustibleVehiculo, EtiquetaMedioambiental } from '../../../core/models/vehicle.model';
+import { Vehicle, Marca, TipoVehiculo, CombustibleVehiculo, EtiquetaMedioambiental, EstadoVerificacion } from '../../../core/models/vehicle.model';
 import { NotificationService } from '../../../core/services/notification.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
@@ -457,7 +457,7 @@ export class VehicleFormComponent implements OnInit {
         tipoVehiculo: formVal.tipoVehiculo,
         combustible: formVal.combustible,
         disponible: formVal.disponible,
-        verificado: false,
+        verificado: EstadoVerificacion.PENDIENTE,
         marca: { idMarca: formVal.id_marca },
         vendedor: { id: user.id },
         matricula: formVal.matricula,

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.autolink.persistence.entities.enums.CombustibleVehiculo;
 import com.autolink.persistence.entities.enums.EtiquetaMedioambiental;
+import com.autolink.persistence.entities.enums.EstadoVerificacion;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 
 import jakarta.persistence.CascadeType;
@@ -67,7 +68,8 @@ public class Vehiculo {
 
 	private Boolean disponible;
 
-	private Boolean verificado;
+	@Enumerated(EnumType.STRING)
+	private EstadoVerificacion verificado;
 
 	@Column(name = "fecha_verificacion")
 	private LocalDate fechaVerificacion;

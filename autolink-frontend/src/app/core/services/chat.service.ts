@@ -5,7 +5,7 @@ import { Mensaje, ConversacionResumen } from '../models/mensaje.model';
 import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { environment } from '../../../environments/environment';
-import { BehaviorSubject, Observable, filter, map, catchError, of } from 'rxjs';
+import { BehaviorSubject, Subject, Observable, filter, map, catchError, of } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -30,10 +30,10 @@ export class ChatService {
   public externalChatRequest = this.requestedContact.asReadonly();
 
   // Notificaciones de ofertas y vehículos
-  private ofertasSubject = new BehaviorSubject<any>(null);
+  private ofertasSubject = new Subject<any>();
   public ofertasUpdates$ = this.ofertasSubject.asObservable().pipe(filter(o => o !== null));
 
-  private vehiculosSubject = new BehaviorSubject<any>(null);
+  private vehiculosSubject = new Subject<any>();
   public vehiculosUpdates$ = this.vehiculosSubject.asObservable().pipe(filter(v => v !== null));
 
   constructor() {

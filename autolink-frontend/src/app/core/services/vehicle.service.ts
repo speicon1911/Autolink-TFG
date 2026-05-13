@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Vehicle, Marca } from '../models/vehicle.model';
+import { Vehicle, Marca, EstadoVerificacion } from '../models/vehicle.model';
 import { PaginatedResponse } from '../models/pagination.model';
 import { environment } from '../../../environments/environment';
 
@@ -86,8 +86,11 @@ export class VehicleService {
         return this.http.put(`${this.apiUrl}/vehiculos/${id}/disponible`, disponible);
     }
 
-    verificarVehiculo(id: number, verificado: boolean): Observable<any> {
-        return this.http.put(`${this.apiUrl}/vehiculos/${id}/verificado`, verificado);
+    verificarVehiculo(id: number, verificado: EstadoVerificacion): Observable<any> {
+        // Al ser un enum (string) lo enviamos como JSON string con comillas si es necesario
+        return this.http.put(`${this.apiUrl}/vehiculos/${id}/verificado`, `"${verificado}"`, {
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 
     deleteVehiculo(id: number): Observable<void> {

@@ -30,14 +30,14 @@ public class GlobalExceptionHandler {
 	// --- EXCEPCIONES DE SEGURIDAD ---
 
 	@ExceptionHandler(AuthenticationException.class)
-	public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario o contraseña incorrectos.");
+	public ResponseEntity<Map<String, String>> handleAuthenticationException(AuthenticationException ex) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Usuario o contraseña incorrectos."));
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
-	public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+	public ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException ex) {
 		return ResponseEntity.status(HttpStatus.FORBIDDEN)
-				.body("No tienes permisos suficientes para realizar esta acción.");
+				.body(Map.of("message", "No tienes permisos suficientes para realizar esta acción."));
 	}
 
 	// --- EXCEPCIONES DE PARÁMETROS ---
@@ -50,20 +50,20 @@ public class GlobalExceptionHandler {
 	// --- EXCEPCIONES DE PERSONAS ---
 
 	@ExceptionHandler(PersonaExceptions.class)
-	public ResponseEntity<String> handlePersonaExceptions(PersonaExceptions ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	public ResponseEntity<Map<String, String>> handlePersonaExceptions(PersonaExceptions ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
 	}
 
 	@ExceptionHandler(PersonaNotFoundException.class)
-	public ResponseEntity<String> handlePersonaNotFoundException(PersonaNotFoundException ex) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	public ResponseEntity<Map<String, String>> handlePersonaNotFoundException(PersonaNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
 	}
 
 	// --- EXCEPCIONES DE VEHÍCULOS ---
 
 	@ExceptionHandler(VehiculoNotFoundException.class)
-	public ResponseEntity<String> handleVehiculoNotFound(VehiculoNotFoundException ex) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	public ResponseEntity<Map<String, String>> handleVehiculoNotFound(VehiculoNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
 	}
 
 	@ExceptionHandler(VehiculoExceptions.class)
@@ -84,52 +84,52 @@ public class GlobalExceptionHandler {
 	// --- EXCEPCIONES DE VENTAS ---
 
 	@ExceptionHandler(VentaNotFoundException.class)
-	public ResponseEntity<String> handleVentaNotFound(VentaNotFoundException ex) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	public ResponseEntity<Map<String, String>> handleVentaNotFound(VentaNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
 	}
 
 	@ExceptionHandler(VentaExceptions.class)
-	public ResponseEntity<String> handleVentaExceptions(VentaExceptions ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	public ResponseEntity<Map<String, String>> handleVentaExceptions(VentaExceptions ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
 	}
 
 	// --- EXCEPCIONES DE MARCAS ---
 
 	@ExceptionHandler(MarcaNotFoundException.class)
-	public ResponseEntity<String> handleMarcaNotFound(MarcaNotFoundException ex) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	public ResponseEntity<Map<String, String>> handleMarcaNotFound(MarcaNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
 	}
 
 	@ExceptionHandler(MarcaExceptions.class)
-	public ResponseEntity<String> handleMarcaExceptions(MarcaExceptions ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	public ResponseEntity<Map<String, String>> handleMarcaExceptions(MarcaExceptions ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
 	}
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(
-				"Error de integridad de datos: Es posible que el registro esté siendo utilizado por otras entidades.");
+	public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message",
+				"Error de integridad de datos: Es posible que el registro esté siendo utilizado por otras entidades."));
 	}
 
 	// --- EXCEPCIONES DE ARCHIVOS / SUBIDA ---ç
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
-	public ResponseEntity<String> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+	public ResponseEntity<Map<String, String>> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
 		return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-				.body("El archivo es demasiado grande. El límite máximo permitido es de 5MB por foto.");
+				.body(Map.of("message", "El archivo es demasiado grande. El límite máximo permitido es de 5MB por foto."));
 	}
 
 	@ExceptionHandler(IOException.class)
-	public ResponseEntity<String> handleIOException(IOException ex) {
+	public ResponseEntity<Map<String, String>> handleIOException(IOException ex) {
 		ex.printStackTrace(); // Log the error for the developer
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body("Error al procesar el archivo o al conectar con el servidor de imágenes: " + ex.getMessage());
+				.body(Map.of("message", "Error al procesar el archivo o al conectar con el servidor de imágenes: " + ex.getMessage()));
 	}
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<String> handleGenericException(Exception ex) {
+	public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
 		ex.printStackTrace(); // Log the error for the developer
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body("Ha ocurrido un error inesperado: " + ex.getMessage());
+				.body(Map.of("message", "Ha ocurrido un error inesperado: " + ex.getMessage()));
 	}
 
 }

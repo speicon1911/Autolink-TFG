@@ -113,12 +113,11 @@ import { PaginatedResponse } from '../../../core/models/pagination.model';
                       <div class="flex items-center justify-end gap-3">
                         <div class="relative w-36 group/select">
                           <select
-                            [value]="u.rol"
                             (change)="onRolChange(u, $event)"
                             class="appearance-none w-full bg-surface-base/50 border border-white/10 text-content-primary text-[11px] font-bold rounded-lg focus:ring-2 focus:ring-action-primary outline-none block p-2 pr-8 cursor-pointer hover:bg-surface-base transition-all"
                             >
                             @for (r of roles; track r) {
-                              <option [value]="r" class="bg-surface-card text-content-primary">{{ r | formatEnum }}</option>
+                              <option [value]="r" [selected]="r === u.rol" class="bg-surface-card text-content-primary">{{ r | formatEnum }}</option>
                             }
                           </select>
                           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-action-primary">

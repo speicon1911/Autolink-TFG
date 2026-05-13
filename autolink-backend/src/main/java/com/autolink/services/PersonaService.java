@@ -81,8 +81,18 @@ public class PersonaService implements UserDetailsService {
 	}
 
 	public PersonaDTO createPersona(Persona persona) {
-		if (persona.getDNI() != null && this.personaRepository.existsByDNI(persona.getDNI())) {
-			throw new PersonaExceptions("El DNI " + persona.getDNI() + " ya está registrado.");
+		// Validaciones básicas
+		if (persona.getDNI() != null) {
+			if (persona.getDNI().length() != 9) {
+				throw new PersonaExceptions("El DNI debe tener exactamente 9 caracteres.");
+			}
+			if (this.personaRepository.existsByDNI(persona.getDNI())) {
+				throw new PersonaExceptions("El DNI " + persona.getDNI() + " ya está registrado.");
+			}
+		}
+
+		if (persona.getTelefono() != null && this.personaRepository.existsByTelefono(persona.getTelefono())) {
+			throw new PersonaExceptions("El número de teléfono " + persona.getTelefono() + " ya está en uso.");
 		}
 
 		Optional<Persona> existenteOpt = this.personaRepository.findByCorreo(persona.getCorreo());
@@ -92,20 +102,17 @@ public class PersonaService implements UserDetailsService {
 			if (Boolean.TRUE.equals(existente.getActivo())) {
 				throw new PersonaExceptions("El correo " + persona.getCorreo() + " ya está registrado.");
 			} else {
+				// Reactivación de usuario
 				existente.setNombre(persona.getNombre());
 				existente.setApellidos(persona.getApellidos());
 				if (persona.getPassword() != null) {
 					existente.setPassword(new BCryptPasswordEncoder().encode(persona.getPassword()));
 				}
 				existente.setRol(persona.getRol() != null ? persona.getRol() : Rol.CLIENTE);
-
-				// Actualizamos también estos campos al reactivar
-				if (persona.getTelefono() != null)
-					existente.setTelefono(persona.getTelefono());
-				if (persona.getSalarioAnual() != null)
-					existente.setSalarioAnual(persona.getSalarioAnual());
-				if (persona.getDNI() != null)
-					existente.setDNI(persona.getDNI());
+				
+				if (persona.getTelefono() != null) existente.setTelefono(persona.getTelefono());
+				if (persona.getSalarioAnual() != null) existente.setSalarioAnual(persona.getSalarioAnual());
+				if (persona.getDNI() != null) existente.setDNI(persona.getDNI());
 
 				existente.setActivo(true);
 				return personaMapper.toDto(this.personaRepository.save(existente));
@@ -163,8 +170,13 @@ public class PersonaService implements UserDetailsService {
 
 		if (persona.getSalarioAnual() != null)
 			personaBD.setSalarioAnual(persona.getSalarioAnual());
-		if (persona.getTelefono() != null)
+		if (persona.getTelefono() != null) {
+			if (!persona.getTelefono().equals(personaBD.getTelefono())
+					&& personaRepository.existsByTelefono(persona.getTelefono())) {
+				throw new PersonaExceptions("Ese número de teléfono ya está en uso por otro usuario");
+			}
 			personaBD.setTelefono(persona.getTelefono());
+		}
 		if (persona.getCiudadAsignada() != null)
 			personaBD.setCiudadAsignada(persona.getCiudadAsignada());
 

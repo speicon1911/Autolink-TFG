@@ -3,7 +3,7 @@ import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Vehicle, EtiquetaMedioambiental } from '../../../core/models/vehicle.model';
+import { Vehicle, EtiquetaMedioambiental, EstadoVerificacion } from '../../../core/models/vehicle.model';
 import { VehicleService } from '../../../core/services/vehicle.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { VentaService } from '../../../core/services/venta.service';
@@ -66,7 +66,7 @@ import { ChatService } from '../../../core/services/chat.service';
               }
 
               <div class="absolute top-8 right-8 flex flex-col gap-2 items-end pointer-events-none">
-                @if (vehicle()?.verificado) {
+                @if (vehicle()?.verificado === 'VERIFICADO') {
                   <div class="bg-action-primary text-surface-base font-black px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 text-xs border border-action-primary/20">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                     VERIFICADO

@@ -174,8 +174,21 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                       [ngClass]="v.disponible ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-surface-base text-content-muted border border-white/5'">
                       {{ v.disponible ? 'Disponible' : 'Vendido' }}
                     </span>
-                    @if (v.verificado) {
-                      <span class="text-[10px] text-action-primary font-black uppercase tracking-widest">Verificado</span>
+                    @if (v.verificado === 'VERIFICADO') {
+                      <span class="text-[10px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-2 py-0.5 rounded-full font-black uppercase tracking-widest flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Verificado
+                      </span>
+                    } @else if (v.verificado === 'RECHAZADO') {
+                      <span class="text-[10px] bg-rose-500/10 text-rose-500 border border-rose-500/20 px-2 py-0.5 rounded-full font-black uppercase tracking-widest flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        Rechazado
+                      </span>
+                    } @else {
+                      <span class="text-[10px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2 py-0.5 rounded-full font-black uppercase tracking-widest flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        Pendiente
+                      </span>
                     }
                   </div>
                 </div>

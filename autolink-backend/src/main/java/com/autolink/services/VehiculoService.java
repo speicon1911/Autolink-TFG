@@ -17,6 +17,7 @@ import com.autolink.persistence.entities.ImagenVehiculo;
 import com.autolink.persistence.entities.Vehiculo;
 import com.autolink.persistence.entities.enums.CombustibleVehiculo;
 import com.autolink.persistence.entities.enums.EtiquetaMedioambiental;
+import com.autolink.persistence.entities.enums.EstadoVerificacion;
 import com.autolink.persistence.entities.enums.TipoVehiculo;
 import com.autolink.persistence.repositories.ImagenVehiculoRepository;
 import com.autolink.persistence.repositories.VehiculoRepository;
@@ -73,7 +74,7 @@ public class VehiculoService {
 	public Page<VehiculoDTO> filtrarVehiculos(String marca, String modelo, TipoVehiculo tipo,
 			CombustibleVehiculo combustible, String color, Integer minPotencia, Integer maxPrecio, Integer maxKm,
 			Integer plazas, Integer anioFabricacion, String ciudad, EtiquetaMedioambiental etiqueta, boolean disponible,
-			boolean aplicarDisp, boolean verificado, boolean aplicarVerif, Pageable pageable) {
+			boolean aplicarDisp, EstadoVerificacion verificado, boolean aplicarVerif, Pageable pageable) {
 
 		Page<Vehiculo> vehiculos = vehiculoRepository.buscarConFiltros(marca, modelo, tipo, combustible, color,
 				minPotencia, maxPrecio, maxKm, plazas, anioFabricacion, ciudad, etiqueta, disponible, aplicarDisp,
@@ -101,7 +102,11 @@ public class VehiculoService {
 			vehiculo.setDisponible(true);
 		}
 
-		if (vehiculo.getVerificado() != null && vehiculo.getVerificado()) {
+		if (vehiculo.getVerificado() == null) {
+			vehiculo.setVerificado(EstadoVerificacion.PENDIENTE);
+		}
+
+		if (vehiculo.getVerificado() == EstadoVerificacion.VERIFICADO) {
 			vehiculo.setFechaVerificacion(LocalDate.now());
 		}
 
@@ -216,7 +221,7 @@ public class VehiculoService {
 		return dto;
 	}
 
-	public VehiculoDTO updateVerificado(Boolean verificado, int idVehiculo) {
+	public VehiculoDTO updateVerificado(EstadoVerificacion verificado, int idVehiculo) {
 		if (verificado == null) {
 			throw new VehiculoExceptions("El estado de verificación no puede ser nulo");
 		}
@@ -224,10 +229,10 @@ public class VehiculoService {
 		Vehiculo vehiculoBD = this.vehiculoRepository.findById(idVehiculo).orElseThrow(
 				() -> new VehiculoNotFoundException("No es posible encontrar el vehiculo con ID: " + idVehiculo));
 
-		boolean estadoActual = (vehiculoBD.getVerificado() != null) && vehiculoBD.getVerificado();
+		EstadoVerificacion estadoActual = vehiculoBD.getVerificado();
 
-		if (estadoActual && !verificado) {
-			throw new VehiculoExceptions("Un vehículo verificado no puede volver a no verificado");
+		if (estadoActual == EstadoVerificacion.VERIFICADO && verificado != EstadoVerificacion.VERIFICADO) {
+			throw new VehiculoExceptions("Un vehículo verificado no puede volver a otro estado");
 		}
 
 		if (estadoActual == verificado) {
@@ -236,7 +241,7 @@ public class VehiculoService {
 
 		vehiculoBD.setVerificado(verificado);
 
-		if (verificado) {
+		if (verificado == EstadoVerificacion.VERIFICADO) {
 			vehiculoBD.setFechaVerificacion(LocalDate.now());
 		}
 
