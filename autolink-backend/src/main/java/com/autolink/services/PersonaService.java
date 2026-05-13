@@ -93,14 +93,20 @@ public class PersonaService implements UserDetailsService {
 			if (persona.getDNI().length() != 9) {
 				throw new PersonaExceptions("El DNI debe tener exactamente 9 caracteres.");
 			}
-			if (this.personaRepository.existsByDNI(persona.getDNI())) {
-				throw new PersonaExceptions("El DNI " + persona.getDNI() + " ya está registrado.");
+
+			// Buscamos si existe alguien con ese DNI
+			Optional<Persona> personaPorDni = this.personaRepository.findByDNI(persona.getDNI());
+			if (personaPorDni.isPresent() && Boolean.TRUE.equals(personaPorDni.get().getActivo())) {
+				throw new PersonaExceptions("El DNI " + persona.getDNI() + " ya está registrado y activo.");
 			}
 		}
 
 		if (persona.getTelefono() != null) {
-			if (this.personaRepository.existsByTelefono(persona.getTelefono())) {
-				throw new PersonaExceptions("El número de teléfono " + persona.getTelefono() + " ya está en uso.");
+			// Buscamos si existe alguien con ese teléfono
+			Optional<Persona> personaPorTel = this.personaRepository.findByTelefono(persona.getTelefono());
+			if (personaPorTel.isPresent() && Boolean.TRUE.equals(personaPorTel.get().getActivo())) {
+				throw new PersonaExceptions(
+						"El número de teléfono " + persona.getTelefono() + " ya está en uso por un usuario activo.");
 			}
 			// Validar que tenga exactamente 9 dígitos
 			String telStr = String.valueOf(persona.getTelefono());
@@ -109,20 +115,27 @@ public class PersonaService implements UserDetailsService {
 			}
 		}
 
+		// Buscamos si existe alguien para reactivar (por correo o por DNI)
 		Optional<Persona> existenteOpt = this.personaRepository.findByCorreo(persona.getCorreo());
+		if (existenteOpt.isEmpty() && persona.getDNI() != null) {
+			existenteOpt = this.personaRepository.findByDNI(persona.getDNI());
+		}
 
 		if (existenteOpt.isPresent()) {
 			Persona existente = existenteOpt.get();
 			if (Boolean.TRUE.equals(existente.getActivo())) {
-				throw new PersonaExceptions("El correo " + persona.getCorreo() + " ya está registrado.");
+				throw new PersonaExceptions("Ya existe un usuario activo con ese correo o DNI.");
 			} else {
 				// Reactivación de usuario
 				existente.setNombre(persona.getNombre());
 				existente.setApellidos(persona.getApellidos());
+				existente.setCorreo(persona.getCorreo());
+				existente.setDNI(persona.getDNI());
 				if (persona.getPassword() != null) {
 					existente.setPassword(new BCryptPasswordEncoder().encode(persona.getPassword()));
 				}
 				existente.setRol(persona.getRol() != null ? persona.getRol() : Rol.CLIENTE);
+				existente.setActivo(true);
 
 				if (persona.getTelefono() != null)
 					existente.setTelefono(persona.getTelefono());
@@ -221,12 +234,8 @@ public class PersonaService implements UserDetailsService {
 		emailService.notificarCambioRol(personaGuardada.getCorreo(), nuevo.name());
 
 		// 3. Notificamos por WebSocket para actualización en tiempo real en el frontend
-		NotificationDTO notification = NotificationDTO.builder()
-				.type("ROLE_UPDATED")
-				.message("Tu rol ha sido actualizado a: " + nuevo.name())
-				.data(nuevo.name())
-				.build();
-
+		NotificationDTO notification = NotificationDTO.builder().type("ROLE_UPDATED")
+				.message("Tu rol ha sido actualizado a: " + nuevo.name()).data(nuevo.name()).build();
 		messagingTemplate.convertAndSendToUser(personaGuardada.getCorreo(), "/queue/notifications", notification);
 
 		// 4. Devolvemos el DTO

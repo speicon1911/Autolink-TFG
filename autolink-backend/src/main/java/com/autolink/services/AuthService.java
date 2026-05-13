@@ -33,8 +33,21 @@ public class AuthService {
 
 	// Login: El "username" de Spring Security mapea con el "email" de Persona.
 	public LoginResponse login(LoginRequest request) {
-		Authentication authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+		// 1. Verificamos si la cuenta está activa ANTES de autenticar
+		Persona persona = this.personaRepository.findByCorreo(request.getUsername()).orElse(null);
+		
+		if (persona != null && Boolean.FALSE.equals(persona.getActivo())) {
+			throw new PersonaExceptions("Tu cuenta está suspendida. Regístrate de nuevo para reactivarla o contacta con soporte.");
+		}
+
+		// 2. Si está activa (o no existe, en cuyo caso fallará el authenticate), procedemos
+		Authentication authentication;
+		try {
+			authentication = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+		} catch (Exception e) {
+			throw new PersonaExceptions("Usuario o contraseña incorrectos.");
+		}
 
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
