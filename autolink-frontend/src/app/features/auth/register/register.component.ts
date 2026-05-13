@@ -60,7 +60,14 @@ import { Rol } from '../../../core/models/user.model';
               <label class="text-[10px] font-bold uppercase tracking-widest text-action-primary ml-1">Teléfono de Contacto</label>
               <input type="tel" formControlName="telefono"
                 class="w-full bg-surface-base/10 border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted/30"
-                placeholder="Ej: 600123456">
+                [class.border-rose-500]="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched"
+                placeholder="Ej: 600123456"
+                maxlength="9">
+              @if (registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched) {
+                <p class="text-[10px] text-rose-500 ml-1 font-bold">
+                  Introduce un número de teléfono válido (9 dígitos)
+                </p>
+              }
             </div>
           }
     
@@ -155,7 +162,7 @@ export class RegisterComponent {
     this.rol.set(r);
     const telefonoControl = this.registerForm.get('telefono');
     if (r === 'VENDEDOR') {
-      telefonoControl?.setValidators([Validators.required, Validators.pattern(/^[0-9]{9,15}$/)]);
+      telefonoControl?.setValidators([Validators.required, Validators.pattern(/^[0-9]{9}$/)]);
     } else {
       telefonoControl?.clearValidators();
       telefonoControl?.setValue('');

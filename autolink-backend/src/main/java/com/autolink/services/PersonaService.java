@@ -98,8 +98,15 @@ public class PersonaService implements UserDetailsService {
 			}
 		}
 
-		if (persona.getTelefono() != null && this.personaRepository.existsByTelefono(persona.getTelefono())) {
-			throw new PersonaExceptions("El número de teléfono " + persona.getTelefono() + " ya está en uso.");
+		if (persona.getTelefono() != null) {
+			if (this.personaRepository.existsByTelefono(persona.getTelefono())) {
+				throw new PersonaExceptions("El número de teléfono " + persona.getTelefono() + " ya está en uso.");
+			}
+			// Validar que tenga exactamente 9 dígitos
+			String telStr = String.valueOf(persona.getTelefono());
+			if (telStr.length() != 9) {
+				throw new PersonaExceptions("El número de teléfono debe tener exactamente 9 dígitos.");
+			}
 		}
 
 		Optional<Persona> existenteOpt = this.personaRepository.findByCorreo(persona.getCorreo());
@@ -116,10 +123,13 @@ public class PersonaService implements UserDetailsService {
 					existente.setPassword(new BCryptPasswordEncoder().encode(persona.getPassword()));
 				}
 				existente.setRol(persona.getRol() != null ? persona.getRol() : Rol.CLIENTE);
-				
-				if (persona.getTelefono() != null) existente.setTelefono(persona.getTelefono());
-				if (persona.getSalarioAnual() != null) existente.setSalarioAnual(persona.getSalarioAnual());
-				if (persona.getDNI() != null) existente.setDNI(persona.getDNI());
+
+				if (persona.getTelefono() != null)
+					existente.setTelefono(persona.getTelefono());
+				if (persona.getSalarioAnual() != null)
+					existente.setSalarioAnual(persona.getSalarioAnual());
+				if (persona.getDNI() != null)
+					existente.setDNI(persona.getDNI());
 
 				existente.setActivo(true);
 				return personaMapper.toDto(this.personaRepository.save(existente));
@@ -182,6 +192,11 @@ public class PersonaService implements UserDetailsService {
 					&& personaRepository.existsByTelefono(persona.getTelefono())) {
 				throw new PersonaExceptions("Ese número de teléfono ya está en uso por otro usuario");
 			}
+			// Validar que tenga exactamente 9 dígitos
+			String telStr = String.valueOf(persona.getTelefono());
+			if (telStr.length() != 9) {
+				throw new PersonaExceptions("El número de teléfono debe tener exactamente 9 dígitos.");
+			}
 			personaBD.setTelefono(persona.getTelefono());
 		}
 		if (persona.getCiudadAsignada() != null)
@@ -201,19 +216,19 @@ public class PersonaService implements UserDetailsService {
 		// 1. Cambiamos el rol y guardamos
 		personaBD.setRol(nuevo);
 		Persona personaGuardada = this.personaRepository.save(personaBD);
-		
+
 		// 2. Enviamos la notificación por Email
 		emailService.notificarCambioRol(personaGuardada.getCorreo(), nuevo.name());
-		
+
 		// 3. Notificamos por WebSocket para actualización en tiempo real en el frontend
 		NotificationDTO notification = NotificationDTO.builder()
 				.type("ROLE_UPDATED")
 				.message("Tu rol ha sido actualizado a: " + nuevo.name())
 				.data(nuevo.name())
 				.build();
-		
+
 		messagingTemplate.convertAndSendToUser(personaGuardada.getCorreo(), "/queue/notifications", notification);
-		
+
 		// 4. Devolvemos el DTO
 		return personaMapper.toDto(personaGuardada);
 	}

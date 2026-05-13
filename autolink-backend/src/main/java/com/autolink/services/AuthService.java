@@ -89,6 +89,10 @@ public class AuthService {
 		} else {
 			nuevaPersona.setRol(Rol.CLIENTE);
 		}
+		
+		if (request.getTelefono() != null) {
+			nuevaPersona.setTelefono(request.getTelefono());
+		}
 
 		// 4. Guardar en BD
 		// AQUÍ es donde PersonaService validará si el correo existe y lanzará la

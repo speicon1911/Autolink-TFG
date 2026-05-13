@@ -63,8 +63,15 @@ import { User } from '../../../core/models/user.model';
 
             <div class="space-y-1">
               <label class="text-[10px] font-bold uppercase tracking-wider text-action-primary ml-1">Teléfono</label>
-              <input type="number" formControlName="telefono"
-                class="w-full bg-surface-base/50 border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted/20">
+              <input type="tel" formControlName="telefono"
+                class="w-full bg-surface-base/50 border border-white/10 rounded-xl px-4 py-2.5 text-content-primary focus:ring-2 focus:ring-action-primary outline-none transition-all placeholder:text-content-muted/20"
+                [class.border-rose-500]="profileForm.get('telefono')?.invalid && profileForm.get('telefono')?.touched"
+                maxlength="9">
+              @if (profileForm.get('telefono')?.invalid && profileForm.get('telefono')?.touched) {
+                <p class="text-[10px] text-rose-500 ml-1 font-bold">
+                  Introduce un teléfono válido (9 dígitos)
+                </p>
+              }
             </div>
 
             <div class="space-y-1">
