@@ -76,7 +76,7 @@ limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
 server {
     listen 80;
     listen [::]:80;
-    server_name tu-dominio.com www.tu-dominio.com;
+    server_name autolink-tfg.duckdns.org www.autolink-tfg.duckdns.org;
 
     # Redirección de HTTP a HTTPS de forma permanente (301)
     location / {
@@ -87,11 +87,11 @@ server {
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
-    server_name tu-dominio.com www.tu-dominio.com;
+    server_name autolink-tfg.duckdns.org www.autolink-tfg.duckdns.org;
 
     # Rutas a los certificados SSL (Let's Encrypt se encargará de crearlos en esta ruta del VPS)
-    ssl_certificate /etc/letsencrypt/live/tu-dominio.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/tu-dominio.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/autolink-tfg.duckdns.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/autolink-tfg.duckdns.org/privkey.pem;
 
     # Parámetros de Seguridad SSL recomendados por Mozilla
     ssl_protocols TLSv1.2 TLSv1.3;
@@ -228,14 +228,12 @@ services:
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
-      - IMGBB_API_KEY=${IMGBB_API_KEY}
-      - IMGBB_API_URL=${IMGBB_API_URL}
       - MAIL_HOST=${MAIL_HOST}
       - MAIL_PORT=${MAIL_PORT}
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - CORS_ALLOWED_ORIGIN=${CORS_ALLOWED_ORIGIN} # Ej: https://tu-dominio.com
+      - CORS_ALLOWED_ORIGIN=${CORS_ALLOWED_ORIGIN} # Ej: https://autolink-tfg.duckdns.org
     depends_on:
       - db
 
@@ -292,16 +290,15 @@ sudo apt install certbot -y
 ```
 
 ### Paso 2: Apuntar el Dominio
-El cliente debe configurar en su proveedor de dominios (GoDaddy, Namecheap, etc.) un registro de tipo **A** apuntando la IP pública del VPS:
-* `tu-dominio.com` -> `IP_DEL_VPS`
-* `www.tu-dominio.com` -> `IP_DEL_VPS`
+El cliente debe configurar en su proveedor de dominios (GoDaddy, Namecheap, etc.) un registro de tipo **A** apuntando la IP pública del VPS (o mediante DuckDNS):
+* `autolink-tfg.duckdns.org` -> `IP_DEL_VPS`
 
 ### Paso 3: Generar los Certificados SSL Gratuitos (Certbot)
 Antes de levantar Nginx por primera vez, necesitamos crear los certificados. Ejecutamos Certbot en modo standalone (temporalmente levanta un puerto web para validar el dominio con Let's Encrypt):
 ```bash
-sudo certbot certonly --standalone -d tu-dominio.com -d www.tu-dominio.com
+sudo certbot certonly --standalone -d autolink-tfg.duckdns.org
 ```
-*Esto generará automáticamente los archivos `.pem` en la ruta `/etc/letsencrypt/live/tu-dominio.com/` del VPS, la cual mapeamos directamente a nuestro contenedor de Nginx.*
+*Esto generará automáticamente los archivos `.pem` en la ruta `/etc/letsencrypt/live/autolink-tfg.duckdns.org/` del VPS, la cual mapeamos directamente a nuestro contenedor de Nginx.*
 
 > [!TIP]
 > **Renovación automática**: Let's Encrypt dura 90 días. Certbot instala un servicio systemd que se ejecuta dos veces al día y renovará automáticamente cualquier certificado que esté a menos de 30 días de expirar. Solo tendrás que configurar una tarea programada (cron job) para recargar Nginx después de una renovación exitosa:
@@ -329,7 +326,7 @@ Tienes **tres métodos profesionales e industriales** para hacerlo. A continuaci
 
 ### Método A: A través de phpMyAdmin bajo el proxy seguro (Recomendado para visualización rápida)
 Como ya hemos configurado Nginx, puedes acceder a la base de datos de manera visual desde cualquier navegador web:
-* **URL de acceso:** `https://tu-dominio.com/admin-pma/`
+* **URL de acceso:** `https://autolink-tfg.duckdns.org/admin-pma/`
 * **Cómo funciona:** Nginx recibe la petición en el puerto `443` cifrado, valida las cabeceras de seguridad y la redirige internamente al contenedor de phpMyAdmin en el puerto `80`. Desde ahí inicias sesión con tu usuario `root` y la contraseña del archivo `.env`.
 * **Pros:** No requiere instalar programas adicionales, funciona desde cualquier ordenador con navegador, cifrado total por HTTPS.
 * **Contras:** Si la base de datos es gigantesca (de gigabytes), las subidas/descargas de copias de seguridad por navegador pueden fallar por timeout de HTTP.
@@ -406,3 +403,194 @@ docker exec -i autolink-db mysql -u root -p"tu_contraseña_db" autolink < backup
 > **Mi recomendación para tu despliegue:**
 > 1. **Mantén phpMyAdmin tras Nginx (`/admin-pma`)** para que tengas un acceso rápido y cómodo desde cualquier lugar.
 > 2. **Implementa el Túnel SSH (Método B)** enlazando a `127.0.0.1:3306:3306` en tu `docker-compose.prod.yml`. Te dará la flexibilidad de usar DBeaver/HeidiSQL de forma 100% segura sin arriesgar la seguridad de los datos de tus clientes.
+
+---
+
+## 6. Despliegue sin Dominio (Solo con la IP Pública del VPS)
+
+Es muy común que para la defensa de tu TFG o durante la fase de pruebas con el cliente **no dispongas de un dominio registrado** (como `autolink.com`), sino únicamente de la **IP pública del VPS** (por ejemplo, `123.45.67.89`).
+
+Si te encuentras en este caso, tienes **tres alternativas técnicas** para resolverlo:
+
+---
+
+### Alternativa A: Despliegue en HTTP (Sin SSL) - *La más rápida para pruebas*
+Es la opción idónea si solo quieres validar que los contenedores docker se comunican correctamente y que Nginx enruta el tráfico sin preocuparte por certificados.
+
+#### 1. Configuración de Nginx (`nginx/nginx.conf` sin HTTPS)
+Debemos eliminar la redirección HTTPS y meter todas nuestras rutas (Angular, Spring Boot, WebSockets y phpMyAdmin) dentro del bloque de escucha del puerto `80`.
+
+```nginx
+# nginx/nginx.conf (HTTP - Solo IP)
+
+# Definición de límites de peticiones (Rate Limiting)
+limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name _; # Acepta cualquier petición dirigida a la IP del VPS
+
+    # Cabeceras de seguridad adaptadas (sin Directiva HTTPS de HSTS para evitar problemas en navegadores sin SSL)
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+
+    client_max_body_size 10M;
+
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    # --- RUTA 1: FRONTEND (Angular) ---
+    location / {
+        proxy_pass http://frontend:4000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # --- RUTA 2: BACKEND (Spring Boot API) ---
+    location ~ ^/(auth|personas|vehiculos|ventas|marcas|error|api/contacto) {
+        limit_req zone=api_limit burst=20 nodelay;
+        proxy_pass http://backend:8082;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffering off;
+    }
+
+    # --- RUTA 3: WEBSOCKETS (/ws) ---
+    location /ws {
+        proxy_pass http://backend:8082;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 86400s;
+    }
+
+    # --- RUTA 4: phpMyAdmin Seguro (/admin-pma) ---
+    location /admin-pma/ {
+        proxy_pass http://phpmyadmin/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+#### 2. Modificación de `docker-compose.prod.yml`
+Dado que no usamos SSL, **no necesitamos generar certificados Let's Encrypt ni mapear volúmenes de `/etc/letsencrypt`**. Nginx solo necesita mapear el puerto `80` y su archivo de configuración:
+
+```yaml
+  # NUEVO SERVICIO: NGINX (PROXY INVERSO Y SEGURIDAD HTTP)
+  nginx:
+    image: nginx:alpine
+    container_name: autolink-nginx
+    restart: always
+    ports:
+      - "80:80" # Solo exponemos el puerto HTTP
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
+      - backend
+      - phpmyadmin
+```
+
+---
+
+### Alternativa B: Certificado Auto-firmado (HTTPS sobre IP) - *Seguridad local*
+Si el tribunal del TFG te exige HTTPS sí o sí pero no tienes dominio, puedes generar tu propio certificado SSL encriptado en el VPS usando **OpenSSL**.
+
+> [!WARNING]
+> Los navegadores web marcarán el sitio como **No seguro** y mostrarán una pantalla de advertencia ("La conexión no es privada"). El usuario tendrá que hacer clic en "Configuración Avanzada" y "Acceder a [IP] (no seguro)" para entrar. Aun así, el tráfico de red estará cifrado.
+
+#### 1. Generar el certificado auto-firmado en la consola del VPS:
+```bash
+sudo mkdir -p /etc/ssl/certs
+sudo mkdir -p /etc/ssl/private
+# Generamos un certificado válido por 365 días para la IP del VPS
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /etc/ssl/private/nginx-selfsigned.key \
+  -out /etc/ssl/certs/nginx-selfsigned.crt \
+  -subj "/C=ES/ST=Autolink/L=Autolink/O=Autolink/OU=TFG/CN=TU_IP_PUBLICA_VPS"
+```
+
+#### 2. Configurar Nginx para usar el certificado auto-firmado (`nginx/nginx.conf`):
+En el archivo de configuración, sustituimos las rutas de Let's Encrypt por las del certificado local generado:
+
+```nginx
+server {
+    listen 80;
+    listen [::]:80;
+    server_name _;
+    return 301 https://$host$request_uri; # Redirección HTTP a HTTPS
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name _;
+
+    # Rutas al certificado auto-firmado
+    ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+    ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+
+    # ... Resto de la configuración idéntica a la sección 2.2 (Cabeceras, locations, etc.) ...
+}
+```
+
+#### 3. Mapear los certificados en tu `docker-compose.prod.yml`:
+Debemos pasar los certificados locales desde el VPS hacia el contenedor de Nginx:
+
+```yaml
+  nginx:
+    image: nginx:alpine
+    container_name: autolink-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Mapeamos los certificados auto-firmados en lugar de Let's Encrypt
+      - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt:ro
+      - /etc/ssl/private/nginx-selfsigned.key:/etc/ssl/private/nginx-selfsigned.key:ro
+    depends_on:
+      - frontend
+      - backend
+      - phpmyadmin
+```
+
+---
+
+### Alternativa C: Subdominio Gratuito con DuckDNS - *La opción recomendada para tu TFG* 🌟
+Si quieres que tu despliegue luzca **100% impecable**, con el candado verde de HTTPS oficial en el navegador sin ninguna advertencia, la mejor solución es utilizar un proveedor gratuito de DNS dinámico como **DuckDNS**.
+
+#### ¿Cómo implementarlo paso a paso?
+1. **Regístrate en [DuckDNS](https://www.duckdns.org/)** (puedes iniciar sesión de forma segura con tu cuenta de GitHub o Google).
+2. **Crea un subdominio gratuito** (ejemplo: `autolink-tfg.duckdns.org`).
+3. **Apunta el dominio a tu VPS:** Introduce la IP pública de tu VPS en la celda correspondiente del dominio dinámico en la web de DuckDNS y dale a "update IP".
+4. **Genera tu certificado Let's Encrypt real y gratuito:**
+   En la consola de tu VPS ejecuta:
+   ```bash
+   sudo certbot certonly --standalone -d autolink-tfg.duckdns.org
+   ```
+5. **Configura tu `nginx.conf` y `docker-compose.prod.yml` original:**
+   Sustituye todas las apariciones de `tu-dominio.com` por `autolink-tfg.duckdns.org` en la configuración original de esta guía.
+6. ¡Listo! Tu plataforma estará desplegada bajo un **dominio web real con HTTPS SSL oficial sin coste alguno**. Esta opción es la idónea porque ofrece una experiencia de usuario perfecta y demuestra que sabes gestionar nombres de dominio reales en el mundo profesional.
+
