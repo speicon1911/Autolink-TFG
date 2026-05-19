@@ -243,7 +243,7 @@ import { ChatService } from '../../../core/services/chat.service';
             @if (vehicle()?.descripcion) {
               <div class="space-y-3 pt-4 border-t border-white/5">
                  <h3 class="text-xs font-black text-action-primary uppercase tracking-widest">Descripción del Vendedor</h3>
-                 <p class="text-content-primary/90 leading-relaxed text-base whitespace-pre-wrap italic font-medium">
+                 <p class="text-content-primary/90 leading-relaxed text-base whitespace-pre-wrap break-words italic font-medium">
                    {{ vehicle()?.descripcion }}
                  </p>
               </div>
