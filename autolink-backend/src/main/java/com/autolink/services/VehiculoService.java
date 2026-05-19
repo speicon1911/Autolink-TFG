@@ -41,7 +41,6 @@ public class VehiculoService {
 	private VehiculoMapper vehiculoMapper;
 
 	@Autowired
-//	private ImgBBService imgBBService;
 	private ImagenOptimizadaService imagenOptimizadaService;
 	@Autowired
 	private ImagenVehiculoRepository imagenVehiculoRepository;
@@ -299,8 +298,7 @@ public class VehiculoService {
 				throw new VehiculoExceptions(
 						"La imagen " + archivo.getOriginalFilename() + " es demasiado grande (máx 5MB).");
 			}
-//			String urlPublica = imgBBService.subirAImgBB(archivo);
-//			Se procesa la foto localmente con compresion extrema (800px y 60% calidad)
+			// Se procesa la foto localmente con compresion extrema (800px y 60% calidad)
 			String base64DataUri = imagenOptimizadaService.optimizarYconvertirABase64(archivo);
 
 			ImagenVehiculo nuevaImg = new ImagenVehiculo();
@@ -351,14 +349,18 @@ public class VehiculoService {
 
 		if (v.getVencimientoItv() != null && v.getFechaMatriculacion() != null) {
 			if (v.getVencimientoItv().isBefore(v.getFechaMatriculacion())) {
-				throw new VehiculoValidationException("El vencimiento de la ITV no puede ser anterior a la fecha de matriculación.");
+				throw new VehiculoValidationException(
+						"El vencimiento de la ITV no puede ser anterior a la fecha de matriculación.");
 			}
 		}
 
-		// 3. Validar que la fecha de matriculación no sea anterior al año de fabricación
+		// 3. Validar que la fecha de matriculación no sea anterior al año de
+		// fabricación
 		if (v.getFechaMatriculacion() != null && v.getAnioFabricacion() != 0) {
 			if (v.getFechaMatriculacion().getYear() < v.getAnioFabricacion()) {
-				throw new VehiculoValidationException("La fecha de matriculación no puede ser anterior al año de fabricación (" + v.getAnioFabricacion() + ").");
+				throw new VehiculoValidationException(
+						"La fecha de matriculación no puede ser anterior al año de fabricación ("
+								+ v.getAnioFabricacion() + ").");
 			}
 		}
 

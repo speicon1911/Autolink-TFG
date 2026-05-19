@@ -1,0 +1,102 @@
+# Definición de límites de peticiones (Rate Limiting)
+limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name localhost;
+
+    # Cabeceras de seguridad adaptadas (sin la directiva HTTPS HSTS para evitar conflictos locales)
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+
+    # Tamaño máximo permitido para subida de imágenes (ej. fotos de vehículos)
+    client_max_body_size 10M;
+
+    # Gzip para comprimir archivos estáticos y hacer la web más rápida
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    # --- RUTA 1: FRONTEND (Angular) ---
+    location / {
+        proxy_pass http://frontend:4000; # Nombre del servicio en docker-compose
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # --- RUTA 2: BACKEND (Spring Boot API) ---
+    # Capturamos todas las rutas de endpoints de Spring Boot
+    location ~ ^/(auth|personas|vehiculos|ventas|marcas|mensajes|error|api/contacto) {
+        # Aplicamos límite de peticiones para proteger el backend de saturación
+        limit_req zone=api_limit burst=20 nodelay;
+
+        proxy_pass http://backend:8082; # Puerto real expuesto dentro del contenedor Spring Boot
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Desactivamos el buffering para respuestas de streaming rápidas
+        proxy_buffering off;
+    }
+
+    # --- RUTA 3: WEBSOCKETS (/ws) ---
+    # Soporte específico para mensajería y chat interactivo WebSocket en tu backend
+    location /ws {
+        proxy_pass http://backend:8082;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 86400s; # Mantiene la conexión abierta 24h sin cerrarse por timeout
+    }
+
+    # --- RUTA 4: phpMyAdmin Seguro (/admin-pma) ---
+    # Redirigir /admin-pma (sin barra) a /admin-pma/ (con barra) para evitar colisiones con Angular
+    location = /admin-pma {
+        set $admin_auth "";
+        if ($cookie_auth_admin = "true") {
+            set $admin_auth "A";
+        }
+        if ($cookie_auth_db_key = "${PMA_SECURITY_KEY}") {
+            set $admin_auth "${admin_auth}B";
+        }
+        if ($admin_auth != "AB") {
+            return 403;
+        }
+        return 301 $scheme://$http_host$request_uri/;
+    }
+
+    # Cambiamos la ruta pública para que los bots no puedan adivinar el login de base de datos
+    location /admin-pma/ {
+        set $admin_auth "";
+        if ($cookie_auth_admin = "true") {
+            set $admin_auth "A";
+        }
+        if ($cookie_auth_db_key = "${PMA_SECURITY_KEY}") {
+            set $admin_auth "${admin_auth}B";
+        }
+        if ($admin_auth != "AB") {
+            return 403;
+        }
+
+        proxy_pass http://phpmyadmin/; # El "/" final reescribe la URL eliminando "/admin-pma"
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

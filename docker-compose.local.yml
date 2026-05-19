@@ -4,11 +4,7 @@ services:
     image: speicon1911/autolink-tfg:mariadb
     container_name: autolink-db
     restart: always
-    # ELIMINADO EL PUERTO AL EXTERIOR (Comentado para máxima seguridad)
-    # Solo accesible internamente por el Backend y phpMyAdmin.
-    # Si necesitas conectarte con DBeaver en local, puedes descomentar la siguiente línea:
-    # ports:
-    #   - "3306:3306"
+    # Blindado localmente. Solo es accesible internamente.
     expose:
       - "3306"
     environment:
@@ -22,24 +18,22 @@ services:
     image: speicon1911/autolink-tfg:phpmyadmin
     container_name: autolink-pma
     restart: always
-    # ELIMINADO EL PUERTO AL EXTERIOR
-    # Ahora phpMyAdmin está protegido y se accede mediante: http://localhost/admin-pma/
     expose:
       - "80"
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306
-      - PMA_ABSOLUTE_URI=https://autolink-tfg.duckdns.org/admin-pma/
+      - PMA_ABSOLUTE_URI=http://localhost/admin-pma/
     depends_on:
       - db
 
-  # SERVICIO BACKEND (Spring Boot API)
+  # SERVICIO BACKEND (Spring Boot API) - CONSTRUIDO DESDE TU CARPETA LOCAL
   backend:
-    image: speicon1911/autolink-tfg:backend
+    build:
+      context: ./autolink-backend
+      dockerfile: Dockerfile
     container_name: autolink-backend
     restart: always
-    # ELIMINADO EL PUERTO AL EXTERIOR
-    # La API ahora está protegida y se accede a través del Proxy Inverso.
     expose:
       - "8082"
     environment:
@@ -52,16 +46,17 @@ services:
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - CORS_ALLOWED_ORIGIN=${CORS_ALLOWED_ORIGIN}
+      - CORS_ALLOWED_ORIGIN=${CORS_ALLOWED_ORIGIN} # Ej: http://localhost
     depends_on:
       - db
 
-  # SERVICIO FRONTEND (Angular SSR)
+  # SERVICIO FRONTEND (Angular SSR) - CONSTRUIDO DESDE TU CARPETA LOCAL
   frontend:
-    image: speicon1911/autolink-tfg:frontend
+    build:
+      context: ./autolink-frontend
+      dockerfile: Dockerfile
     container_name: autolink-frontend
     restart: always
-    # ELIMINADO EL PUERTO DIRECTO (Evita conflictos con Nginx en el puerto 80)
     expose:
       - "4000"
     environment:
@@ -69,20 +64,16 @@ services:
     depends_on:
       - backend
 
-  # NUEVO SERVICIO: NGINX (PROXY INVERSO Y SEGURIDAD)
+  # SERVICIO: NGINX (PROXY INVERSO LOCAL)
   nginx:
     image: nginx:alpine
     container_name: autolink-nginx
     restart: always
-    # ÚNICOS PUERTOS EXPUESTOS AL EXTERIOR EN TODO EL VPS 🛡️
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80" # Mapea el puerto local 80 al contenedor
     volumes:
-      # Mapeamos nuestro archivo de configuración
-      - ./nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
-      # Mapeamos los certificados de Let's Encrypt generados en el VPS
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      # Mapeamos la configuración de Nginx exclusiva para localhost (sin SSL)
+      - ./nginx/nginx.local.conf.template:/etc/nginx/templates/default.conf.template:ro
     environment:
       - PMA_SECURITY_KEY=${PMA_SECURITY_KEY}
     depends_on:

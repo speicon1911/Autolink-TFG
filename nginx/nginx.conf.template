@@ -1,0 +1,128 @@
+# Definición de límites de peticiones (Rate Limiting)
+limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
+
+# Configuración del servidor
+server {
+    listen 80;
+    listen [::]:80;
+    server_name autolink-tfg.duckdns.org www.autolink-tfg.duckdns.org;
+
+    # Redirección de HTTP a HTTPS de forma permanente (301)
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name autolink-tfg.duckdns.org www.autolink-tfg.duckdns.org;
+
+    # Rutas a los certificados SSL (Let's Encrypt se encargará de crearlos en esta ruta del VPS)
+    ssl_certificate /etc/letsencrypt/live/autolink-tfg.duckdns.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/autolink-tfg.duckdns.org/privkey.pem;
+
+    # Parámetros de Seguridad SSL recomendados por Mozilla
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384';
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 1d;
+    ssl_session_tickets off;
+
+    # Cabeceras de Seguridad Globales (Security Headers)
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'self';" always;
+
+    # Tamaño máximo permitido para subida de imágenes (ej. fotos de vehículos)
+    client_max_body_size 10M;
+
+    # Gzip para comprimir archivos estáticos y hacer la web más rápida
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    # --- RUTA 1: FRONTEND (Angular) ---
+    location / {
+        proxy_pass http://frontend:4000; # Nombre del servicio en docker-compose
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # --- RUTA 2: BACKEND (Spring Boot API) ---
+    # Capturamos todas las rutas de endpoints de Spring Boot
+    location ~ ^/(auth|personas|vehiculos|ventas|marcas|mensajes|error|api/contacto) {
+        # Aplicamos límite de peticiones para proteger el backend de saturación
+        limit_req zone=api_limit burst=20 nodelay;
+
+        proxy_pass http://backend:8082; # Puerto real expuesto dentro del contenedor Spring Boot
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Desactivamos el buffering para respuestas de streaming rápidas
+        proxy_buffering off;
+    }
+
+    # --- RUTA 3: WEBSOCKETS (/ws) ---
+    # Soporte específico para mensajería y chat interactivo WebSocket en tu backend
+    location /ws {
+        proxy_pass http://backend:8082;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 86400s; # Mantiene la conexión abierta 24h sin cerrarse por timeout
+    }
+
+    # --- RUTA 4: phpMyAdmin Seguro (/admin-pma) ---
+    # Redirigir /admin-pma (sin barra) a /admin-pma/ (con barra) para evitar colisiones con Angular
+    location = /admin-pma {
+        set $admin_auth "";
+        if ($cookie_auth_admin = "true") {
+            set $admin_auth "A";
+        }
+        if ($cookie_auth_db_key = "${PMA_SECURITY_KEY}") {
+            set $admin_auth "${admin_auth}B";
+        }
+        if ($admin_auth != "AB") {
+            return 403;
+        }
+        return 301 $scheme://$http_host$request_uri/;
+    }
+
+    # Cambiamos la ruta pública para que los bots no puedan adivinar el login de base de datos
+    location /admin-pma/ {
+        set $admin_auth "";
+        if ($cookie_auth_admin = "true") {
+            set $admin_auth "A";
+        }
+        if ($cookie_auth_db_key = "${PMA_SECURITY_KEY}") {
+            set $admin_auth "${admin_auth}B";
+        }
+        if ($admin_auth != "AB") {
+            return 403;
+        }
+
+        proxy_pass http://phpmyadmin/; # El "/" final reescribe la URL eliminando "/admin-pma"
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

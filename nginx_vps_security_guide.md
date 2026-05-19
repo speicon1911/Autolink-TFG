@@ -58,7 +58,7 @@ Crea un archivo llamado `nginx.conf` en una nueva carpeta `/nginx` en la raíz d
 3. **Cabeceras de Seguridad**: Añade políticas HSTS, anti-clickjacking y prevención de sniffing.
 4. **Configuración de Rutas (Reverse Proxy)**:
    - `/` redirige al Frontend (Angular).
-   - `/auth/`, `/personas/`, `/vehiculos/`, `/ventas/`, `/marcas/`, `/error` y `/api/contacto` al Backend (Spring Boot).
+   - `/auth/`, `/personas/`, `/vehiculos/`, `/ventas/`, `/marcas/`, `/mensajes/`, `/error` y `/api/contacto` al Backend (Spring Boot).
    - `/ws/` gestiona de forma segura los WebSockets.
    - `/admin-pma/` sirve phpMyAdmin de manera oculta y segura.
 5. **Rate Limiting**: Limita las peticiones a un máximo de 10 peticiones por segundo por IP, con ráfagas de 20, para evitar ataques de denegación de servicio (DoS).
@@ -131,7 +131,7 @@ server {
 
     # --- RUTA 2: BACKEND (Spring Boot API) ---
     # Capturamos todas las rutas de endpoints de Spring Boot
-    location ~ ^/(auth|personas|vehiculos|ventas|marcas|error|api/contacto) {
+    location ~ ^/(auth|personas|vehiculos|ventas|marcas|mensajes|error|api/contacto) {
         # Aplicamos límite de peticiones para proteger el backend de saturación
         limit_req zone=api_limit burst=20 nodelay;
 
@@ -456,7 +456,7 @@ server {
     }
 
     # --- RUTA 2: BACKEND (Spring Boot API) ---
-    location ~ ^/(auth|personas|vehiculos|ventas|marcas|error|api/contacto) {
+    location ~ ^/(auth|personas|vehiculos|ventas|marcas|mensajes|error|api/contacto) {
         limit_req zone=api_limit burst=20 nodelay;
         proxy_pass http://backend:8082;
         proxy_http_version 1.1;
