@@ -126,7 +126,7 @@ import { NgOptimizedImage } from '@angular/common';
                   </div>
                   <div class="w-8 h-8 rounded-full bg-action-primary/10 flex items-center justify-center text-action-primary group-hover:ring-2 group-hover:ring-action-primary transition-all shadow-sm overflow-hidden">
                     @if (authService.currentUser$()?.fotoPerfil) {
-                      <img [ngSrc]="authService.currentUser$()!.fotoPerfil!" width="32" height="32" alt="Profile" class="w-full h-full object-cover">
+                      <img [src]="authService.currentUser$()!.fotoPerfil!" alt="Profile" class="w-full h-full object-cover">
                     } @else {
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     }
@@ -227,7 +227,7 @@ import { NgOptimizedImage } from '@angular/common';
               <a [routerLink]="getProfileRoute()" (click)="closeMobileMenu()" class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/5 transition-colors group flex-1">
                 <div class="w-10 h-10 rounded-full bg-action-primary/10 flex items-center justify-center text-action-primary group-hover:ring-2 group-hover:ring-action-primary transition-all overflow-hidden shadow-sm">
                   @if (authService.currentUser$()?.fotoPerfil) {
-                    <img [ngSrc]="authService.currentUser$()!.fotoPerfil!" width="40" height="40" alt="Profile" class="w-full h-full object-cover">
+                    <img [src]="authService.currentUser$()!.fotoPerfil!" alt="Profile" class="w-full h-full object-cover">
                   } @else {
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   }

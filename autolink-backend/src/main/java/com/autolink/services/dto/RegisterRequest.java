@@ -22,5 +22,6 @@ public class RegisterRequest {
 	private String password2;
 	private String rol;
 	private Integer telefono;
+	private String recaptchaToken;
 
 }

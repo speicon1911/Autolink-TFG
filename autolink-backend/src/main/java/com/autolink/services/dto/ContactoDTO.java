@@ -12,4 +12,5 @@ public class ContactoDTO {
 	private String email;
 	private String asunto;
 	private String mensaje;
+	private String recaptchaToken;
 }

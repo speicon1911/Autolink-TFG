@@ -31,10 +31,22 @@ public class AuthService {
 	@Autowired
 	private com.autolink.persistence.repositories.PersonaRepository personaRepository;
 
+	@Autowired
+	private RecaptchaService recaptchaService;
+
 	// Login: El "username" de Spring Security mapea con el "email" de Persona.
 	public LoginResponse login(LoginRequest request) {
+		// 0. Validar reCAPTCHA
+		if (request.getRecaptchaToken() == null || !this.recaptchaService.validarToken(request.getRecaptchaToken())) {
+			throw new PersonaExceptions("La verificación de seguridad de reCAPTCHA ha fallado. Inténtalo de nuevo.");
+		}
+		return this.loginInterno(request.getUsername(), request.getPassword());
+	}
+
+	// Login Interno: Autentica directamente sin validar reCAPTCHA (para el flujo automático tras registro)
+	private LoginResponse loginInterno(String username, String password) {
 		// 1. Verificamos si la cuenta está activa ANTES de autenticar
-		Persona persona = this.personaRepository.findByCorreo(request.getUsername()).orElse(null);
+		Persona persona = this.personaRepository.findByCorreo(username).orElse(null);
 		
 		if (persona != null && Boolean.FALSE.equals(persona.getActivo())) {
 			throw new PersonaExceptions("Tu cuenta está suspendida. Regístrate de nuevo para reactivarla o contacta con soporte.");
@@ -44,7 +56,7 @@ public class AuthService {
 		Authentication authentication;
 		try {
 			authentication = authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+					new UsernamePasswordAuthenticationToken(username, password));
 		} catch (Exception e) {
 			throw new PersonaExceptions("Usuario o contraseña incorrectos.");
 		}
@@ -77,6 +89,11 @@ public class AuthService {
 	// Registro corregido: Evitamos enviar la contraseña encriptada al
 	// AuthenticationManager.
 	public LoginResponse registrar(RegisterRequest request) {
+		// 0. Validar reCAPTCHA
+		if (request.getRecaptchaToken() == null || !this.recaptchaService.validarToken(request.getRecaptchaToken())) {
+			throw new PersonaExceptions("La verificación de seguridad de reCAPTCHA ha fallado. Inténtalo de nuevo.");
+		}
+
 		// 1. Validar contraseñas (Lógica propia de la petición de registro)
 		if (request.getPassword1() == null || !request.getPassword1().equals(request.getPassword2())) {
 			throw new PersonaExceptions("Las contraseñas no coinciden o están vacías.");
@@ -112,12 +129,8 @@ public class AuthService {
 		// excepción si es necesario.
 		this.personaService.createPersona(nuevaPersona);
 
-		// 5. Autenticación automática
-		LoginRequest loginRequest = new LoginRequest();
-		loginRequest.setUsername(request.getEmail().trim().toLowerCase());
-		loginRequest.setPassword(request.getPassword1().trim());
-
-		return this.login(loginRequest);
+		// 5. Autenticación automática tras registro exitoso (Bypassea recaptcha ya que ha sido validado en el paso 0)
+		return this.loginInterno(request.getEmail().trim().toLowerCase(), request.getPassword1().trim());
 	}
 
 	// Refrescar tokens.

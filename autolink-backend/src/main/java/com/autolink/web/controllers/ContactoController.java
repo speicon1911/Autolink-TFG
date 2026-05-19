@@ -16,6 +16,7 @@ import com.autolink.services.EmailService;
 import com.autolink.services.PersonaService;
 import com.autolink.services.VehiculoService;
 import com.autolink.services.dto.ContactoDTO;
+import com.autolink.services.exceptions.PersonaExceptions;
 
 @RestController
 @RequestMapping("/api/contacto")
@@ -31,11 +32,20 @@ public class ContactoController {
 	@Autowired
 	private VehiculoService vehiculoService;
 
+	@Autowired
+	private com.autolink.services.RecaptchaService recaptchaService;
+
 	@Value("${app.admin.email}")
 	private String emailAdmin;
 
 	@PostMapping
 	public void recibirContacto(@RequestBody ContactoDTO contacto) {
+		// Validar reCAPTCHA
+		if (contacto.getRecaptchaToken() == null || !this.recaptchaService.validarToken(contacto.getRecaptchaToken())) {
+			throw new PersonaExceptions(
+					"La verificación de seguridad de reCAPTCHA ha fallado. Inténtalo de nuevo.");
+		}
+
 		String asuntoCorreo = "NUEVO CONTACTO: " + contacto.getAsunto();
 		String cuerpo = "Has recibido un mensaje de: " + contacto.getNombre() + " (" + contacto.getEmail() + ")\n\n"
 				+ "Mensaje:\n" + contacto.getMensaje();

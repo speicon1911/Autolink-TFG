@@ -8,6 +8,7 @@ export interface ContactoDTO {
     email: string;
     asunto: string;
     mensaje: string;
+    recaptchaToken?: string;
 }
 
 @Injectable({

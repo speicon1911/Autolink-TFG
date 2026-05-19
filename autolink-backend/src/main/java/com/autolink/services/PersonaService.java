@@ -43,7 +43,7 @@ public class PersonaService implements UserDetailsService {
 	private PersonaMapper personaMapper;
 
 	@Autowired
-	private ImgBBService imgBBService;
+	private ImagenOptimizadaService imagenOptimizadaService;
 
 	@Autowired
 	private EmailService emailService;
@@ -292,9 +292,9 @@ public class PersonaService implements UserDetailsService {
 			throw new PersonaExceptions("La imagen es demasiado grande (máx 5MB).");
 		}
 
-		String urlFoto = imgBBService.subirAImgBB(archivo);
+		String base64DataUri = imagenOptimizadaService.optimizarAvatarYconvertirABase64(archivo);
 
-		persona.setFotoPerfil(urlFoto);
+		persona.setFotoPerfil(base64DataUri);
 		personaRepository.save(persona);
 
 		return personaMapper.toDto(persona);

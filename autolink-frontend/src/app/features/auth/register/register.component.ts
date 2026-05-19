@@ -2,14 +2,16 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { NgxCaptchaModule } from 'ngx-captcha';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Rol } from '../../../core/models/user.model';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, NgxCaptchaModule],
   template: `
     <div class="max-w-md mx-auto mt-8 mb-12 animate-fade-in px-4">
       <div class="bg-surface-card/80 backdrop-blur-xl p-8 rounded-3xl border border-action-primary/20 shadow-2xl space-y-8">
@@ -107,9 +109,19 @@ import { Rol } from '../../../core/models/user.model';
               </button>
             </div>
           </div>
+
+          <!-- reCAPTCHA Widget -->
+          <div class="flex justify-center py-2">
+            <ngx-recaptcha2
+              [siteKey]="recaptchaSiteKey"
+              (success)="onCaptchaSuccess($event)"
+              (expire)="onCaptchaExpired()"
+              [theme]="'dark'">
+            </ngx-recaptcha2>
+          </div>
     
-          <button type="submit" [disabled]="registerForm.invalid || loading()"
-            class="btn-primary w-full disabled:opacity-50 text-surface-base font-black py-4 rounded-xl transition-all active:scale-[0.98] mt-4 flex items-center justify-center gap-3 uppercase tracking-widest text-sm">
+          <button type="submit" [disabled]="registerForm.invalid || loading() || !recaptchaToken()"
+            class="btn-primary w-full disabled:opacity-50 text-surface-base font-black py-4 rounded-xl transition-all active:scale-[0.98] mt-4 flex items-center justify-center gap-3 uppercase tracking-widest text-sm disabled:cursor-not-allowed">
             @if (loading()) {
               <div class="w-5 h-5 border-2 border-surface-base/20 border-t-surface-base rounded-full animate-spin"></div>
               <span>Creando Cuenta...</span>
@@ -142,6 +154,10 @@ export class RegisterComponent {
   loading = signal(false);
   rol = signal<string>('CLIENTE');
 
+  // Clave de sitio pública oficial de pruebas de Google reCAPTCHA
+  readonly recaptchaSiteKey = environment.recaptchaSiteKey;
+  recaptchaToken = signal<string | null>(null);
+
   registerForm = this.fb.group({
     nombre: ['', Validators.required],
     apellidos: ['', Validators.required],
@@ -158,6 +174,14 @@ export class RegisterComponent {
     return p1 === p2 ? null : { passwordMismatch: true };
   }
 
+  onCaptchaSuccess(token: string) {
+    this.recaptchaToken.set(token);
+  }
+
+  onCaptchaExpired() {
+    this.recaptchaToken.set(null);
+  }
+
   setRol(r: string) {
     this.rol.set(r);
     const telefonoControl = this.registerForm.get('telefono');
@@ -172,8 +196,16 @@ export class RegisterComponent {
 
   onSubmit() {
     if (this.registerForm.valid) {
+      if (!this.recaptchaToken()) {
+        this.ns.error('Por favor, completa la verificación "No soy un robot"');
+        return;
+      }
       this.loading.set(true);
-      const data = { ...this.registerForm.value, rol: this.rol() };
+      const data = { 
+        ...this.registerForm.value, 
+        rol: this.rol(),
+        recaptchaToken: this.recaptchaToken()
+      };
       this.authService.register(data as any).subscribe({
         next: (user) => {
           if (user) {

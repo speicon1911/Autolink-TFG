@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed, HostListener, model } from '@angular/core';
 import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Vehicle, EtiquetaMedioambiental, EstadoVerificacion } from '../../../core/models/vehicle.model';
@@ -14,7 +14,7 @@ import { ChatService } from '../../../core/services/chat.service';
 @Component({
     selector: 'app-vehicle-details',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormatEnumPipe, FormsModule, NgOptimizedImage],
+    imports: [CommonModule, RouterLink, FormatEnumPipe, FormsModule],
     template: `
     <div class="max-w-6xl mx-auto space-y-12 animate-fade-in py-8 px-4 lg:px-0">
       <!-- Breadcrumb / Back -->
@@ -35,10 +35,9 @@ import { ChatService } from '../../../core/services/chat.service';
               (click)="openLightbox()">
               
               @if (vehicle()?.imagenes && vehicle()!.imagenes!.length > 0) {
-                <img [ngSrc]="vehicle()!.imagenes![selectedImageIndex()].url" 
-                  fill
-                  priority
-                  class="object-cover group-hover/main-img:scale-105 transition-transform duration-700 ease-out">
+                <img [src]="vehicle()!.imagenes![selectedImageIndex()].url" 
+                  class="absolute inset-0 w-full h-full object-cover group-hover/main-img:scale-105 transition-transform duration-700 ease-out"
+                  alt="Vehículo">
                 
                 <!-- Overlay Gradient -->
                 <div class="absolute inset-0 bg-gradient-to-t from-pitch-black/40 via-transparent to-transparent opacity-0 group-hover/main-img:opacity-100 transition-opacity"></div>
@@ -88,7 +87,7 @@ import { ChatService } from '../../../core/services/chat.service';
                     class="flex-shrink-0 w-24 h-20 rounded-2xl overflow-hidden border-2 transition-all relative group"
                     [class.border-action-primary]="selectedImageIndex() === $index"
                     [class.border-white/10]="selectedImageIndex() !== $index">
-                    <img [ngSrc]="img.url" fill class="object-cover">
+                    <img [src]="img.url" class="absolute inset-0 w-full h-full object-cover">
                     <!-- Overlay if not selected -->
                     @if (selectedImageIndex() !== $index) {
                       <div class="absolute inset-0 bg-pitch-black/40 group-hover:bg-pitch-black/0 transition-colors"></div>
@@ -243,7 +242,7 @@ import { ChatService } from '../../../core/services/chat.service';
             @if (vehicle()?.descripcion) {
               <div class="space-y-3 pt-4 border-t border-white/5">
                  <h3 class="text-xs font-black text-action-primary uppercase tracking-widest">Descripción del Vendedor</h3>
-                 <p class="text-content-primary/90 leading-relaxed text-base whitespace-pre-wrap italic font-medium">
+                 <p class="text-content-primary/90 leading-relaxed text-base whitespace-pre-wrap break-words italic font-medium">
                    {{ vehicle()?.descripcion }}
                  </p>
               </div>
@@ -313,7 +312,7 @@ import { ChatService } from '../../../core/services/chat.service';
     <!-- Lightbox Modal -->
     @if (isLightboxOpen()) {
       <div 
-        class="fixed inset-0 z-[100] bg-surface-base/95 backdrop-blur-xl flex items-center justify-center p-4 animate-fade-in"
+        class="fixed inset-0 z-[100] bg-surface-base/98 flex items-center justify-center p-4 animate-fade-in"
         (click)="closeLightbox()">
         
         <!-- Controls -->
@@ -333,9 +332,8 @@ import { ChatService } from '../../../core/services/chat.service';
         <!-- Main Lightbox Image -->
         <div class="max-w-5xl w-full max-h-[85vh] flex flex-col items-center gap-6" (click)="$event.stopPropagation()">
           <img 
-            [ngSrc]="vehicle()!.imagenes![selectedImageIndex()].url" 
-            fill
-            class="object-contain rounded-3xl shadow-2xl pointer-events-none select-none animate-zoom-in"
+            [src]="vehicle()!.imagenes![selectedImageIndex()].url" 
+            class="max-w-full max-h-[75vh] object-contain rounded-3xl shadow-2xl pointer-events-none select-none animate-zoom-in"
             alt="Vehículo Ampliado">
           
           <!-- Counter -->

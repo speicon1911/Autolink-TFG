@@ -41,7 +41,8 @@ public class VehiculoService {
 	private VehiculoMapper vehiculoMapper;
 
 	@Autowired
-	private ImgBBService imgBBService;
+//	private ImgBBService imgBBService;
+	private ImagenOptimizadaService imagenOptimizadaService;
 	@Autowired
 	private ImagenVehiculoRepository imagenVehiculoRepository;
 
@@ -298,10 +299,12 @@ public class VehiculoService {
 				throw new VehiculoExceptions(
 						"La imagen " + archivo.getOriginalFilename() + " es demasiado grande (máx 5MB).");
 			}
-			String urlPublica = imgBBService.subirAImgBB(archivo);
+//			String urlPublica = imgBBService.subirAImgBB(archivo);
+//			Se procesa la foto localmente con compresion extrema (800px y 60% calidad)
+			String base64DataUri = imagenOptimizadaService.optimizarYconvertirABase64(archivo);
 
 			ImagenVehiculo nuevaImg = new ImagenVehiculo();
-			nuevaImg.setUrl(urlPublica);
+			nuevaImg.setUrl(base64DataUri);
 			nuevaImg.setVehiculo(vehiculo);
 
 			// guardar
