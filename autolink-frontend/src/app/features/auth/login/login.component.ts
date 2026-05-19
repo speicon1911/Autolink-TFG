@@ -2,13 +2,15 @@ import { Component, inject, signal } from '@angular/core';
 
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import {NgxCaptchaModule} from 'ngx-captcha';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, NgxCaptchaModule],
   template: `
     <div class="max-w-md mx-auto mt-12 animate-fade-in px-4">
       <div class="bg-surface-card/80 backdrop-blur-xl p-8 rounded-3xl border border-action-primary/20 shadow-2xl space-y-8">
@@ -32,7 +34,16 @@ import { NotificationService } from '../../../core/services/notification.service
                 placeholder="••••••••">
               </div>
     
-              <button type="submit" [disabled]="loginForm.invalid || loading()"
+              <div class="flex justify-center py-2">
+                <ngx-recaptcha2
+                  [siteKey]="recaptchaSiteKey"
+                  (success)="onCaptchaSuccess($event)"
+                  (expire)="onCaptchaExpired()"
+                  [theme]="'dark'">
+                </ngx-recaptcha2>
+              </div>
+
+              <button type="submit" [disabled]="loginForm.invalid || loading() || !recaptchaToken()"
                 class="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed font-black py-4 rounded-xl transition-all shadow-lg shadow-action-primary/20 active:scale-[0.98] flex items-center justify-center gap-3 uppercase tracking-widest text-sm text-surface-base">
                 @if (loading()) {
                   <div class="w-5 h-5 border-2 border-surface-base/20 border-t-surface-base rounded-full animate-spin"></div>
@@ -65,15 +76,37 @@ export class LoginComponent {
 
   loading = signal(false);
 
+  // Clave de sitio pública oficial de pruebas de Google reCAPTCHA
+  readonly recaptchaSiteKey = environment.recaptchaSiteKey;
+  recaptchaToken = signal<string | null>(null);
+
   loginForm = this.fb.group({
     username: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
 
+  onCaptchaSuccess(token: string) {
+    this.recaptchaToken.set(token);
+  }
+
+  onCaptchaExpired() {
+    this.recaptchaToken.set(null);
+  }
+
   onSubmit() {
     if (this.loginForm.valid) {
+      if (!this.recaptchaToken()) {
+        this.ns.error('Por favor, completa la verificación "No soy un robot"');
+        return;
+      }
       this.loading.set(true);
-      this.authService.login(this.loginForm.value as any).subscribe({
+      
+      const payload = {
+        ...this.loginForm.value,
+        recaptchaToken: this.recaptchaToken()
+      };
+
+      this.authService.login(payload as any).subscribe({
         next: (user) => {
           if (user) {
             this.ns.success('Sesión iniciada correctamente');

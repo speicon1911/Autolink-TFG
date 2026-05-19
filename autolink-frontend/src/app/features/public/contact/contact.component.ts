@@ -1,13 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { NgxCaptchaModule } from 'ngx-captcha';
 import { ContactoService } from '../../../core/services/contacto.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgxCaptchaModule],
   template: `
     <div class="min-h-screen bg-surface-base text-content-primary py-20 px-4">
       <div class="max-w-4xl mx-auto">
@@ -73,9 +75,19 @@ import { NotificationService } from '../../../core/services/notification.service
                   placeholder="¿En qué podemos ayudarte?"></textarea>
               </div>
 
+              <!-- Google reCAPTCHA v2 Checkbox -->
+              <div class="flex justify-center my-4">
+                <ngx-recaptcha2
+                  [siteKey]="recaptchaSiteKey"
+                  [theme]="'dark'"
+                  (success)="recaptchaToken.set($event)"
+                  (expire)="recaptchaToken.set(null)">
+                </ngx-recaptcha2>
+              </div>
+
               <button 
                 type="submit"
-                [disabled]="contactForm.invalid || isSubmitting"
+                [disabled]="contactForm.invalid || isSubmitting || !recaptchaToken()"
                 class="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed text-surface-base font-black py-4 rounded-xl transition-all shadow-lg shadow-action-primary/20 active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2">
                 @if (isSubmitting) {
                   <div class="w-5 h-5 border-2 border-surface-base/20 border-t-surface-base rounded-full animate-spin"></div>
@@ -98,6 +110,9 @@ export class ContactComponent {
   private fb = inject(FormBuilder);
   private contactoService = inject(ContactoService);
   private ns = inject(NotificationService);
+
+  readonly recaptchaSiteKey = environment.recaptchaSiteKey;
+  recaptchaToken = signal<string | null>(null);
   
   contactForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -109,14 +124,15 @@ export class ContactComponent {
   submitted = false;
 
   onSubmit() {
-    if (this.contactForm.valid) {
+    if (this.contactForm.valid && this.recaptchaToken()) {
       this.isSubmitting = true;
       
       const contactoDTO = {
         nombre: this.contactForm.value.name!,
         email: this.contactForm.value.email!,
         asunto: 'Consulta desde Autolink',
-        mensaje: this.contactForm.value.message!
+        mensaje: this.contactForm.value.message!,
+        recaptchaToken: this.recaptchaToken()!
       };
 
       this.contactoService.enviarMensaje(contactoDTO).subscribe({
@@ -124,13 +140,16 @@ export class ContactComponent {
           this.isSubmitting = false;
           this.submitted = true;
           this.contactForm.reset();
+          this.recaptchaToken.set(null);
           this.ns.success('Mensaje enviado correctamente. Nos pondremos en contacto contigo pronto.');
           
           setTimeout(() => this.submitted = false, 5000);
         },
-        error: () => {
+        error: (err) => {
           this.isSubmitting = false;
-          this.ns.error('Error al enviar el mensaje. Por favor, inténtalo de nuevo.');
+          this.recaptchaToken.set(null);
+          const errorMsg = err.error?.message || 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.';
+          this.ns.error(errorMsg);
         }
       });
     }
