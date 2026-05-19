@@ -1,5 +1,7 @@
 # Definición de límites de peticiones (Rate Limiting)
 limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
+limit_req_zone $binary_remote_addr zone=auth_limit:10m rate=2r/s;
+limit_req_status 429; # Devuelve HTTP 429 (Too Many Requests) en lugar de 503
 
 # Configuración del servidor
 server {
@@ -58,10 +60,24 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    # --- RUTA 2: BACKEND (Spring Boot API) ---
-    # Capturamos todas las rutas de endpoints de Spring Boot
-    location ~ ^/(auth|personas|vehiculos|ventas|marcas|mensajes|error|api/contacto) {
-        # Aplicamos límite de peticiones para proteger el backend de saturación
+    # --- RUTA 2.1: BACKEND AUTH (Protección estricta contra fuerza bruta) ---
+    location ~ ^/auth {
+        # Límite muy estricto para evitar ataques de fuerza bruta en login/registro (2 req/s)
+        limit_req zone=auth_limit burst=5 nodelay;
+
+        proxy_pass http://backend:8082;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffering off;
+    }
+
+    # --- RUTA 2.2: BACKEND GENERAL ---
+    # Capturamos el resto de rutas de endpoints de Spring Boot
+    location ~ ^/(personas|vehiculos|ventas|marcas|mensajes|error|api/contacto) {
+        # Aplicamos límite de peticiones para proteger el backend de saturación general (10 req/s)
         limit_req zone=api_limit burst=20 nodelay;
 
         proxy_pass http://backend:8082; # Puerto real expuesto dentro del contenedor Spring Boot
