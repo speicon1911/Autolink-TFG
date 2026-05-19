@@ -12,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -47,7 +48,8 @@ public class Persona {
 	private Rol rol;
 
 	// foto de perfil
-	@Column(name = "foto_perfil")
+	@Lob
+	@Column(name = "foto_perfil", columnDefinition = "LONGTEXT")
 	private String fotoPerfil;
 
 	// --- CAMPOS ESPECÍFICOS (Antes en subclases) ---

@@ -14,7 +14,7 @@ import { ImagenVehiculo } from '../../../core/models/vehicle.model';
   standalone: true,
   imports: [ReactiveFormsModule, FormatEnumPipe, ConfirmModalComponent],
   template: `
-    <div class="fixed inset-0 bg-surface-base/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="fixed inset-0 bg-surface-base/85 z-50 flex items-center justify-center p-4">
       <div class="bg-surface-card border border-white/10 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-fade-in text-content-primary">
         <header class="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
           <div>
@@ -407,6 +407,8 @@ export class VehicleFormComponent implements OnInit {
       });
     }
   }
+
+
 
   cargarMarcas() {
     this.vehicleService.getMarcas().subscribe(data => {

@@ -2,11 +2,13 @@ package com.autolink.persistence.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -23,6 +25,8 @@ public class ImagenVehiculo {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
+	@Lob
+	@Column(name = "url", columnDefinition = "LONGTEXT", nullable = false)
 	private String url; // url de la imagen
 
 	@ManyToOne

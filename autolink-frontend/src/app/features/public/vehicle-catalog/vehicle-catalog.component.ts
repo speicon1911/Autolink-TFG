@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FormatEnumPipe } from '../../../shared/pipes/format-enum.pipe';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { VehicleService } from '../../../core/services/vehicle.service';
 import { Vehicle, Marca, TipoVehiculo, CombustibleVehiculo, EtiquetaMedioambiental, EstadoVerificacion } from '../../../core/models/vehicle.model';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +13,7 @@ import { ChatService } from '../../../core/services/chat.service';
 @Component({
   selector: 'app-vehicle-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, PaginationComponent, FormatEnumPipe, NgOptimizedImage],
+  imports: [CommonModule, FormsModule, PaginationComponent, FormatEnumPipe],
   template: `
     <div class="animate-fade-in px-4 lg:px-0">
       <header class="text-center space-y-4 mb-12">
@@ -93,11 +93,8 @@ import { ChatService } from '../../../core/services/chat.service';
                   class="group bg-surface-card backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden hover:border-action-primary transition-all duration-500 transform hover:-translate-y-2 shadow-2xl">
                   <div class="aspect-[16/10] bg-surface-base relative overflow-hidden">
                     @if (v.imagenes && v.imagenes.length > 0) {
-                      <img [ngSrc]="v.imagenes[0].url" 
-                        fill
-                        [priority]="$index === 0"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                        class="object-cover group-hover:scale-110 transition-transform duration-700" 
+                      <img [src]="v.imagenes[0].url" 
+                        class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                         alt="Vehículo">
                     } @else {
                       <div class="absolute inset-0 flex items-center justify-center text-content-muted/40 group-hover:scale-110 transition-transform duration-700">
