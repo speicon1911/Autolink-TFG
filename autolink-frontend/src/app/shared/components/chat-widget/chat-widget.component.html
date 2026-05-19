@@ -1,90 +1,92 @@
-<div class="chat-container" [class.open]="isOpen()">
-  <!-- Floating Button -->
-  <button class="chat-toggle" (click)="toggleChat()">
-    @if (!isOpen()) {
-      <i class="fas fa-comments"></i>
-    } @else {
-      <i class="fas fa-times"></i>
-    }
-    
-    @if (totalUnread() > 0 && !isOpen()) {
-      <div class="unread-badge-total">
-        {{ totalUnread() > 99 ? '99+' : totalUnread() }}
-      </div>
-    }
-  </button>
-
-  <!-- Chat Window -->
-  @if (isOpen()) {
-    <div class="chat-window">
-      <div class="chat-header">
-        @if (selectedContact()) {
-          <div class="header-back" (click)="backToList()">
-            <i class="fas fa-chevron-left"></i>
-          </div>
-        }
-        <div class="header-title">
-          {{ selectedContact() ? selectedContact().nombre : 'Mensajes' }}
-        </div>
-      </div>
-
-      <!-- Contact List -->
-      @if (!selectedContact()) {
-        <div class="contact-list">
-          @if (contactos().length === 0) {
-            <div class="no-chats">
-              No tienes conversaciones activas.
-            </div>
-          }
-          @for (c of contactos(); track c.persona.id) {
-            <div class="contact-item" (click)='selectContact(c.persona)'>
-              <div class="contact-avatar">
-                @if (c.persona.fotoPerfil) {
-                  <img [src]="c.persona.fotoPerfil" [alt]="c.persona.nombre">
-                } @else {
-                  <div class="initials-avatar">{{ getInitials(c.persona) }}</div>
-                }
-              </div>
-              <div class="contact-info">
-                <div class="contact-name">{{ c.persona.nombre }} {{ c.persona.apellidos }}</div>
-                <div class="contact-email">{{ c.persona.correo }}</div>
-              </div>
-              @if (c.mensajesNoLeidos > 0) {
-                <div class="unread-badge-contact">
-                  {{ c.mensajesNoLeidos }}
-                </div>
-              }
-            </div>
-          }
+@if (currentUser()) {
+  <div class="chat-container" [class.open]="isOpen()">
+    <!-- Floating Button -->
+    <button class="chat-toggle" (click)="toggleChat()">
+      @if (!isOpen()) {
+        <i class="fas fa-comments"></i>
+      } @else {
+        <i class="fas fa-times"></i>
+      }
+      
+      @if (totalUnread() > 0 && !isOpen()) {
+        <div class="unread-badge-total">
+          {{ totalUnread() > 99 ? '99+' : totalUnread() }}
         </div>
       }
+    </button>
 
-      <!-- Chat Messages -->
-      @if (selectedContact()) {
-        <div class="chat-messages">
-          <div #scrollMe class="messages-list">
-            @for (m of mensajes(); track $index) {
-              <div class="message" 
-                   [class.sent]="m.idRemitente === currentUser()?.id"
-                   [class.received]="m.idRemitente !== currentUser()?.id">
-                <div class="message-content">
-                  {{ m.contenido }}
+    <!-- Chat Window -->
+    @if (isOpen()) {
+      <div class="chat-window">
+        <div class="chat-header">
+          @if (selectedContact()) {
+            <div class="header-back" (click)="backToList()">
+              <i class="fas fa-chevron-left"></i>
+            </div>
+          }
+          <div class="header-title">
+            {{ selectedContact() ? selectedContact().nombre : 'Mensajes' }}
+          </div>
+        </div>
+
+        <!-- Contact List -->
+        @if (!selectedContact()) {
+          <div class="contact-list">
+            @if (contactos().length === 0) {
+              <div class="no-chats">
+                No tienes conversaciones activas.
+              </div>
+            }
+            @for (c of contactos(); track c.persona.id) {
+              <div class="contact-item" (click)='selectContact(c.persona)'>
+                <div class="contact-avatar">
+                  @if (c.persona.fotoPerfil) {
+                    <img [src]="c.persona.fotoPerfil" [alt]="c.persona.nombre">
+                  } @else {
+                    <div class="initials-avatar">{{ getInitials(c.persona) }}</div>
+                  }
                 </div>
-                <div class="message-time">
-                  {{ m.fechaEnvio | date:'HH:mm' }}
+                <div class="contact-info">
+                  <div class="contact-name">{{ c.persona.nombre }} {{ c.persona.apellidos }}</div>
+                  <div class="contact-email">{{ c.persona.correo }}</div>
                 </div>
+                @if (c.mensajesNoLeidos > 0) {
+                  <div class="unread-badge-contact">
+                    {{ c.mensajesNoLeidos }}
+                  </div>
+                }
               </div>
             }
           </div>
+        }
 
-          <div class="chat-input">
-            <input type="text" [(ngModel)]="nuevoMensaje" (keyup.enter)="enviar()" placeholder="Escribe un mensaje...">
-            <button (click)="enviar()">
-              <i class="fas fa-paper-plane"></i>
-            </button>
+        <!-- Chat Messages -->
+        @if (selectedContact()) {
+          <div class="chat-messages">
+            <div #scrollMe class="messages-list">
+              @for (m of mensajes(); track $index) {
+                <div class="message" 
+                    [class.sent]="m.idRemitente === currentUser()?.id"
+                    [class.received]="m.idRemitente !== currentUser()?.id">
+                  <div class="message-content">
+                    {{ m.contenido }}
+                  </div>
+                  <div class="message-time">
+                    {{ m.fechaEnvio | date:'HH:mm' }}
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="chat-input">
+              <input type="text" [(ngModel)]="nuevoMensaje" (keyup.enter)="enviar()" placeholder="Escribe un mensaje...">
+              <button (click)="enviar()">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
           </div>
-        </div>
-      }
-    </div>
-  }
-</div>
+        }
+      </div>
+    }
+  </div>
+}
